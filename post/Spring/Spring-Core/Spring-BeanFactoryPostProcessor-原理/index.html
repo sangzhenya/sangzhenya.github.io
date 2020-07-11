@@ -1,0 +1,752 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <title>Spring BeanFactoryPostProcessor 和 BeanDefinitionRegistryPostProcessor | 新月的博客</title>
+    <meta property="og:title" content="Spring BeanFactoryPostProcessor 和 BeanDefinitionRegistryPostProcessor - 新月的博客">
+    <meta property="og:type" content="article">
+        
+    <meta property="article:published_time" content='2019-01-15T09:00:00&#43;08:00'>
+        
+        
+    <meta property="article:modified_time" content='2019-01-15T09:00:00&#43;08:00'>
+        
+    <meta name="Keywords" content="">
+    <meta name="description" content="Spring BeanFactoryPostProcessor 和 BeanDefinitionRegistryPostProcessor">
+        
+    <meta name="author" content="新月">
+    <meta property="og:url" content="https://sangzhenya.github.io/post/Spring/Spring-Core/Spring-BeanFactoryPostProcessor-%E5%8E%9F%E7%90%86/">
+    <link rel="shortcut icon" href="https://sangzhenya.github.io/favicon.ico" type="image/x-icon">
+
+    <link rel="stylesheet" href='https://sangzhenya.github.io/css/normalize.css'>
+    <link rel="stylesheet" href='https://sangzhenya.github.io/css/style.css'>
+    <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+
+    
+
+
+    
+    
+</head>
+
+
+<body>
+    <header id="header" class="clearfix">
+    <div class="container">
+        <div class="col-group">
+            <div class="site-name ">
+                
+                    <a id="logo" href="https://sangzhenya.github.io/">
+                        新月的博客
+                    </a>
+                
+                <p class="description">晚来天欲雪，能饮一杯无？</p>
+            </div>
+            <div>
+                <nav id="nav-menu" class="clearfix">
+                    <a class="current" href="https://sangzhenya.github.io/">首页</a>
+                    
+                    <a  href="https://sangzhenya.github.io/archives/" title="归档">归档</a>
+                    
+                    <a  href="https://sangzhenya.github.io/about/" title="关于">关于</a>
+                    
+                </nav>
+            </div>
+        </div>
+    </div>
+</header>
+
+    <div id="body">
+        <div class="container">
+            <div class="col-group">
+
+                <div class="col-8" id="main">
+                    
+<div class="res-cons">
+    
+    <article class="post">
+        <header>
+            <h1 class="post-title">Spring BeanFactoryPostProcessor 和 BeanDefinitionRegistryPostProcessor</h1>
+        </header>
+        <date class="post-meta meta-date">
+            2019年1月15日
+        </date>
+        
+        <div class="post-meta">
+            <span>|</span>
+            
+            <span class="meta-category"><a href='https://sangzhenya.github.io/categories/Spring'>Spring</a></span>
+            
+        </div>
+        
+        
+        
+        <div class="post-content">
+            <p><code>BeanFactoryPostProcessor</code> BeanFactory 的后置处理器；在 BeanFactory 标准初始化之后调用，所有 Bean 定义已经保存加载到 beanFactory 中但是 bean 的实例还未创建，可以操作 beanFactory 进行定制。为容器中添加一个自定义的 <code>BeanFactoryPostProcessoer</code> 如下：</p>
+<div class="highlight"><div style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4">
+<table style="border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 1
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 2
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 3
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 4
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 5
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 6
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 7
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 8
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 9
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">10
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">11
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">12
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#3c5d5d;font-weight:bold">@Component</span>
+<span style="color:#000;font-weight:bold">public</span> <span style="color:#000;font-weight:bold">class</span> <span style="color:#458;font-weight:bold">MyBeanFactoryPostProcessor</span> <span style="color:#000;font-weight:bold">implements</span> BeanFactoryPostProcessor <span style="color:#000;font-weight:bold">{</span>
+    <span style="color:#000;font-weight:bold">private</span> Log log <span style="color:#000;font-weight:bold">=</span> LogFactory<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">getLog</span><span style="color:#000;font-weight:bold">(</span>MyBeanFactoryPostProcessor<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">class</span><span style="color:#000;font-weight:bold">);</span>
+
+    <span style="color:#3c5d5d;font-weight:bold">@Override</span>
+    <span style="color:#000;font-weight:bold">public</span> <span style="color:#458;font-weight:bold">void</span> <span style="color:#900;font-weight:bold">postProcessBeanFactory</span><span style="color:#000;font-weight:bold">(</span>ConfigurableListableBeanFactory beanFactory<span style="color:#000;font-weight:bold">)</span> <span style="color:#000;font-weight:bold">throws</span> BeansException <span style="color:#000;font-weight:bold">{</span>
+        <span style="color:#458;font-weight:bold">int</span> count <span style="color:#000;font-weight:bold">=</span> beanFactory<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">getBeanDefinitionCount</span><span style="color:#000;font-weight:bold">();</span>
+        log<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">info</span><span style="color:#000;font-weight:bold">(</span><span style="color:#d14">&#34;Count::&#34;</span> <span style="color:#000;font-weight:bold">+</span> count<span style="color:#000;font-weight:bold">);</span>
+        String<span style="color:#000;font-weight:bold">[]</span> definitionNames <span style="color:#000;font-weight:bold">=</span> beanFactory<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">getBeanDefinitionNames</span><span style="color:#000;font-weight:bold">();</span>
+        log<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">info</span><span style="color:#000;font-weight:bold">(</span><span style="color:#d14">&#34;DefinitionNames::&#34;</span> <span style="color:#000;font-weight:bold">+</span> Arrays<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">toString</span><span style="color:#000;font-weight:bold">(</span>definitionNames<span style="color:#000;font-weight:bold">));</span>
+    <span style="color:#000;font-weight:bold">}</span>
+<span style="color:#000;font-weight:bold">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><p><code>BeanDefinitionRegistryPostProcessor</code> Bean 定义注册中心的后置处理器，运行修改 bean 定义注册中心。和 <code>BeanFactoryPostProcessor</code> 调用的位置之前， Bean 定义信息加载到 BeanFactory 之前同样也是在 Bean 的实例创建之前，但在可以自定义一个如下所示：</p>
+<div class="highlight"><div style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4">
+<table style="border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 1
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 2
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 3
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 4
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 5
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 6
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 7
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 8
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 9
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">10
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">11
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#3c5d5d;font-weight:bold">@Component</span>
+<span style="color:#000;font-weight:bold">public</span> <span style="color:#000;font-weight:bold">class</span> <span style="color:#458;font-weight:bold">MyBeanDefinitionRegistryPostProcessor</span> <span style="color:#000;font-weight:bold">implements</span> BeanDefinitionRegistryPostProcessor <span style="color:#000;font-weight:bold">{</span>
+    <span style="color:#3c5d5d;font-weight:bold">@Override</span>
+    <span style="color:#000;font-weight:bold">public</span> <span style="color:#458;font-weight:bold">void</span> <span style="color:#900;font-weight:bold">postProcessBeanFactory</span><span style="color:#000;font-weight:bold">(</span>ConfigurableListableBeanFactory beanFactory<span style="color:#000;font-weight:bold">)</span> <span style="color:#000;font-weight:bold">throws</span> BeansException <span style="color:#000;font-weight:bold">{}</span>
+    <span style="color:#3c5d5d;font-weight:bold">@Override</span>
+    <span style="color:#000;font-weight:bold">public</span> <span style="color:#458;font-weight:bold">void</span> <span style="color:#900;font-weight:bold">postProcessBeanDefinitionRegistry</span><span style="color:#000;font-weight:bold">(</span>BeanDefinitionRegistry registry<span style="color:#000;font-weight:bold">)</span> <span style="color:#000;font-weight:bold">throws</span> BeansException <span style="color:#000;font-weight:bold">{</span>
+<span style="color:#998;font-style:italic">//        RootBeanDefinition beanDefinition = new RootBeanDefinition(MessageService.class);
+</span><span style="color:#998;font-style:italic"></span>        AbstractBeanDefinition beanDefinition <span style="color:#000;font-weight:bold">=</span> BeanDefinitionBuilder<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">rootBeanDefinition</span><span style="color:#000;font-weight:bold">(</span>MessageService<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">class</span><span style="color:#000;font-weight:bold">).</span><span style="color:#008080">getBeanDefinition</span><span style="color:#000;font-weight:bold">();</span>
+        registry<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">registerBeanDefinition</span><span style="color:#000;font-weight:bold">(</span><span style="color:#d14">&#34;cMessageService&#34;</span><span style="color:#000;font-weight:bold">,</span> beanDefinition<span style="color:#000;font-weight:bold">);</span>
+    <span style="color:#000;font-weight:bold">}</span>
+<span style="color:#000;font-weight:bold">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>然后查看其调用栈：</p>
+<p>首先初始化容器，在这个过程中调用 <code>refresh</code>  方法刷新容器，刷新容器其实就是 Spring 启动的主要过程。在 <code>refresh</code>方法中调用 <code>invokeBeanFactoryPostProcessors</code> 方法去 invoke BeanFactory 的后置处理器去执行相应的操作，调用 <code>PostProcessorRegistrationDelegate.invokeBeanFactoryPostProcessors</code> 方法去组织调用相应的 BeanFactoryPostProcesser。 方法如下：</p>
+<div class="highlight"><div style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4">
+<table style="border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">  1
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">  2
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">  3
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">  4
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">  5
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">  6
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">  7
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">  8
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">  9
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 10
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 11
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 12
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 13
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 14
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 15
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 16
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 17
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 18
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 19
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 20
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 21
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 22
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 23
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 24
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 25
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 26
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 27
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 28
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 29
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 30
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 31
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 32
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 33
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 34
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 35
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 36
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 37
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 38
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 39
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 40
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 41
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 42
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 43
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 44
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 45
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 46
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 47
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 48
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 49
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 50
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 51
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 52
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 53
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 54
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 55
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 56
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 57
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 58
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 59
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 60
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 61
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 62
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 63
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 64
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 65
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 66
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 67
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 68
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 69
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 70
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 71
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 72
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 73
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 74
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 75
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 76
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 77
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 78
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 79
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 80
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 81
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 82
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 83
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 84
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 85
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 86
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 87
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 88
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 89
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 90
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 91
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 92
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 93
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 94
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 95
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 96
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 97
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 98
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 99
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">100
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">101
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">102
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">103
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">104
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">105
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">106
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">107
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">108
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">109
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">110
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">111
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">112
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">113
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">114
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">115
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">116
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">117
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">118
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">119
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">120
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">121
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">122
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">123
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">124
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">125
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">126
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">127
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">128
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">129
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">130
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">131
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">132
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">133
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">134
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">135
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">136
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">137
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">138
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">139
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">140
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">141
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">142
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">143
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">144
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">145
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">146
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">147
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#998;font-style:italic">// 方法传入的是 beanFactory 和 在上一步获取到的所有的 BeanFactoryPostProcessor
+</span><span style="color:#998;font-style:italic"></span><span style="color:#000;font-weight:bold">public</span> <span style="color:#000;font-weight:bold">static</span> <span style="color:#458;font-weight:bold">void</span> <span style="color:#900;font-weight:bold">invokeBeanFactoryPostProcessors</span><span style="color:#000;font-weight:bold">(</span>
+			ConfigurableListableBeanFactory beanFactory<span style="color:#000;font-weight:bold">,</span> List<span style="color:#000;font-weight:bold">&lt;</span>BeanFactoryPostProcessor<span style="color:#000;font-weight:bold">&gt;</span> beanFactoryPostProcessors<span style="color:#000;font-weight:bold">)</span> <span style="color:#000;font-weight:bold">{</span>
+
+    
+    <span style="color:#998;font-style:italic">// Invoke BeanDefinitionRegistryPostProcessors first, if any.
+</span><span style="color:#998;font-style:italic"></span>    Set<span style="color:#000;font-weight:bold">&lt;</span>String<span style="color:#000;font-weight:bold">&gt;</span> processedBeans <span style="color:#000;font-weight:bold">=</span> <span style="color:#000;font-weight:bold">new</span> HashSet<span style="color:#000;font-weight:bold">&lt;&gt;();</span>
+
+    <span style="color:#000;font-weight:bold">if</span> <span style="color:#000;font-weight:bold">(</span>beanFactory <span style="color:#000;font-weight:bold">instanceof</span> BeanDefinitionRegistry<span style="color:#000;font-weight:bold">)</span> <span style="color:#000;font-weight:bold">{</span>
+        BeanDefinitionRegistry registry <span style="color:#000;font-weight:bold">=</span> <span style="color:#000;font-weight:bold">(</span>BeanDefinitionRegistry<span style="color:#000;font-weight:bold">)</span> beanFactory<span style="color:#000;font-weight:bold">;</span>
+        List<span style="color:#000;font-weight:bold">&lt;</span>BeanFactoryPostProcessor<span style="color:#000;font-weight:bold">&gt;</span> regularPostProcessors <span style="color:#000;font-weight:bold">=</span> <span style="color:#000;font-weight:bold">new</span> ArrayList<span style="color:#000;font-weight:bold">&lt;&gt;();</span>
+        List<span style="color:#000;font-weight:bold">&lt;</span>BeanDefinitionRegistryPostProcessor<span style="color:#000;font-weight:bold">&gt;</span> registryProcessors <span style="color:#000;font-weight:bold">=</span> <span style="color:#000;font-weight:bold">new</span> ArrayList<span style="color:#000;font-weight:bold">&lt;&gt;();</span>
+
+        <span style="color:#998;font-style:italic">// 从传入的 beanFactoryPostProcessors 分类收集 BeanFactoryPostProcessor
+</span><span style="color:#998;font-style:italic"></span>        <span style="color:#000;font-weight:bold">for</span> <span style="color:#000;font-weight:bold">(</span>BeanFactoryPostProcessor postProcessor <span style="color:#000;font-weight:bold">:</span> beanFactoryPostProcessors<span style="color:#000;font-weight:bold">)</span> <span style="color:#000;font-weight:bold">{</span>
+            <span style="color:#000;font-weight:bold">if</span> <span style="color:#000;font-weight:bold">(</span>postProcessor <span style="color:#000;font-weight:bold">instanceof</span> BeanDefinitionRegistryPostProcessor<span style="color:#000;font-weight:bold">)</span> <span style="color:#000;font-weight:bold">{</span>
+                BeanDefinitionRegistryPostProcessor registryProcessor <span style="color:#000;font-weight:bold">=</span>
+                    <span style="color:#000;font-weight:bold">(</span>BeanDefinitionRegistryPostProcessor<span style="color:#000;font-weight:bold">)</span> postProcessor<span style="color:#000;font-weight:bold">;</span>
+                registryProcessor<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">postProcessBeanDefinitionRegistry</span><span style="color:#000;font-weight:bold">(</span>registry<span style="color:#000;font-weight:bold">);</span>
+                registryProcessors<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">add</span><span style="color:#000;font-weight:bold">(</span>registryProcessor<span style="color:#000;font-weight:bold">);</span>
+            <span style="color:#000;font-weight:bold">}</span>
+            <span style="color:#000;font-weight:bold">else</span> <span style="color:#000;font-weight:bold">{</span>
+                regularPostProcessors<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">add</span><span style="color:#000;font-weight:bold">(</span>postProcessor<span style="color:#000;font-weight:bold">);</span>
+            <span style="color:#000;font-weight:bold">}</span>
+        <span style="color:#000;font-weight:bold">}</span>
+
+        <span style="color:#998;font-style:italic">// Do not initialize FactoryBeans here: We need to leave all regular beans
+</span><span style="color:#998;font-style:italic"></span>        <span style="color:#998;font-style:italic">// uninitialized to let the bean factory post-processors apply to them!
+</span><span style="color:#998;font-style:italic"></span>        <span style="color:#998;font-style:italic">// Separate between BeanDefinitionRegistryPostProcessors that implement
+</span><span style="color:#998;font-style:italic"></span>        <span style="color:#998;font-style:italic">// PriorityOrdered, Ordered, and the rest.
+</span><span style="color:#998;font-style:italic"></span>        List<span style="color:#000;font-weight:bold">&lt;</span>BeanDefinitionRegistryPostProcessor<span style="color:#000;font-weight:bold">&gt;</span> currentRegistryProcessors <span style="color:#000;font-weight:bold">=</span> <span style="color:#000;font-weight:bold">new</span> ArrayList<span style="color:#000;font-weight:bold">&lt;&gt;();</span>
+
+        <span style="color:#998;font-style:italic">// 找到并执行实现了 PriorityOrdered  的 BeanDefinitionRegistryPostProcessor
+</span><span style="color:#998;font-style:italic"></span>        <span style="color:#998;font-style:italic">// First, invoke the BeanDefinitionRegistryPostProcessors that implement PriorityOrdered.
+</span><span style="color:#998;font-style:italic"></span>        String<span style="color:#000;font-weight:bold">[]</span> postProcessorNames <span style="color:#000;font-weight:bold">=</span>
+            beanFactory<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">getBeanNamesForType</span><span style="color:#000;font-weight:bold">(</span>BeanDefinitionRegistryPostProcessor<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">class</span><span style="color:#000;font-weight:bold">,</span> <span style="color:#000;font-weight:bold">true</span><span style="color:#000;font-weight:bold">,</span> <span style="color:#000;font-weight:bold">false</span><span style="color:#000;font-weight:bold">);</span>
+        <span style="color:#000;font-weight:bold">for</span> <span style="color:#000;font-weight:bold">(</span>String ppName <span style="color:#000;font-weight:bold">:</span> postProcessorNames<span style="color:#000;font-weight:bold">)</span> <span style="color:#000;font-weight:bold">{</span>
+            <span style="color:#000;font-weight:bold">if</span> <span style="color:#000;font-weight:bold">(</span>beanFactory<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">isTypeMatch</span><span style="color:#000;font-weight:bold">(</span>ppName<span style="color:#000;font-weight:bold">,</span> PriorityOrdered<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">class</span><span style="color:#000;font-weight:bold">))</span> <span style="color:#000;font-weight:bold">{</span>
+                currentRegistryProcessors<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">add</span><span style="color:#000;font-weight:bold">(</span>beanFactory<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">getBean</span><span style="color:#000;font-weight:bold">(</span>ppName<span style="color:#000;font-weight:bold">,</span> BeanDefinitionRegistryPostProcessor<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">class</span><span style="color:#000;font-weight:bold">));</span>
+                processedBeans<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">add</span><span style="color:#000;font-weight:bold">(</span>ppName<span style="color:#000;font-weight:bold">);</span>
+            <span style="color:#000;font-weight:bold">}</span>
+        <span style="color:#000;font-weight:bold">}</span>
+        sortPostProcessors<span style="color:#000;font-weight:bold">(</span>currentRegistryProcessors<span style="color:#000;font-weight:bold">,</span> beanFactory<span style="color:#000;font-weight:bold">);</span>
+        registryProcessors<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">addAll</span><span style="color:#000;font-weight:bold">(</span>currentRegistryProcessors<span style="color:#000;font-weight:bold">);</span>
+        invokeBeanDefinitionRegistryPostProcessors<span style="color:#000;font-weight:bold">(</span>currentRegistryProcessors<span style="color:#000;font-weight:bold">,</span> registry<span style="color:#000;font-weight:bold">);</span>
+        currentRegistryProcessors<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">clear</span><span style="color:#000;font-weight:bold">();</span>
+
+        <span style="color:#998;font-style:italic">// 找到并执行实现了 Ordered  的 BeanDefinitionRegistryPostProcessor
+</span><span style="color:#998;font-style:italic"></span>        <span style="color:#998;font-style:italic">// Next, invoke the BeanDefinitionRegistryPostProcessors that implement Ordered.
+</span><span style="color:#998;font-style:italic"></span>        postProcessorNames <span style="color:#000;font-weight:bold">=</span> beanFactory<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">getBeanNamesForType</span><span style="color:#000;font-weight:bold">(</span>BeanDefinitionRegistryPostProcessor<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">class</span><span style="color:#000;font-weight:bold">,</span> <span style="color:#000;font-weight:bold">true</span><span style="color:#000;font-weight:bold">,</span> <span style="color:#000;font-weight:bold">false</span><span style="color:#000;font-weight:bold">);</span>
+        <span style="color:#000;font-weight:bold">for</span> <span style="color:#000;font-weight:bold">(</span>String ppName <span style="color:#000;font-weight:bold">:</span> postProcessorNames<span style="color:#000;font-weight:bold">)</span> <span style="color:#000;font-weight:bold">{</span>
+            <span style="color:#000;font-weight:bold">if</span> <span style="color:#000;font-weight:bold">(!</span>processedBeans<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">contains</span><span style="color:#000;font-weight:bold">(</span>ppName<span style="color:#000;font-weight:bold">)</span> <span style="color:#000;font-weight:bold">&amp;&amp;</span> beanFactory<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">isTypeMatch</span><span style="color:#000;font-weight:bold">(</span>ppName<span style="color:#000;font-weight:bold">,</span> Ordered<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">class</span><span style="color:#000;font-weight:bold">))</span> <span style="color:#000;font-weight:bold">{</span>
+                currentRegistryProcessors<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">add</span><span style="color:#000;font-weight:bold">(</span>beanFactory<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">getBean</span><span style="color:#000;font-weight:bold">(</span>ppName<span style="color:#000;font-weight:bold">,</span> BeanDefinitionRegistryPostProcessor<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">class</span><span style="color:#000;font-weight:bold">));</span>
+                processedBeans<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">add</span><span style="color:#000;font-weight:bold">(</span>ppName<span style="color:#000;font-weight:bold">);</span>
+            <span style="color:#000;font-weight:bold">}</span>
+        <span style="color:#000;font-weight:bold">}</span>
+        sortPostProcessors<span style="color:#000;font-weight:bold">(</span>currentRegistryProcessors<span style="color:#000;font-weight:bold">,</span> beanFactory<span style="color:#000;font-weight:bold">);</span>
+        registryProcessors<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">addAll</span><span style="color:#000;font-weight:bold">(</span>currentRegistryProcessors<span style="color:#000;font-weight:bold">);</span>
+        invokeBeanDefinitionRegistryPostProcessors<span style="color:#000;font-weight:bold">(</span>currentRegistryProcessors<span style="color:#000;font-weight:bold">,</span> registry<span style="color:#000;font-weight:bold">);</span>
+        currentRegistryProcessors<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">clear</span><span style="color:#000;font-weight:bold">();</span>
+
+        <span style="color:#998;font-style:italic">// 找到并执行实现了剩下的 BeanDefinitionRegistryPostProcessor
+</span><span style="color:#998;font-style:italic"></span>        <span style="color:#998;font-style:italic">// Finally, invoke all other BeanDefinitionRegistryPostProcessors until no further ones appear.
+</span><span style="color:#998;font-style:italic"></span>        <span style="color:#458;font-weight:bold">boolean</span> reiterate <span style="color:#000;font-weight:bold">=</span> <span style="color:#000;font-weight:bold">true</span><span style="color:#000;font-weight:bold">;</span>
+        <span style="color:#000;font-weight:bold">while</span> <span style="color:#000;font-weight:bold">(</span>reiterate<span style="color:#000;font-weight:bold">)</span> <span style="color:#000;font-weight:bold">{</span>
+            reiterate <span style="color:#000;font-weight:bold">=</span> <span style="color:#000;font-weight:bold">false</span><span style="color:#000;font-weight:bold">;</span>
+            postProcessorNames <span style="color:#000;font-weight:bold">=</span> beanFactory<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">getBeanNamesForType</span><span style="color:#000;font-weight:bold">(</span>BeanDefinitionRegistryPostProcessor<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">class</span><span style="color:#000;font-weight:bold">,</span> <span style="color:#000;font-weight:bold">true</span><span style="color:#000;font-weight:bold">,</span> <span style="color:#000;font-weight:bold">false</span><span style="color:#000;font-weight:bold">);</span>
+            <span style="color:#000;font-weight:bold">for</span> <span style="color:#000;font-weight:bold">(</span>String ppName <span style="color:#000;font-weight:bold">:</span> postProcessorNames<span style="color:#000;font-weight:bold">)</span> <span style="color:#000;font-weight:bold">{</span>
+                <span style="color:#000;font-weight:bold">if</span> <span style="color:#000;font-weight:bold">(!</span>processedBeans<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">contains</span><span style="color:#000;font-weight:bold">(</span>ppName<span style="color:#000;font-weight:bold">))</span> <span style="color:#000;font-weight:bold">{</span>
+                    currentRegistryProcessors<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">add</span><span style="color:#000;font-weight:bold">(</span>beanFactory<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">getBean</span><span style="color:#000;font-weight:bold">(</span>ppName<span style="color:#000;font-weight:bold">,</span> BeanDefinitionRegistryPostProcessor<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">class</span><span style="color:#000;font-weight:bold">));</span>
+                    processedBeans<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">add</span><span style="color:#000;font-weight:bold">(</span>ppName<span style="color:#000;font-weight:bold">);</span>
+                    reiterate <span style="color:#000;font-weight:bold">=</span> <span style="color:#000;font-weight:bold">true</span><span style="color:#000;font-weight:bold">;</span>
+                <span style="color:#000;font-weight:bold">}</span>
+            <span style="color:#000;font-weight:bold">}</span>
+            sortPostProcessors<span style="color:#000;font-weight:bold">(</span>currentRegistryProcessors<span style="color:#000;font-weight:bold">,</span> beanFactory<span style="color:#000;font-weight:bold">);</span>
+            registryProcessors<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">addAll</span><span style="color:#000;font-weight:bold">(</span>currentRegistryProcessors<span style="color:#000;font-weight:bold">);</span>
+            invokeBeanDefinitionRegistryPostProcessors<span style="color:#000;font-weight:bold">(</span>currentRegistryProcessors<span style="color:#000;font-weight:bold">,</span> registry<span style="color:#000;font-weight:bold">);</span>
+            currentRegistryProcessors<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">clear</span><span style="color:#000;font-weight:bold">();</span>
+        <span style="color:#000;font-weight:bold">}</span>
+
+        <span style="color:#998;font-style:italic">// 因为 BeanDefinitionRegistryPostProcessor 同时又是 BeanFactoryPostProcessor
+</span><span style="color:#998;font-style:italic"></span>        <span style="color:#998;font-style:italic">// 所以在调用了其 postProcessBeanDefinitionRegistry 之后需要调用其继承来的
+</span><span style="color:#998;font-style:italic"></span>        <span style="color:#998;font-style:italic">// postProcessBeanFactory 方法
+</span><span style="color:#998;font-style:italic"></span>        <span style="color:#998;font-style:italic">// Now, invoke the postProcessBeanFactory callback of all processors handled so far.
+</span><span style="color:#998;font-style:italic"></span>        invokeBeanFactoryPostProcessors<span style="color:#000;font-weight:bold">(</span>registryProcessors<span style="color:#000;font-weight:bold">,</span> beanFactory<span style="color:#000;font-weight:bold">);</span>
+        invokeBeanFactoryPostProcessors<span style="color:#000;font-weight:bold">(</span>regularPostProcessors<span style="color:#000;font-weight:bold">,</span> beanFactory<span style="color:#000;font-weight:bold">);</span>
+    <span style="color:#000;font-weight:bold">}</span>
+
+    <span style="color:#000;font-weight:bold">else</span> <span style="color:#000;font-weight:bold">{</span>
+        <span style="color:#998;font-style:italic">// Invoke factory processors registered with the context instance.
+</span><span style="color:#998;font-style:italic"></span>        invokeBeanFactoryPostProcessors<span style="color:#000;font-weight:bold">(</span>beanFactoryPostProcessors<span style="color:#000;font-weight:bold">,</span> beanFactory<span style="color:#000;font-weight:bold">);</span>
+    <span style="color:#000;font-weight:bold">}</span>
+
+    <span style="color:#998;font-style:italic">// 这里找到所有实现 BeanFactoryPostProcessor 接口的 Bean 的名称
+</span><span style="color:#998;font-style:italic"></span>    <span style="color:#998;font-style:italic">// Do not initialize FactoryBeans here: We need to leave all regular beans
+</span><span style="color:#998;font-style:italic"></span>    <span style="color:#998;font-style:italic">// uninitialized to let the bean factory post-processors apply to them!
+</span><span style="color:#998;font-style:italic"></span>    String<span style="color:#000;font-weight:bold">[]</span> postProcessorNames <span style="color:#000;font-weight:bold">=</span>
+        beanFactory<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">getBeanNamesForType</span><span style="color:#000;font-weight:bold">(</span>BeanFactoryPostProcessor<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">class</span><span style="color:#000;font-weight:bold">,</span> <span style="color:#000;font-weight:bold">true</span><span style="color:#000;font-weight:bold">,</span> <span style="color:#000;font-weight:bold">false</span><span style="color:#000;font-weight:bold">);</span>
+
+    <span style="color:#998;font-style:italic">// 先分别放到三个不同的优先级的列表中
+</span><span style="color:#998;font-style:italic"></span>    <span style="color:#998;font-style:italic">// Separate between BeanFactoryPostProcessors that implement PriorityOrdered,
+</span><span style="color:#998;font-style:italic"></span>    <span style="color:#998;font-style:italic">// Ordered, and the rest.
+</span><span style="color:#998;font-style:italic"></span>    List<span style="color:#000;font-weight:bold">&lt;</span>BeanFactoryPostProcessor<span style="color:#000;font-weight:bold">&gt;</span> priorityOrderedPostProcessors <span style="color:#000;font-weight:bold">=</span> <span style="color:#000;font-weight:bold">new</span> ArrayList<span style="color:#000;font-weight:bold">&lt;&gt;();</span>
+    List<span style="color:#000;font-weight:bold">&lt;</span>String<span style="color:#000;font-weight:bold">&gt;</span> orderedPostProcessorNames <span style="color:#000;font-weight:bold">=</span> <span style="color:#000;font-weight:bold">new</span> ArrayList<span style="color:#000;font-weight:bold">&lt;&gt;();</span>
+    List<span style="color:#000;font-weight:bold">&lt;</span>String<span style="color:#000;font-weight:bold">&gt;</span> nonOrderedPostProcessorNames <span style="color:#000;font-weight:bold">=</span> <span style="color:#000;font-weight:bold">new</span> ArrayList<span style="color:#000;font-weight:bold">&lt;&gt;();</span>
+    <span style="color:#000;font-weight:bold">for</span> <span style="color:#000;font-weight:bold">(</span>String ppName <span style="color:#000;font-weight:bold">:</span> postProcessorNames<span style="color:#000;font-weight:bold">)</span> <span style="color:#000;font-weight:bold">{</span>
+        <span style="color:#998;font-style:italic">// 如果再上面已经处理过了则跳过
+</span><span style="color:#998;font-style:italic"></span>        <span style="color:#000;font-weight:bold">if</span> <span style="color:#000;font-weight:bold">(</span>processedBeans<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">contains</span><span style="color:#000;font-weight:bold">(</span>ppName<span style="color:#000;font-weight:bold">))</span> <span style="color:#000;font-weight:bold">{</span>
+            <span style="color:#998;font-style:italic">// skip - already processed in first phase above
+</span><span style="color:#998;font-style:italic"></span>        <span style="color:#000;font-weight:bold">}</span>
+        <span style="color:#000;font-weight:bold">else</span> <span style="color:#000;font-weight:bold">if</span> <span style="color:#000;font-weight:bold">(</span>beanFactory<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">isTypeMatch</span><span style="color:#000;font-weight:bold">(</span>ppName<span style="color:#000;font-weight:bold">,</span> PriorityOrdered<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">class</span><span style="color:#000;font-weight:bold">))</span> <span style="color:#000;font-weight:bold">{</span>
+            priorityOrderedPostProcessors<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">add</span><span style="color:#000;font-weight:bold">(</span>beanFactory<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">getBean</span><span style="color:#000;font-weight:bold">(</span>ppName<span style="color:#000;font-weight:bold">,</span> BeanFactoryPostProcessor<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">class</span><span style="color:#000;font-weight:bold">));</span>
+        <span style="color:#000;font-weight:bold">}</span>
+        <span style="color:#000;font-weight:bold">else</span> <span style="color:#000;font-weight:bold">if</span> <span style="color:#000;font-weight:bold">(</span>beanFactory<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">isTypeMatch</span><span style="color:#000;font-weight:bold">(</span>ppName<span style="color:#000;font-weight:bold">,</span> Ordered<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">class</span><span style="color:#000;font-weight:bold">))</span> <span style="color:#000;font-weight:bold">{</span>
+            orderedPostProcessorNames<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">add</span><span style="color:#000;font-weight:bold">(</span>ppName<span style="color:#000;font-weight:bold">);</span>
+        <span style="color:#000;font-weight:bold">}</span>
+        <span style="color:#000;font-weight:bold">else</span> <span style="color:#000;font-weight:bold">{</span>
+            nonOrderedPostProcessorNames<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">add</span><span style="color:#000;font-weight:bold">(</span>ppName<span style="color:#000;font-weight:bold">);</span>
+        <span style="color:#000;font-weight:bold">}</span>
+    <span style="color:#000;font-weight:bold">}</span>
+
+    <span style="color:#998;font-style:italic">// 首先调用实现了 PriorityOrdered 的 BeanFactoryPostProcessor
+</span><span style="color:#998;font-style:italic"></span>    <span style="color:#998;font-style:italic">// First, invoke the BeanFactoryPostProcessors that implement PriorityOrdered.
+</span><span style="color:#998;font-style:italic"></span>    sortPostProcessors<span style="color:#000;font-weight:bold">(</span>priorityOrderedPostProcessors<span style="color:#000;font-weight:bold">,</span> beanFactory<span style="color:#000;font-weight:bold">);</span>
+    invokeBeanFactoryPostProcessors<span style="color:#000;font-weight:bold">(</span>priorityOrderedPostProcessors<span style="color:#000;font-weight:bold">,</span> beanFactory<span style="color:#000;font-weight:bold">);</span>
+
+    <span style="color:#998;font-style:italic">// 然后调用实现了 Ordered 的 BeanFactoryPostProcessor
+</span><span style="color:#998;font-style:italic"></span>    <span style="color:#998;font-style:italic">// Next, invoke the BeanFactoryPostProcessors that implement Ordered.
+</span><span style="color:#998;font-style:italic"></span>    List<span style="color:#000;font-weight:bold">&lt;</span>BeanFactoryPostProcessor<span style="color:#000;font-weight:bold">&gt;</span> orderedPostProcessors <span style="color:#000;font-weight:bold">=</span> <span style="color:#000;font-weight:bold">new</span> ArrayList<span style="color:#000;font-weight:bold">&lt;&gt;(</span>orderedPostProcessorNames<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">size</span><span style="color:#000;font-weight:bold">());</span>
+    <span style="color:#000;font-weight:bold">for</span> <span style="color:#000;font-weight:bold">(</span>String postProcessorName <span style="color:#000;font-weight:bold">:</span> orderedPostProcessorNames<span style="color:#000;font-weight:bold">)</span> <span style="color:#000;font-weight:bold">{</span>
+        orderedPostProcessors<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">add</span><span style="color:#000;font-weight:bold">(</span>beanFactory<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">getBean</span><span style="color:#000;font-weight:bold">(</span>postProcessorName<span style="color:#000;font-weight:bold">,</span> BeanFactoryPostProcessor<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">class</span><span style="color:#000;font-weight:bold">));</span>
+    <span style="color:#000;font-weight:bold">}</span>
+    sortPostProcessors<span style="color:#000;font-weight:bold">(</span>orderedPostProcessors<span style="color:#000;font-weight:bold">,</span> beanFactory<span style="color:#000;font-weight:bold">);</span>
+    invokeBeanFactoryPostProcessors<span style="color:#000;font-weight:bold">(</span>orderedPostProcessors<span style="color:#000;font-weight:bold">,</span> beanFactory<span style="color:#000;font-weight:bold">);</span>
+	
+    <span style="color:#998;font-style:italic">// 最后调用剩余的 BeanFactoryPostProcessor
+</span><span style="color:#998;font-style:italic"></span>    <span style="color:#998;font-style:italic">// Finally, invoke all other BeanFactoryPostProcessors.
+</span><span style="color:#998;font-style:italic"></span>    List<span style="color:#000;font-weight:bold">&lt;</span>BeanFactoryPostProcessor<span style="color:#000;font-weight:bold">&gt;</span> nonOrderedPostProcessors <span style="color:#000;font-weight:bold">=</span> <span style="color:#000;font-weight:bold">new</span> ArrayList<span style="color:#000;font-weight:bold">&lt;&gt;(</span>nonOrderedPostProcessorNames<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">size</span><span style="color:#000;font-weight:bold">());</span>
+    <span style="color:#000;font-weight:bold">for</span> <span style="color:#000;font-weight:bold">(</span>String postProcessorName <span style="color:#000;font-weight:bold">:</span> nonOrderedPostProcessorNames<span style="color:#000;font-weight:bold">)</span> <span style="color:#000;font-weight:bold">{</span>
+        nonOrderedPostProcessors<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">add</span><span style="color:#000;font-weight:bold">(</span>beanFactory<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">getBean</span><span style="color:#000;font-weight:bold">(</span>postProcessorName<span style="color:#000;font-weight:bold">,</span> BeanFactoryPostProcessor<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">class</span><span style="color:#000;font-weight:bold">));</span>
+    <span style="color:#000;font-weight:bold">}</span>
+    invokeBeanFactoryPostProcessors<span style="color:#000;font-weight:bold">(</span>nonOrderedPostProcessors<span style="color:#000;font-weight:bold">,</span> beanFactory<span style="color:#000;font-weight:bold">);</span>
+
+    <span style="color:#998;font-style:italic">// Clear cached merged bean definitions since the post-processors might have
+</span><span style="color:#998;font-style:italic"></span>    <span style="color:#998;font-style:italic">// modified the original metadata, e.g. replacing placeholders in values...
+</span><span style="color:#998;font-style:italic"></span>    beanFactory<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">clearMetadataCache</span><span style="color:#000;font-weight:bold">();</span>
+<span style="color:#000;font-weight:bold">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>调用的方法也很简单：</p>
+<div class="highlight"><div style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4">
+<table style="border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 1
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 2
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 3
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 4
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 5
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 6
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 7
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 8
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 9
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">10
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">11
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">12
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">13
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">14
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#000;font-weight:bold">private</span> <span style="color:#000;font-weight:bold">static</span> <span style="color:#458;font-weight:bold">void</span> <span style="color:#900;font-weight:bold">invokeBeanDefinitionRegistryPostProcessors</span><span style="color:#000;font-weight:bold">(</span>
+    Collection<span style="color:#000;font-weight:bold">&lt;?</span> <span style="color:#000;font-weight:bold">extends</span> BeanDefinitionRegistryPostProcessor<span style="color:#000;font-weight:bold">&gt;</span> postProcessors<span style="color:#000;font-weight:bold">,</span> BeanDefinitionRegistry registry<span style="color:#000;font-weight:bold">)</span> <span style="color:#000;font-weight:bold">{</span>
+	<span style="color:#998;font-style:italic">// 遍历所有的 BeanDefinitionRegistryPostProcessor 并调用其 postProcessBeanDefinitionRegistry 即可
+</span><span style="color:#998;font-style:italic"></span>    <span style="color:#000;font-weight:bold">for</span> <span style="color:#000;font-weight:bold">(</span>BeanDefinitionRegistryPostProcessor postProcessor <span style="color:#000;font-weight:bold">:</span> postProcessors<span style="color:#000;font-weight:bold">)</span> <span style="color:#000;font-weight:bold">{</span>
+        postProcessor<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">postProcessBeanDefinitionRegistry</span><span style="color:#000;font-weight:bold">(</span>registry<span style="color:#000;font-weight:bold">);</span>
+    <span style="color:#000;font-weight:bold">}</span>
+<span style="color:#000;font-weight:bold">}</span>
+<span style="color:#000;font-weight:bold">private</span> <span style="color:#000;font-weight:bold">static</span> <span style="color:#458;font-weight:bold">void</span> <span style="color:#900;font-weight:bold">invokeBeanFactoryPostProcessors</span><span style="color:#000;font-weight:bold">(</span>
+    Collection<span style="color:#000;font-weight:bold">&lt;?</span> <span style="color:#000;font-weight:bold">extends</span> BeanFactoryPostProcessor<span style="color:#000;font-weight:bold">&gt;</span> postProcessors<span style="color:#000;font-weight:bold">,</span> ConfigurableListableBeanFactory beanFactory<span style="color:#000;font-weight:bold">)</span> <span style="color:#000;font-weight:bold">{</span>
+	<span style="color:#998;font-style:italic">// 遍历所有的 BeanFactoryPostProcessor 并调用其 postProcessBeanFactory 即可
+</span><span style="color:#998;font-style:italic"></span>    <span style="color:#000;font-weight:bold">for</span> <span style="color:#000;font-weight:bold">(</span>BeanFactoryPostProcessor postProcessor <span style="color:#000;font-weight:bold">:</span> postProcessors<span style="color:#000;font-weight:bold">)</span> <span style="color:#000;font-weight:bold">{</span>
+        postProcessor<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">postProcessBeanFactory</span><span style="color:#000;font-weight:bold">(</span>beanFactory<span style="color:#000;font-weight:bold">);</span>
+    <span style="color:#000;font-weight:bold">}</span>
+<span style="color:#000;font-weight:bold">}</span>
+</code></pre></td></tr></table>
+</div>
+</div>
+        </div>
+
+        
+
+
+        
+
+<div class="post-archive">
+    <h2>See Also</h2>
+    <ul class="listing">
+        
+        <li><a href="https://sangzhenya.github.io/post/Spring/Spring-Core/Spring-ApplicationListener/">Spring ApplicationListener 和 ApplicationEvent</a></li>
+        
+    </ul>
+</div>
+
+
+        <div class="post-meta meta-tags">
+            
+            <ul class="clearfix">
+                
+                <li><a href='https://sangzhenya.github.io/tags/Spring'>Spring</a></li>
+                
+                <li><a href='https://sangzhenya.github.io/tags/%E6%BA%90%E7%A0%81'>源码</a></li>
+                
+            </ul>
+            
+        </div>
+    </article>
+    
+    
+
+    
+    
+</div>
+
+                </div>
+
+                <div id="secondary">
+    <section class="widget">
+        <form id="search" action='//www.google.com/search' method="get" accept-charset="utf-8" target="_blank" _lpchecked="1">
+      
+      <input type="text" name="q" maxlength="20" placeholder="Search">
+      <input type="hidden" name="sitesearch" value="https://sangzhenya.github.io/">
+      <button type="submit" class="submit icon-search"></button>
+</form>
+    </section>
+    
+    <section class="widget">
+        <h3 class="widget-title">最近文章</h3>
+<ul class="widget-list">
+    
+    <li>
+        <a href="https://sangzhenya.github.io/post/Java/JVM/Java-JNDI/" title="Java JNDI">Java JNDI</a>
+    </li>
+    
+    <li>
+        <a href="https://sangzhenya.github.io/post/Java/JVM/Java-OOM/" title="Java OOM">Java OOM</a>
+    </li>
+    
+    <li>
+        <a href="https://sangzhenya.github.io/post/Java/JVM/Java-JVM/" title="Java JVM">Java JVM</a>
+    </li>
+    
+    <li>
+        <a href="https://sangzhenya.github.io/post/Java/JVM/Java-HotSpot-GC-%E7%AE%97%E6%B3%95%E5%AE%9E%E7%8E%B0/" title="Java HotSpot GC 算法实现">Java HotSpot GC 算法实现</a>
+    </li>
+    
+    <li>
+        <a href="https://sangzhenya.github.io/post/Java/JVM/Java-GC-2/" title="Java GC 2">Java GC 2</a>
+    </li>
+    
+    <li>
+        <a href="https://sangzhenya.github.io/post/Java/JVM/Java-GC-1/" title="Java GC 1">Java GC 1</a>
+    </li>
+    
+    <li>
+        <a href="https://sangzhenya.github.io/post/Java/JVM/Java-%E8%99%9A%E6%8B%9F%E6%9C%BA%E5%86%85%E5%AD%98%E6%A8%A1%E5%9E%8B/" title="Java 虚拟机内存模型">Java 虚拟机内存模型</a>
+    </li>
+    
+    <li>
+        <a href="https://sangzhenya.github.io/post/Java/JVM/Java-%E9%80%83%E9%80%B8%E5%88%86%E6%9E%90/" title="Java 逃逸分析">Java 逃逸分析</a>
+    </li>
+    
+    <li>
+        <a href="https://sangzhenya.github.io/post/Java/JVM/Java-%E5%9B%9B%E7%A7%8D%E5%BC%95%E7%94%A8%E7%B1%BB%E5%9E%8B/" title="Java 四种引用类型">Java 四种引用类型</a>
+    </li>
+    
+    <li>
+        <a href="https://sangzhenya.github.io/post/%E5%BE%AE%E6%9C%8D%E5%8A%A1/dubbo/Dubbo-%E5%8E%9F%E7%90%86/" title="Dubbo 原理">Dubbo 原理</a>
+    </li>
+    
+</ul>
+    </section>
+
+    
+
+    <section class="widget">
+        <h3 class="widget-title">分类</h3>
+<ul class="widget-list">
+    
+    <li><a href="https://sangzhenya.github.io/categories/Java/">Java (22)</a></li>
+    
+    <li><a href="https://sangzhenya.github.io/categories/MQ/">MQ (3)</a></li>
+    
+    <li><a href="https://sangzhenya.github.io/categories/MyBaits/">MyBaits (7)</a></li>
+    
+    <li><a href="https://sangzhenya.github.io/categories/MySQL/">MySQL (4)</a></li>
+    
+    <li><a href="https://sangzhenya.github.io/categories/Netty/">Netty (10)</a></li>
+    
+    <li><a href="https://sangzhenya.github.io/categories/Nginx/">Nginx (2)</a></li>
+    
+    <li><a href="https://sangzhenya.github.io/categories/Redis/">Redis (2)</a></li>
+    
+    <li><a href="https://sangzhenya.github.io/categories/Spring/">Spring (36)</a></li>
+    
+    <li><a href="https://sangzhenya.github.io/categories/%E5%85%B3%E4%BA%8E/">关于 (1)</a></li>
+    
+    <li><a href="https://sangzhenya.github.io/categories/%E5%85%B6%E4%BB%96/">其他 (8)</a></li>
+    
+    <li><a href="https://sangzhenya.github.io/categories/%E5%BE%AE%E6%9C%8D%E5%8A%A1/">微服务 (11)</a></li>
+    
+    <li><a href="https://sangzhenya.github.io/categories/%E7%AE%97%E6%B3%95/">算法 (3)</a></li>
+    
+    <li><a href="https://sangzhenya.github.io/categories/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/">读书笔记 (7)</a></li>
+    
+</ul>
+    </section>
+
+    <section class="widget">
+        <h3 class="widget-title">标签</h3>
+<div class="tagcloud">
+    
+    <a href="https://sangzhenya.github.io/tags/Active-MQ/">Active MQ</a>
+    
+    <a href="https://sangzhenya.github.io/tags/Cookie/">Cookie</a>
+    
+    <a href="https://sangzhenya.github.io/tags/Debug/">Debug</a>
+    
+    <a href="https://sangzhenya.github.io/tags/Docker/">Docker</a>
+    
+    <a href="https://sangzhenya.github.io/tags/Dubbo/">Dubbo</a>
+    
+    <a href="https://sangzhenya.github.io/tags/Git/">Git</a>
+    
+    <a href="https://sangzhenya.github.io/tags/JDK8/">JDK8</a>
+    
+    <a href="https://sangzhenya.github.io/tags/JPA/">JPA</a>
+    
+    <a href="https://sangzhenya.github.io/tags/JUC/">JUC</a>
+    
+    <a href="https://sangzhenya.github.io/tags/JVM/">JVM</a>
+    
+    <a href="https://sangzhenya.github.io/tags/java/">java</a>
+    
+    <a href="https://sangzhenya.github.io/tags/Jenkins/">Jenkins</a>
+    
+    <a href="https://sangzhenya.github.io/tags/Kafka/">Kafka</a>
+    
+    <a href="https://sangzhenya.github.io/tags/Kubernetes/">Kubernetes</a>
+    
+    <a href="https://sangzhenya.github.io/tags/Linux/">Linux</a>
+    
+    <a href="https://sangzhenya.github.io/tags/Maven/">Maven</a>
+    
+    <a href="https://sangzhenya.github.io/tags/MyBaits/">MyBaits</a>
+    
+    <a href="https://sangzhenya.github.io/tags/MySQL/">MySQL</a>
+    
+    <a href="https://sangzhenya.github.io/tags/Netty/">Netty</a>
+    
+    <a href="https://sangzhenya.github.io/tags/Nginx/">Nginx</a>
+    
+    <a href="https://sangzhenya.github.io/tags/Rabbit-MQ/">Rabbit MQ</a>
+    
+    <a href="https://sangzhenya.github.io/tags/Redis/">Redis</a>
+    
+    <a href="https://sangzhenya.github.io/tags/Rocket-MQ/">Rocket MQ</a>
+    
+    <a href="https://sangzhenya.github.io/tags/Session/">Session</a>
+    
+    <a href="https://sangzhenya.github.io/tags/Spring/">Spring</a>
+    
+    <a href="https://sangzhenya.github.io/tags/Spring-Boot/">Spring Boot</a>
+    
+    <a href="https://sangzhenya.github.io/tags/Spring-Cloud/">Spring Cloud</a>
+    
+    <a href="https://sangzhenya.github.io/tags/Spring-Data/">Spring Data</a>
+    
+    <a href="https://sangzhenya.github.io/tags/Spring-MVC/">Spring MVC</a>
+    
+    <a href="https://sangzhenya.github.io/tags/Spring-Security/">Spring Security</a>
+    
+    <a href="https://sangzhenya.github.io/tags/Spring-%E6%B3%A8%E8%A7%A3/">Spring 注解</a>
+    
+    <a href="https://sangzhenya.github.io/tags/Tmux/">Tmux</a>
+    
+    <a href="https://sangzhenya.github.io/tags/Zookeeper/">Zookeeper</a>
+    
+    <a href="https://sangzhenya.github.io/tags/java/">java</a>
+    
+    <a href="https://sangzhenya.github.io/tags/%E4%BB%A3%E7%A0%81/">代码</a>
+    
+    <a href="https://sangzhenya.github.io/tags/%E5%85%B3%E4%BA%8E/">关于</a>
+    
+    <a href="https://sangzhenya.github.io/tags/%E5%BE%AE%E6%9C%8D%E5%8A%A1/">微服务</a>
+    
+    <a href="https://sangzhenya.github.io/tags/%E6%BA%90%E7%A0%81/">源码</a>
+    
+    <a href="https://sangzhenya.github.io/tags/%E7%AE%97%E6%B3%95/">算法</a>
+    
+    <a href="https://sangzhenya.github.io/tags/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/">设计模式</a>
+    
+    <a href="https://sangzhenya.github.io/tags/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/">读书笔记</a>
+    
+    <a href="https://sangzhenya.github.io/tags/%E9%9B%86%E5%90%88/">集合</a>
+    
+</div>
+    </section>
+
+    
+
+    <section class="widget">
+        <h3 class="widget-title">其它</h3>
+        <ul class="widget-list">
+            <li><a href="https://sangzhenya.github.io/index.xml">文章 RSS</a></li>
+        </ul>
+    </section>
+</div>
+            </div>
+        </div>
+    </div>
+    <footer id="footer">
+    <div class="container">
+        &copy; 2020 <a href="https://sangzhenya.github.io/">新月的博客 By 新月</a>.
+        Powered by <a rel="nofollow noreferer noopener" href="https://gohugo.io" target="_blank">Hugo</a>.
+        Theme based on <a href="https://github.com/flysnow-org/maupassant-hugo" target="_blank">maupassant</a>.
+        
+    </div>
+</footer>
+
+
+    
+    <script type="text/javascript">
+        window.MathJax = {
+            tex2jax: {
+                inlineMath: [['$', '$']],
+                processEscapes: true
+                }
+            };
+    </script>
+    <script src='https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-MML-AM_CHTML' async></script>
+
+
+<a id="rocket" href="#top"></a>
+<script type="text/javascript" src='https://sangzhenya.github.io/js/totop.js?v=0.0.0' async=""></script>
+
+
+
+
+
+
+</body>
+
+</html>

@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Debug on 新月的博客</title>
+    <link>https://sangzhenya.github.io/tags/Debug/</link>
+    <description>Recent content in Debug on 新月的博客</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>zh-CN</language>
+    <lastBuildDate>Wed, 17 Apr 2019 09:00:00 +0800</lastBuildDate>
+    
+	<atom:link href="https://sangzhenya.github.io/tags/Debug/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>Debug Java 程序 对象后面的数字是什么</title>
+      <link>https://sangzhenya.github.io/post/Others/Java-%E7%A8%8B%E5%BA%8F-Debug-%E5%90%8E%E9%9D%A2%E7%9A%84%E6%95%B0%E5%AD%97/</link>
+      <pubDate>Wed, 17 Apr 2019 09:00:00 +0800</pubDate>
+      
+      <guid>https://sangzhenya.github.io/post/Others/Java-%E7%A8%8B%E5%BA%8F-Debug-%E5%90%8E%E9%9D%A2%E7%9A%84%E6%95%B0%E5%AD%97/</guid>
+      <description>在 Debug Java 程序的时候，在 IDEA 的 Variables 窗口中经常可以看到类似下图形式的变量： {ConcurrentHashMap$Segment@873} 中的 873 是 JVM 在调试的时候提供的唯一的 ObjectId，在程序内部是无法访问的。可以参考 Stack Overflow上的一个问答： Deciphering variable information while debugging Java 后半部分：java.util.concurrent.ConcurrentHashMap</description>
+    </item>
+    
+  </channel>
+</rss>

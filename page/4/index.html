@@ -67,161 +67,231 @@
     <article class="post">
         <header>
             <h1 class="post-title">
-                <a href="https://sangzhenya.github.io/post/Java/JVM/JNDI/" title=""></a>
+                <a href="https://sangzhenya.github.io/post/DataBase/MyBatis/MyBatis-SQL-%E6%98%A0%E5%B0%84/" title="MyBatis SQL 映射">MyBatis SQL 映射</a>
             </h1>
         </header>
         <date class="post-meta meta-date">
-            1年1月1日
+            2019年5月15日
         </date>
         
-        <div class="post-content">
-            Java JNDI JNDI 即 Java Naming and Direcotry Interface 即 Java 命名与目录接口。是为 Java 编程的客户端提供的一个统一的命名服务和目录系统接口，不依赖于任何特定的服务实现。JDNI 的架构包含一个 API和一个 service provider interface(SPI)。Java 程序使用 JNDI API 去访问不同的命名服务和目录系统接口。SPI 则使得不同的命名服务和目录……
+        <div class="post-meta">
+            <span>|</span>
+            
+            <span class="meta-category"><a href='https://sangzhenya.github.io/categories/MyBaits'>MyBaits</a></span>
+            
         </div>
-        <p class="readmore"><a href="https://sangzhenya.github.io/post/Java/JVM/JNDI/">阅读全文</a></p>
+        
+        <div class="post-content">
+            一个包含增删改查的 MyBatis Mapper 文件如下： 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 &lt;?xml version=&#34;1.0&#34; encoding=&#34;UTF-8&#34; ?&gt; &lt;!DOCTYPE mapper PUBLIC &#34;-//mybatis.org//DTD Mapper 3.0//EN&#34; &#34;http://mybatis.org/dtd/mybatis-3-mapper.dtd&#34;&gt; &lt;mapper namespace=&#34;com.xinyue.imybatis.mapper.UserMapper&#34;&gt; &lt;select id=&#34;getUserById&#34; resultType=&#34;User&#34; databaseId=&#34;mysql&#34;&gt; select id, name, password, first_name firstName, last_name lastName from user where id = #{id} &lt;/select&gt; &lt;insert id=&#34;createUser&#34; parameterType=&#34;User&#34;&gt; insert into user (name, password, first_name, last_name) values (#{name}, #{password}, #{firstName}, #{lastName}) &lt;/insert&gt; &lt;update id=&#34;updateUser&#34;&gt; update user set name = #{name}, password=#{password}, first_name=#{firstName} where id=#{id} &lt;/update&gt; &lt;delete id=&#34;deleteUser&#34;&gt; delete from user where id = #{id} &lt;/delete&gt; &lt;/mapper&gt; 一个简单的测试样例如下： 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 @Test public void testCreate() { try {……
+        </div>
+        <p class="readmore"><a href="https://sangzhenya.github.io/post/DataBase/MyBatis/MyBatis-SQL-%E6%98%A0%E5%B0%84/">阅读全文</a></p>
     </article>
     
     <article class="post">
         <header>
             <h1 class="post-title">
-                <a href="https://sangzhenya.github.io/post/Java/JVM/%E5%8F%8C%E4%BA%B2%E5%A7%94%E6%B4%BE%E6%A8%A1%E5%9E%8B/" title=""></a>
+                <a href="https://sangzhenya.github.io/post/DataBase/MyBatis/MyBaits-%E8%87%AA%E5%AE%9A%E4%B9%89-TypeHandler/" title="MyBatis 自定义 TypeHandler">MyBatis 自定义 TypeHandler</a>
             </h1>
         </header>
         <date class="post-meta meta-date">
-            1年1月1日
+            2019年5月13日
         </date>
         
-        <div class="post-content">
-            双亲委派模型 [TOC] 类加载机制 类从被加载到虚拟机内存开始，到卸载出内存为止，整个生命周期包括：加载 -&gt; 验证 -&gt; 准备 -&gt; 解析 -&gt; 初始化 -&gt; 使用 -&gt; 卸载 7个阶段。其中 验证、准备、解析三个阶段可以统称为连接。如图所示： 以上过程中加载、验证、准备、初始化和卸载5个阶段的顺序是确定的，但是解析阶段则不一定，……
+        <div class="post-meta">
+            <span>|</span>
+            
+            <span class="meta-category"><a href='https://sangzhenya.github.io/categories/MyBaits'>MyBaits</a></span>
+            
         </div>
-        <p class="readmore"><a href="https://sangzhenya.github.io/post/Java/JVM/%E5%8F%8C%E4%BA%B2%E5%A7%94%E6%B4%BE%E6%A8%A1%E5%9E%8B/">阅读全文</a></p>
+        
+        <div class="post-content">
+            MyBaits 支持通过自定义的 TypeHandler 的形式来设置参数或从结果中取出数据集的时候的封装策略。主要有以下几步： 实现 TypeHanlder结果或者继承 BaseTypeHandler 使用 @MappedTypes 定义处理的 Java 类型，使用 @MapJdbcTypes 定义 jdbc type 类型 在参数处理或自定义结果集处理的时候标明使用自定义的 TypeHandler 处理。也可以在全局配置 TypeHandler 要处理的 javaType 定义一个枚举类放到 User 上……
+        </div>
+        <p class="readmore"><a href="https://sangzhenya.github.io/post/DataBase/MyBatis/MyBaits-%E8%87%AA%E5%AE%9A%E4%B9%89-TypeHandler/">阅读全文</a></p>
     </article>
     
     <article class="post">
         <header>
             <h1 class="post-title">
-                <a href="https://sangzhenya.github.io/post/Java/%E9%9B%86%E5%90%88%E7%B1%BB/Java-HashMap/" title=""></a>
+                <a href="https://sangzhenya.github.io/post/DataBase/MyBatis/MyBaits-%E8%BF%90%E8%A1%8C%E5%8E%9F%E7%90%86/" title="MyBatis 运行原理">MyBatis 运行原理</a>
             </h1>
         </header>
         <date class="post-meta meta-date">
-            1年1月1日
+            2019年5月11日
         </date>
         
-        <div class="post-content">
-            Java8 HashMap HashMap 是一个用于存储 Key-Value 键值对的集合，每个键值对也叫做 Node，这些键值对分散存储在一个数组中，这个数组就是 HaspMap 的骨干。HashMap 默认大小是 16，每次自动扩展或者手动初始的时候长度都是 2 的幂。HashMap 不是线程的安全的，因为在多线程的情况下可能出现循环链表的情况。 HashMap 有四种初始……
+        <div class="post-meta">
+            <span>|</span>
+            
+            <span class="meta-category"><a href='https://sangzhenya.github.io/categories/MyBaits'>MyBaits</a></span>
+            
         </div>
-        <p class="readmore"><a href="https://sangzhenya.github.io/post/Java/%E9%9B%86%E5%90%88%E7%B1%BB/Java-HashMap/">阅读全文</a></p>
+        
+        <div class="post-content">
+            MyBaits 分层结构图 MyBatis 过程整个过程有以下四步： 创建 SqlSessionFactory 获取 SqlSession 获取代理对象 执行方法 获取 SqlSessionFactory 1 2 3 4 5 6 public SqlSessionFactory getSqlSessionFactory() throws IOException { // 获取配置的文件流 InputStream inputStream = Resources.getResourceAsStream(&#34;mybatis-config.xml&#34;); // 根据配置使用 SqlSessionFactoryBuilder 生成 SqlSessionFactory return new SqlSessionFactoryBuilder().build(inputStream); } 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 // SqlSessionFactoryBuilder public SqlSessionFactory build(InputStream inputStream) { // 调用内部的 build 方法 return build(inputStream, null, null); } public SqlSessionFactory build(InputStream inputStream, String environment, Properties properties) { try { // 根据配置……
+        </div>
+        <p class="readmore"><a href="https://sangzhenya.github.io/post/DataBase/MyBatis/MyBaits-%E8%BF%90%E8%A1%8C%E5%8E%9F%E7%90%86/">阅读全文</a></p>
     </article>
     
     <article class="post">
         <header>
             <h1 class="post-title">
-                <a href="https://sangzhenya.github.io/post/Java/%E9%9B%86%E5%90%88%E7%B1%BB/%E9%9B%86%E5%90%88%E7%B1%BB-List/" title=""></a>
+                <a href="https://sangzhenya.github.io/post/DataBase/MyBatis/MyBaits-%E9%85%8D%E7%BD%AE%E6%96%87%E4%BB%B6/" title="MyBatis 配置文件">MyBatis 配置文件</a>
             </h1>
         </header>
         <date class="post-meta meta-date">
-            1年1月1日
+            2019年5月9日
         </date>
         
-        <div class="post-content">
-            集合类 &mdash; List ArrayList 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29 30 31 32 33 34 35 36 37 38 39 40 41 42 43 44 45 46 47 48 49 50 51 52 53 54 55 56 57 58 59 60 61 62 63 64 65 66 67 68 69 70 71 72 73 74 75 76 77 78 79 80 81 82 83 84 85 86 87 88 89 90 91 92 93 94 95 96 97 98 99 100 101 102 103 104 105 106 107 108 109 110 111 112 113 114 115 116 117 118 119 120 121 122 123 124 125 126 127 128 129 130 131 132 133 134……
+        <div class="post-meta">
+            <span>|</span>
+            
+            <span class="meta-category"><a href='https://sangzhenya.github.io/categories/MyBaits'>MyBaits</a></span>
+            
         </div>
-        <p class="readmore"><a href="https://sangzhenya.github.io/post/Java/%E9%9B%86%E5%90%88%E7%B1%BB/%E9%9B%86%E5%90%88%E7%B1%BB-List/">阅读全文</a></p>
+        
+        <div class="post-content">
+            MyBaits 是一个半自动化的持久化层框架，支持定制化 SQL，存储过程以及高级映射。避免 JDBC 代码和手动设置参数以及获取结果集。其使用简单的 XML 或注解用于配置和原始映射，将接口和 Java 的对象映射成数据库记录。 一个简单的项目配置如下： pom.xml 配置如下： 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 &lt;dependencies&gt; &lt;!-- https://mvnrepository.com/artifact/org.mybatis/mybatis --&gt; &lt;dependency&gt; &lt;groupId&gt;org.mybatis&lt;/groupId&gt; &lt;artifactId&gt;mybatis&lt;/artifactId&gt; &lt;version&gt;3.5.3&lt;/version&gt;……
+        </div>
+        <p class="readmore"><a href="https://sangzhenya.github.io/post/DataBase/MyBatis/MyBaits-%E9%85%8D%E7%BD%AE%E6%96%87%E4%BB%B6/">阅读全文</a></p>
     </article>
     
     <article class="post">
         <header>
             <h1 class="post-title">
-                <a href="https://sangzhenya.github.io/post/Java/%E9%9B%86%E5%90%88%E7%B1%BB/%E9%9B%86%E5%90%88%E7%B1%BB-Map/" title=""></a>
+                <a href="https://sangzhenya.github.io/post/DataBase/MyBatis/MyBaits-%E7%BC%93%E5%AD%98/" title="MyBatis 缓存">MyBatis 缓存</a>
             </h1>
         </header>
         <date class="post-meta meta-date">
-            1年1月1日
+            2019年5月7日
         </date>
         
-        <div class="post-content">
-            集合类 &ndash; Map HashMap 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29 30 31 32 33 34 35 36 37 38 39 40 41 42 43 44 45 46 47 48 49 50 51 52 53 54 55 56 57 58 59 60 61 62 63 64 65 66 67 68 69 70 71 72 73 74 75 76 77 78 79 80 81 82 83 84 85 86 87 88 89 90 91 92 93 94 95 96 97 98 99 100 101 102 103 104 105 106 107 108 109 110 111 112 113 114 115 116 117 118 119 120 121 122 123 124 125 126 127 128 129 130 131 132 133 134……
+        <div class="post-meta">
+            <span>|</span>
+            
+            <span class="meta-category"><a href='https://sangzhenya.github.io/categories/MyBaits'>MyBaits</a></span>
+            
         </div>
-        <p class="readmore"><a href="https://sangzhenya.github.io/post/Java/%E9%9B%86%E5%90%88%E7%B1%BB/%E9%9B%86%E5%90%88%E7%B1%BB-Map/">阅读全文</a></p>
+        
+        <div class="post-content">
+            MyBatis 具有非常强大的缓存特性，可以方便的配置和定制。其默认定义了两级缓存：分布是一集缓存和二级缓存。 一级缓存：又称本地缓存。作用域为 sqlSession, 当 Session flush 或 close 之后，该 Session 中的所有 Cache 将被清空。其默认情况一级缓存开启，而且不能关闭，不过可以通过调用 clearCache 来清空本地缓存可以通过设置 localCacheScope 来修改缓存的作用域，有 SESSION |……
+        </div>
+        <p class="readmore"><a href="https://sangzhenya.github.io/post/DataBase/MyBatis/MyBaits-%E7%BC%93%E5%AD%98/">阅读全文</a></p>
     </article>
     
     <article class="post">
         <header>
             <h1 class="post-title">
-                <a href="https://sangzhenya.github.io/post/Java/%E9%9B%86%E5%90%88%E7%B1%BB/%E9%9B%86%E5%90%88%E7%B1%BB-Set/" title=""></a>
+                <a href="https://sangzhenya.github.io/post/DataBase/MyBatis/MyBaits-%E5%8A%A8%E6%80%81-SQL/" title="MyBatis 动态 SQL">MyBatis 动态 SQL</a>
             </h1>
         </header>
         <date class="post-meta meta-date">
-            1年1月1日
+            2019年5月5日
         </date>
         
-        <div class="post-content">
-            集合类 &ndash; Set 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29 30 31 32 33 34 // 用于存储数据的 hashMap private transient HashMap&lt;E,Object&gt; map; // 作为 Value 的 dummy 值 private static final Object PRESENT = new Object(); public HashSet() { // 默认的 HashMap 用于存储数据 map = new HashMap&lt;&gt;(); } public HashSet(Collection&lt;? extends E&gt; c) { // 如果初始Collection 长度的 4/3 和 16 之间的大的值作为初始化容量 map = new HashMap&lt;&gt;(Math.max((int) (c.size()/.75f) + 1, 16)); addAll(c); } public HashSet(int initialCapacity) {……
+        <div class="post-meta">
+            <span>|</span>
+            
+            <span class="meta-category"><a href='https://sangzhenya.github.io/categories/MyBaits'>MyBaits</a></span>
+            
         </div>
-        <p class="readmore"><a href="https://sangzhenya.github.io/post/Java/%E9%9B%86%E5%90%88%E7%B1%BB/%E9%9B%86%E5%90%88%E7%B1%BB-Set/">阅读全文</a></p>
+        
+        <div class="post-content">
+            使用 MyBatis 可以很轻松的完成动态 SQL 的拼写。 一个简单的使用 if 拼接的查询方法如下： 1 2 3 4 5 6 7 8 9 &lt;!-- List&lt;User&gt; queryUser(@Param(&#34;id&#34;) Integer id, @Param(&#34;name&#34;) String name, @Param(&#34;firstName&#34;) String firstName, @Param(&#34;lastName&#34;) String lastName); --&gt; &lt;select id=&#34;queryUser&#34; resultType=&#34;User&#34; databaseId=&#34;mysql&#34;&gt; select * from user where 1 = 1 &lt;if test=&#34;id != null&#34;&gt;and id = #{id} &lt;/if&gt; &lt;if test=&#34;name != null and name.trim() != &#39;&#39;&#34;&gt;and name = #{name} &lt;/if&gt; &lt;if test=&#34;firstName != null and firstName != &#39;&#39;&#34;&gt;and first_name = #{firstName} &lt;/if&gt; &lt;if test=&#34;lastName != null and lastName != &#39;&#39;&#34;&gt;and last_name = #{lastName} &lt;/if&gt; &lt;/select&gt; 当然也可以使用 where 标签去省略掉 where 关键字： 1 2 3 4……
+        </div>
+        <p class="readmore"><a href="https://sangzhenya.github.io/post/DataBase/MyBatis/MyBaits-%E5%8A%A8%E6%80%81-SQL/">阅读全文</a></p>
     </article>
     
     <article class="post">
         <header>
             <h1 class="post-title">
-                <a href="https://sangzhenya.github.io/post/MQ/ActiveMQ/" title=""></a>
+                <a href="https://sangzhenya.github.io/post/DataBase/MyBatis/MyBaits-%E6%8F%92%E4%BB%B6/" title="MyBaits 插件">MyBaits 插件</a>
             </h1>
         </header>
         <date class="post-meta meta-date">
-            1年1月1日
+            2019年5月3日
         </date>
         
-        <div class="post-content">
-            Active MQ [toc] 面向消息的中间件 是指利用高效可靠的消息机制进行平台的数据交流，并给予数据通信进行分布式系统的集成。通过提供消息传递和消息排列模型在分布式环境下提供应用解耦、弹性伸缩、冗余存储、流量削风、异步通信、数据同步等功能。简单来说就是解耦，削峰，异步。通用的流程如下： 生产者将消息发送……
+        <div class="post-meta">
+            <span>|</span>
+            
+            <span class="meta-category"><a href='https://sangzhenya.github.io/categories/MyBaits'>MyBaits</a></span>
+            
         </div>
-        <p class="readmore"><a href="https://sangzhenya.github.io/post/MQ/ActiveMQ/">阅读全文</a></p>
+        
+        <div class="post-content">
+            MyBatis 在创建四个主要对象（Executor， ParameterHandler, ResultSetHandler, StatementHandler）的过程中都会使用到插件。插件可以利用动态代理机制一层层的包装目标对象从而实现在目标对象执行目标方法之前进行拦截。 一个简单的插件编写如下： 首先编写实现 Interceptor 的主类： 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22……
+        </div>
+        <p class="readmore"><a href="https://sangzhenya.github.io/post/DataBase/MyBatis/MyBaits-%E6%8F%92%E4%BB%B6/">阅读全文</a></p>
     </article>
     
     <article class="post">
         <header>
             <h1 class="post-title">
-                <a href="https://sangzhenya.github.io/post/MQ/RabbitMQ/" title=""></a>
+                <a href="https://sangzhenya.github.io/post/Others/Tmux/" title="Tmux">Tmux</a>
             </h1>
         </header>
         <date class="post-meta meta-date">
-            1年1月1日
+            2019年5月1日
         </date>
         
-        <div class="post-content">
-            RabbitMQ [toc] 概述 多数应用中可以通过消息服务中间件来提升系统异步通信、扩展解耦的能力。其有两个重要的概念：消息代理和目的地。当消息发送者发送消息后，将由消息代理接管，消息代理保证消息传递到指定的目的地。 主要有两种形式： 队列 Queue，点对点通讯。消息发送者发送消息，消息代理将其放入到一个队……
+        <div class="post-meta">
+            <span>|</span>
+            
+            <span class="meta-category"><a href='https://sangzhenya.github.io/categories/%E5%85%B6%E4%BB%96'>其他</a></span>
+            
         </div>
-        <p class="readmore"><a href="https://sangzhenya.github.io/post/MQ/RabbitMQ/">阅读全文</a></p>
+        
+        <div class="post-content">
+            Tmux 是一个终端复用器类自由软件，用户可以通过 tmux 在一个终端内管理多个分离的会话，窗口及面板，对于同时使用多个命令行，或多个任务时非常方便。 tmux 主要由以下几个模块组成： server 服务，tmux 运行的基础服务，以下的模块均依赖此服务 session 会话，一个服务可以包含多个会话 window 窗口，一个会话可以包含多个窗口 panel……
+        </div>
+        <p class="readmore"><a href="https://sangzhenya.github.io/post/Others/Tmux/">阅读全文</a></p>
     </article>
     
     <article class="post">
         <header>
             <h1 class="post-title">
-                <a href="https://sangzhenya.github.io/post/MQ/RocketMQ/" title=""></a>
+                <a href="https://sangzhenya.github.io/post/Others/Session-%E5%92%8C-Cookie/" title="Cookie 和 Session">Cookie 和 Session</a>
             </h1>
         </header>
         <date class="post-meta meta-date">
-            1年1月1日
+            2019年4月25日
         </date>
         
-        <div class="post-content">
-            RocketMQ RocketMQ 原始文档地址 基本概念 首先 RocketMQ 是由 Producer、Broker、Consumer 三部分组成。其中 Producer 负责生产消息，Consumer 负责消费消息，Broker 负责存储消息。Broker 在实际部署中对应一台服务器，每个 Broker 可以存储多个 Topic 的消息，每个 Topic 的消息也可以分片存储在不同的 Broker 上。M……
+        <div class="post-meta">
+            <span>|</span>
+            
+            <span class="meta-category"><a href='https://sangzhenya.github.io/categories/%E5%85%B6%E4%BB%96'>其他</a></span>
+            
         </div>
-        <p class="readmore"><a href="https://sangzhenya.github.io/post/MQ/RocketMQ/">阅读全文</a></p>
+        
+        <div class="post-content">
+            Cookie 和 Session Cookie Cookie 的作用 Cookie的作用像是去超市购物的时候办理的购物卡，里面村上了你的个人信息，下次来到超时后的时候，超市可以识别你的会员卡，直接购物。 由于 HTTP 是一种无状态协议，当用户的一次访问请求结束后，后端服务器无法知道下一次来访问的是否还是上次访问的用户。Cookie 的作用就是用……
+        </div>
+        <p class="readmore"><a href="https://sangzhenya.github.io/post/Others/Session-%E5%92%8C-Cookie/">阅读全文</a></p>
     </article>
     
     <article class="post">
         <header>
             <h1 class="post-title">
-                <a href="https://sangzhenya.github.io/post/Others/Git-%E5%9F%BA%E7%A1%80/" title=""></a>
+                <a href="https://sangzhenya.github.io/post/Others/Maven/" title="Maven 入门">Maven 入门</a>
             </h1>
         </header>
         <date class="post-meta meta-date">
-            1年1月1日
+            2019年4月23日
         </date>
         
-        <div class="post-content">
-            Git 基础 Git 是一个开源的分布式版本控制系统，Git 主要分为三个区域：工作区，暂存区和版本库 上图中左侧为工作区域，右侧为版本库。在版本库中标记为 index 的区域是暂存区，标记 master 的是代表 master 分支锁代表的目录树。 Git 常用命令 Git 配置命令 1 2 3 git config --list 列出所有的配置信息 git config --global user.name &#34;User Name&#34; git config --global user.email &#34;User Email&#34; Git 基本命令 1 2……
+        <div class="post-meta">
+            <span>|</span>
+            
+            <span class="meta-category"><a href='https://sangzhenya.github.io/categories/%E5%85%B6%E4%BB%96'>其他</a></span>
+            
         </div>
-        <p class="readmore"><a href="https://sangzhenya.github.io/post/Others/Git-%E5%9F%BA%E7%A1%80/">阅读全文</a></p>
+        
+        <div class="post-content">
+            构建的各个环节 清理：将以前编译得到的旧的 class 字节码文件删除，为下一次编译做准备 编译：将 Java 源程序编译成 class 字节码文件 测试：自动测试，自动调用 junit 程序 报告：测试程序执行的结果 打包：动态 Web工程打 war 包，Java 工程打 jar 包 安装：将打包得到的文件复制到 ”仓库“ 中指定的位置 部署：将打包后的文件部……
+        </div>
+        <p class="readmore"><a href="https://sangzhenya.github.io/post/Others/Maven/">阅读全文</a></p>
     </article>
     
     
@@ -301,7 +371,7 @@
         
         
         <li >
-            <a href="https://sangzhenya.github.io/page/13/">13</a>
+            <a href="https://sangzhenya.github.io/page/12/">12</a>
         </li>
         
     
@@ -337,43 +407,43 @@
 <ul class="widget-list">
     
     <li>
-        <a href="https://sangzhenya.github.io/post/Java/jdk8/Java-8-Stream/" title="Java 8 Stream">Java 8 Stream</a>
+        <a href="https://sangzhenya.github.io/post/Java/JVM/Java-JNDI/" title="Java JNDI">Java JNDI</a>
     </li>
     
     <li>
-        <a href="https://sangzhenya.github.io/post/Java/jdk8/Java-8-Lambda/" title="Java 8 Lambda">Java 8 Lambda</a>
+        <a href="https://sangzhenya.github.io/post/Java/JVM/Java-OOM/" title="Java OOM">Java OOM</a>
     </li>
     
     <li>
-        <a href="https://sangzhenya.github.io/post/Java/juc/Java-ConcurrentHashMap/" title="Java ConcurrentHashMap">Java ConcurrentHashMap</a>
+        <a href="https://sangzhenya.github.io/post/Java/JVM/Java-JVM/" title="Java JVM">Java JVM</a>
     </li>
     
     <li>
-        <a href="https://sangzhenya.github.io/post/Java/juc/Java-CAS/" title="Java CAS">Java CAS</a>
+        <a href="https://sangzhenya.github.io/post/Java/JVM/Java-HotSpot-GC-%E7%AE%97%E6%B3%95%E5%AE%9E%E7%8E%B0/" title="Java HotSpot GC 算法实现">Java HotSpot GC 算法实现</a>
     </li>
     
     <li>
-        <a href="https://sangzhenya.github.io/post/Java/juc/Java-volatile/" title="Java volatile">Java volatile</a>
+        <a href="https://sangzhenya.github.io/post/Java/JVM/Java-GC-2/" title="Java GC 2">Java GC 2</a>
     </li>
     
     <li>
-        <a href="https://sangzhenya.github.io/post/Java/juc/Java-ReentrantLock/" title="Java ReentrantLock">Java ReentrantLock</a>
+        <a href="https://sangzhenya.github.io/post/Java/JVM/Java-GC-1/" title="Java GC 1">Java GC 1</a>
     </li>
     
     <li>
-        <a href="https://sangzhenya.github.io/post/Java/juc/Java-%E5%B9%B6%E5%8F%91%E6%8E%A7%E5%88%B6/" title="Java 并发控制">Java 并发控制</a>
+        <a href="https://sangzhenya.github.io/post/Java/JVM/Java-%E8%99%9A%E6%8B%9F%E6%9C%BA%E5%86%85%E5%AD%98%E6%A8%A1%E5%9E%8B/" title="Java 虚拟机内存模型">Java 虚拟机内存模型</a>
     </li>
     
     <li>
-        <a href="https://sangzhenya.github.io/post/Java/juc/Java-AQS/" title="Java AQS">Java AQS</a>
+        <a href="https://sangzhenya.github.io/post/Java/JVM/Java-%E9%80%83%E9%80%B8%E5%88%86%E6%9E%90/" title="Java 逃逸分析">Java 逃逸分析</a>
     </li>
     
     <li>
-        <a href="https://sangzhenya.github.io/post/DataBase/MyBatis/MyBaits-%E4%B8%8E-Spring-Boot/" title=""></a>
+        <a href="https://sangzhenya.github.io/post/Java/JVM/Java-%E5%9B%9B%E7%A7%8D%E5%BC%95%E7%94%A8%E7%B1%BB%E5%9E%8B/" title="Java 四种引用类型">Java 四种引用类型</a>
     </li>
     
     <li>
-        <a href="https://sangzhenya.github.io/post/DataBase/MyBatis/SQL-%E6%98%A0%E5%B0%84/" title=""></a>
+        <a href="https://sangzhenya.github.io/post/%E5%BE%AE%E6%9C%8D%E5%8A%A1/dubbo/Dubbo-%E5%8E%9F%E7%90%86/" title="Dubbo 原理">Dubbo 原理</a>
     </li>
     
 </ul>
@@ -385,9 +455,31 @@
         <h3 class="widget-title">分类</h3>
 <ul class="widget-list">
     
-    <li><a href="https://sangzhenya.github.io/categories/Java/">Java (8)</a></li>
+    <li><a href="https://sangzhenya.github.io/categories/Java/">Java (22)</a></li>
+    
+    <li><a href="https://sangzhenya.github.io/categories/MQ/">MQ (3)</a></li>
+    
+    <li><a href="https://sangzhenya.github.io/categories/MyBaits/">MyBaits (7)</a></li>
+    
+    <li><a href="https://sangzhenya.github.io/categories/MySQL/">MySQL (4)</a></li>
+    
+    <li><a href="https://sangzhenya.github.io/categories/Netty/">Netty (10)</a></li>
+    
+    <li><a href="https://sangzhenya.github.io/categories/Nginx/">Nginx (2)</a></li>
+    
+    <li><a href="https://sangzhenya.github.io/categories/Redis/">Redis (2)</a></li>
+    
+    <li><a href="https://sangzhenya.github.io/categories/Spring/">Spring (36)</a></li>
     
     <li><a href="https://sangzhenya.github.io/categories/%E5%85%B3%E4%BA%8E/">关于 (1)</a></li>
+    
+    <li><a href="https://sangzhenya.github.io/categories/%E5%85%B6%E4%BB%96/">其他 (8)</a></li>
+    
+    <li><a href="https://sangzhenya.github.io/categories/%E5%BE%AE%E6%9C%8D%E5%8A%A1/">微服务 (11)</a></li>
+    
+    <li><a href="https://sangzhenya.github.io/categories/%E7%AE%97%E6%B3%95/">算法 (3)</a></li>
+    
+    <li><a href="https://sangzhenya.github.io/categories/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/">读书笔记 (7)</a></li>
     
 </ul>
     </section>
@@ -396,7 +488,21 @@
         <h3 class="widget-title">标签</h3>
 <div class="tagcloud">
     
+    <a href="https://sangzhenya.github.io/tags/Active-MQ/">Active MQ</a>
+    
+    <a href="https://sangzhenya.github.io/tags/Cookie/">Cookie</a>
+    
+    <a href="https://sangzhenya.github.io/tags/Debug/">Debug</a>
+    
+    <a href="https://sangzhenya.github.io/tags/Docker/">Docker</a>
+    
+    <a href="https://sangzhenya.github.io/tags/Dubbo/">Dubbo</a>
+    
+    <a href="https://sangzhenya.github.io/tags/Git/">Git</a>
+    
     <a href="https://sangzhenya.github.io/tags/JDK8/">JDK8</a>
+    
+    <a href="https://sangzhenya.github.io/tags/JPA/">JPA</a>
     
     <a href="https://sangzhenya.github.io/tags/JUC/">JUC</a>
     
@@ -404,7 +510,65 @@
     
     <a href="https://sangzhenya.github.io/tags/java/">java</a>
     
+    <a href="https://sangzhenya.github.io/tags/Jenkins/">Jenkins</a>
+    
+    <a href="https://sangzhenya.github.io/tags/Kafka/">Kafka</a>
+    
+    <a href="https://sangzhenya.github.io/tags/Kubernetes/">Kubernetes</a>
+    
+    <a href="https://sangzhenya.github.io/tags/Linux/">Linux</a>
+    
+    <a href="https://sangzhenya.github.io/tags/Maven/">Maven</a>
+    
+    <a href="https://sangzhenya.github.io/tags/MyBaits/">MyBaits</a>
+    
+    <a href="https://sangzhenya.github.io/tags/MySQL/">MySQL</a>
+    
+    <a href="https://sangzhenya.github.io/tags/Netty/">Netty</a>
+    
+    <a href="https://sangzhenya.github.io/tags/Nginx/">Nginx</a>
+    
+    <a href="https://sangzhenya.github.io/tags/Rabbit-MQ/">Rabbit MQ</a>
+    
+    <a href="https://sangzhenya.github.io/tags/Redis/">Redis</a>
+    
+    <a href="https://sangzhenya.github.io/tags/Rocket-MQ/">Rocket MQ</a>
+    
+    <a href="https://sangzhenya.github.io/tags/Session/">Session</a>
+    
+    <a href="https://sangzhenya.github.io/tags/Spring/">Spring</a>
+    
+    <a href="https://sangzhenya.github.io/tags/Spring-Boot/">Spring Boot</a>
+    
+    <a href="https://sangzhenya.github.io/tags/Spring-Cloud/">Spring Cloud</a>
+    
+    <a href="https://sangzhenya.github.io/tags/Spring-Data/">Spring Data</a>
+    
+    <a href="https://sangzhenya.github.io/tags/Spring-MVC/">Spring MVC</a>
+    
+    <a href="https://sangzhenya.github.io/tags/Spring-Security/">Spring Security</a>
+    
+    <a href="https://sangzhenya.github.io/tags/Spring-%E6%B3%A8%E8%A7%A3/">Spring 注解</a>
+    
+    <a href="https://sangzhenya.github.io/tags/Tmux/">Tmux</a>
+    
+    <a href="https://sangzhenya.github.io/tags/Zookeeper/">Zookeeper</a>
+    
+    <a href="https://sangzhenya.github.io/tags/java/">java</a>
+    
+    <a href="https://sangzhenya.github.io/tags/%E4%BB%A3%E7%A0%81/">代码</a>
+    
     <a href="https://sangzhenya.github.io/tags/%E5%85%B3%E4%BA%8E/">关于</a>
+    
+    <a href="https://sangzhenya.github.io/tags/%E5%BE%AE%E6%9C%8D%E5%8A%A1/">微服务</a>
+    
+    <a href="https://sangzhenya.github.io/tags/%E6%BA%90%E7%A0%81/">源码</a>
+    
+    <a href="https://sangzhenya.github.io/tags/%E7%AE%97%E6%B3%95/">算法</a>
+    
+    <a href="https://sangzhenya.github.io/tags/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/">设计模式</a>
+    
+    <a href="https://sangzhenya.github.io/tags/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/">读书笔记</a>
     
     <a href="https://sangzhenya.github.io/tags/%E9%9B%86%E5%90%88/">集合</a>
     

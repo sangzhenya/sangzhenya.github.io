@@ -1,0 +1,393 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <title>Spring Cloud Ribbon Feign Hystrix Zuul | 新月的博客</title>
+    <meta property="og:title" content="Spring Cloud Ribbon Feign Hystrix Zuul - 新月的博客">
+    <meta property="og:type" content="article">
+        
+    <meta property="article:published_time" content='2019-03-13T09:00:00&#43;08:00'>
+        
+        
+    <meta property="article:modified_time" content='2019-03-13T09:00:00&#43;08:00'>
+        
+    <meta name="Keywords" content="">
+    <meta name="description" content="Spring Cloud Ribbon Feign Hystrix Zuul">
+        
+    <meta name="author" content="新月">
+    <meta property="og:url" content="https://sangzhenya.github.io/post/Spring/Spring-Cloud/Spring-Cloud-Ribbon-%E8%B4%9F%E8%BD%BD%E5%9D%87%E8%A1%A1/">
+    <link rel="shortcut icon" href="https://sangzhenya.github.io/favicon.ico" type="image/x-icon">
+
+    <link rel="stylesheet" href='https://sangzhenya.github.io/css/normalize.css'>
+    <link rel="stylesheet" href='https://sangzhenya.github.io/css/style.css'>
+    <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+
+    
+
+
+    
+    
+</head>
+
+
+<body>
+    <header id="header" class="clearfix">
+    <div class="container">
+        <div class="col-group">
+            <div class="site-name ">
+                
+                    <a id="logo" href="https://sangzhenya.github.io/">
+                        新月的博客
+                    </a>
+                
+                <p class="description">晚来天欲雪，能饮一杯无？</p>
+            </div>
+            <div>
+                <nav id="nav-menu" class="clearfix">
+                    <a class="current" href="https://sangzhenya.github.io/">首页</a>
+                    
+                    <a  href="https://sangzhenya.github.io/archives/" title="归档">归档</a>
+                    
+                    <a  href="https://sangzhenya.github.io/about/" title="关于">关于</a>
+                    
+                </nav>
+            </div>
+        </div>
+    </div>
+</header>
+
+    <div id="body">
+        <div class="container">
+            <div class="col-group">
+
+                <div class="col-8" id="main">
+                    
+<div class="res-cons">
+    
+    <article class="post">
+        <header>
+            <h1 class="post-title">Spring Cloud Ribbon Feign Hystrix Zuul</h1>
+        </header>
+        <date class="post-meta meta-date">
+            2019年3月13日
+        </date>
+        
+        <div class="post-meta">
+            <span>|</span>
+            
+            <span class="meta-category"><a href='https://sangzhenya.github.io/categories/Spring'>Spring</a></span>
+            
+        </div>
+        
+        
+        
+        <div class="post-content">
+            <h3 id="ribbon">Ribbon</h3>
+<p>Spring Cloud Ribbon 是基于 Netflix Ribbon 实现一套客户端负载均衡的工具。Ribbon 是 Netflix 发布的开源项目，其主要功能是提供客户端的负载均衡算法，将 Netflix 的中间层服务连接在一起。Ribbon 客户端组件提供了一系列完善的配置项如连接超时，重试等。简单的说就是在配置文件中列出 Load Balancer 后面所有的服务，Ribbon 会自动的基于某种规则，例如轮询，随机等算法去连接这些服务。当然也容易使用 Ribbon 实现自定义的负载均衡算法。</p>
+<p>负载均衡算法分为两种一种是进程外的：例如 F5 硬件负载均衡，Nginx 软件负载均衡。一种是进程内的其实将Load Balancer 的逻辑集成到了消费方，消费方从服务注册中心获知哪些地址可用，然后从这些地址中选择一个合适的服务器。Ribbon 就属于进程内的 Load Balancer。</p>
+<p>Ribbon 的核心组件是 IRule，是根据特定的算法从服务列表中选取一个要访问的服务。默认有 1.</p>
+<ol>
+<li>RoundRobinRule：轮询</li>
+<li>RandomRule：随机</li>
+<li>AvailabilityFilteringRule：先过滤掉由于多次访问故障而处于断路器跳闸状态的服务及并发的连接数量超过阈值的服务，然后对剩余的服务列表按照轮询的策略进行访问。</li>
+<li>WeightedResponseTimeRule：根据平均响应时间计算所有服务的权重，响应时间越快服务权重越大的被选中概率越高，刚启动时如果统计信息不足则使用轮询的策略直到统计信息足够才会切换回来。</li>
+<li>RetryRule：按照轮询策略获取服务，如果获取服务失败则在指定时间内重试获取可用服务。</li>
+<li>BestAvailableRule：会过滤掉由于多次访问故障处于断路器跳闸状态的服务，然后选择一个并发量最小的服务。</li>
+<li>ZoneAvoidanceRule：默认规则，符合判断 Server 所有区域性能和 Server 可用性选择服务器。</li>
+</ol>
+<h3 id="feign">Feign</h3>
+<p>是一个声明式 WebService 客户端，使用 Feign 能让编写 Web Service 客户端更加简单。其就是定义一个接口，然后再上面加上注解，同时其也支持 JAX-RS 标准的注解，Feign 也支持可插拔式的编码和解码器。Spring Cloud 对 Feign 进行了封装，使其支持了 Spring MVC 标准的注解和 HttpMessageConverters。 Feign 可以与 Eureka 和 Ribbon 组合使用以支持负载均衡。</p>
+<h3 id="hystrix">Hystrix</h3>
+<p>在分布式系统中程序可能有数十个依赖关系，每个依赖关系在某些时候将不可以避免不能用，这就有可能导致服务雪崩，即多个微服务之间调用的时候，假设微服务 A调用微服务 B和 C，B 和 C 又调用其他服务，即 <strong>扇出</strong>。如果删除的链路上某个微服务的调用相应时间过长或者不可用，对服务 A 的调用就会占用越来越多的资源，进而引起系统崩溃，也就是雪崩效应。</p>
+<p>对于高流量的应用来说，单一的后端依赖可能会导致所有服务器上的所有资源在几秒钟内饱和。比失败更糟糕的是这些应用程序可能导致服务之间的延迟增加，备份队列，线程和其他系统资源紧张，导致整个系统发生级联故障。也就说必须对故障和延迟进行隔离和管理，以便单个依赖关系的失败不影响整个系统。</p>
+<p>Hystrix 是一个用于处理分布式系统延迟和出错的开源库，其能够保证在一个依赖出错的情况下，不会导致整个服务失败，避免级联故障，进而提高分布式系统的弹性。断路器本身是一种开关装置，当某个服务单元发生故障之后，通过断路器的故障监控，想调用方返回一个服务预期的，可以处理的备选响应（FallBack)，而不是长时间的等待或者抛出调用方法无法处理的异常，这样就能保证了调用方的线程不会长时间不必要的占用，从而避免了故障在分布式系统的蔓延，乃至雪崩。</p>
+<h4 id="服务熔断">服务熔断</h4>
+<p>服务熔断是应对雪崩的一种微服务链路保护机制，当扇出链路的某个微服务不可用或者响应时间太长的时候，会进行服务降级，进而熔断该节点微服务的调用，快速返回错误的响应信息。当见到该节点微服务调用响应正常后恢复调用链路。在 Spring Cloud 中通过 Hystrix 实现熔断机制。其会监控服务间的调用状况，当失败的调用到一定的阈值的时候，默认是 5秒内20次调用失败的时候就会触发熔断机制。</p>
+<h4 id="服务降级">服务降级</h4>
+<p>服务降级即在服务资源不够的情况下将某些服务先关掉，等待资源充足的时候再启动。服务降级在客户端完成，与服务端没有关系。客户端的服务端不可用的时候获得提示信息，而不会挂起服务器。</p>
+<h4 id="hystrix-dashboard">Hystrix Dashboard</h4>
+<p>Hystrix 会持续地记录所有通过 Hystrix 的请求执行信息，并以统计报表和图形的形势展示给用户，包括每秒执行多少请求成功，多少请求失败等。Spring Cloud 也提供了 Hystrix Dashboard 的整合对监控的内容转化成可视化界面。界面如下：</p>
+<p><img src="http://img.programya.com/20200111184406.png" alt="监控界面"></p>
+<p>七个颜色的数字从上到下，从左到右分别代表：Success，Short-Circuited，Bad Request，Timeout，Rejected，Rejected，Error 百分数数量。实心圆有两种含义，通过颜色的变化表示实例的健康状态，健康度依次是  绿色，黄色，橙色，红色。通过大小变化反应请求流量的状态，流量越大实心圆越大。</p>
+<p>Host 服务请求的频率，Circuit 表示断路的状态。Hosts 表示集群主机状态的报告，后面显示 1最近一分钟百分位延迟统计。</p>
+<h3 id="zuul">Zuul</h3>
+<p>Zuul 包含了对请求的路由和过滤的功能。其中路由功能负责将外部请求转发到具体的微服务实例上，是实现外部访问统一入口的基础而过滤功能则负载将对请求的处理过程进行干预，实现对请求校验，服务聚合等功能的基础。Zuul 可以和 Eureka 集成，注册进 Eureka，从 Eureka 获取其他微服务的信息，之后访问微服务可以从 Zuul 获得。通过 Zuul 访问的 URL 如 <code>http://zuulgateway:9001/iboot-provider/</code> 。</p>
+
+        </div>
+
+        
+
+
+        
+
+<div class="post-archive">
+    <h2>See Also</h2>
+    <ul class="listing">
+        
+        <li><a href="https://sangzhenya.github.io/post/Spring/Spring-Cloud/Spring-Cloud-ConfigServer/">Spring Cloud Config Server</a></li>
+        
+        <li><a href="https://sangzhenya.github.io/post/Spring/Spring-Boot/Spring-Boot-MyBatis-%E5%A4%9A%E6%95%B0%E6%8D%AE%E6%BA%90%E9%85%8D%E7%BD%AE/">Spring Boot MyBatis 多数据源配置</a></li>
+        
+        <li><a href="https://sangzhenya.github.io/post/Spring/Spring-Boot/Spring-Boot-Actuator/">Spring Boot Actuator</a></li>
+        
+        <li><a href="https://sangzhenya.github.io/post/Spring/Spring-Boot/Spring-Boot-%E8%87%AA%E5%8A%A8%E9%85%8D%E7%BD%AE/">Spring Boot 自动配置</a></li>
+        
+        <li><a href="https://sangzhenya.github.io/post/Spring/Spring-Boot/Spring-Boot-%E8%87%AA%E5%AE%9A%E4%B9%89-Starter/">Spring Boot 自定义 Starter</a></li>
+        
+    </ul>
+</div>
+
+
+        <div class="post-meta meta-tags">
+            
+            <ul class="clearfix">
+                
+                <li><a href='https://sangzhenya.github.io/tags/Spring'>Spring</a></li>
+                
+                <li><a href='https://sangzhenya.github.io/tags/Spring-Cloud'>Spring Cloud</a></li>
+                
+            </ul>
+            
+        </div>
+    </article>
+    
+    
+
+    
+    
+</div>
+
+                </div>
+
+                <div id="secondary">
+    <section class="widget">
+        <form id="search" action='//www.google.com/search' method="get" accept-charset="utf-8" target="_blank" _lpchecked="1">
+      
+      <input type="text" name="q" maxlength="20" placeholder="Search">
+      <input type="hidden" name="sitesearch" value="https://sangzhenya.github.io/">
+      <button type="submit" class="submit icon-search"></button>
+</form>
+    </section>
+    
+    <section class="widget">
+        <h3 class="widget-title">最近文章</h3>
+<ul class="widget-list">
+    
+    <li>
+        <a href="https://sangzhenya.github.io/post/Java/JVM/Java-JNDI/" title="Java JNDI">Java JNDI</a>
+    </li>
+    
+    <li>
+        <a href="https://sangzhenya.github.io/post/Java/JVM/Java-OOM/" title="Java OOM">Java OOM</a>
+    </li>
+    
+    <li>
+        <a href="https://sangzhenya.github.io/post/Java/JVM/Java-JVM/" title="Java JVM">Java JVM</a>
+    </li>
+    
+    <li>
+        <a href="https://sangzhenya.github.io/post/Java/JVM/Java-HotSpot-GC-%E7%AE%97%E6%B3%95%E5%AE%9E%E7%8E%B0/" title="Java HotSpot GC 算法实现">Java HotSpot GC 算法实现</a>
+    </li>
+    
+    <li>
+        <a href="https://sangzhenya.github.io/post/Java/JVM/Java-GC-2/" title="Java GC 2">Java GC 2</a>
+    </li>
+    
+    <li>
+        <a href="https://sangzhenya.github.io/post/Java/JVM/Java-GC-1/" title="Java GC 1">Java GC 1</a>
+    </li>
+    
+    <li>
+        <a href="https://sangzhenya.github.io/post/Java/JVM/Java-%E8%99%9A%E6%8B%9F%E6%9C%BA%E5%86%85%E5%AD%98%E6%A8%A1%E5%9E%8B/" title="Java 虚拟机内存模型">Java 虚拟机内存模型</a>
+    </li>
+    
+    <li>
+        <a href="https://sangzhenya.github.io/post/Java/JVM/Java-%E9%80%83%E9%80%B8%E5%88%86%E6%9E%90/" title="Java 逃逸分析">Java 逃逸分析</a>
+    </li>
+    
+    <li>
+        <a href="https://sangzhenya.github.io/post/Java/JVM/Java-%E5%9B%9B%E7%A7%8D%E5%BC%95%E7%94%A8%E7%B1%BB%E5%9E%8B/" title="Java 四种引用类型">Java 四种引用类型</a>
+    </li>
+    
+    <li>
+        <a href="https://sangzhenya.github.io/post/%E5%BE%AE%E6%9C%8D%E5%8A%A1/dubbo/Dubbo-%E5%8E%9F%E7%90%86/" title="Dubbo 原理">Dubbo 原理</a>
+    </li>
+    
+</ul>
+    </section>
+
+    
+
+    <section class="widget">
+        <h3 class="widget-title">分类</h3>
+<ul class="widget-list">
+    
+    <li><a href="https://sangzhenya.github.io/categories/Java/">Java (22)</a></li>
+    
+    <li><a href="https://sangzhenya.github.io/categories/MQ/">MQ (3)</a></li>
+    
+    <li><a href="https://sangzhenya.github.io/categories/MyBaits/">MyBaits (7)</a></li>
+    
+    <li><a href="https://sangzhenya.github.io/categories/MySQL/">MySQL (4)</a></li>
+    
+    <li><a href="https://sangzhenya.github.io/categories/Netty/">Netty (10)</a></li>
+    
+    <li><a href="https://sangzhenya.github.io/categories/Nginx/">Nginx (2)</a></li>
+    
+    <li><a href="https://sangzhenya.github.io/categories/Redis/">Redis (2)</a></li>
+    
+    <li><a href="https://sangzhenya.github.io/categories/Spring/">Spring (36)</a></li>
+    
+    <li><a href="https://sangzhenya.github.io/categories/%E5%85%B3%E4%BA%8E/">关于 (1)</a></li>
+    
+    <li><a href="https://sangzhenya.github.io/categories/%E5%85%B6%E4%BB%96/">其他 (8)</a></li>
+    
+    <li><a href="https://sangzhenya.github.io/categories/%E5%BE%AE%E6%9C%8D%E5%8A%A1/">微服务 (11)</a></li>
+    
+    <li><a href="https://sangzhenya.github.io/categories/%E7%AE%97%E6%B3%95/">算法 (3)</a></li>
+    
+    <li><a href="https://sangzhenya.github.io/categories/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/">读书笔记 (7)</a></li>
+    
+</ul>
+    </section>
+
+    <section class="widget">
+        <h3 class="widget-title">标签</h3>
+<div class="tagcloud">
+    
+    <a href="https://sangzhenya.github.io/tags/Active-MQ/">Active MQ</a>
+    
+    <a href="https://sangzhenya.github.io/tags/Cookie/">Cookie</a>
+    
+    <a href="https://sangzhenya.github.io/tags/Debug/">Debug</a>
+    
+    <a href="https://sangzhenya.github.io/tags/Docker/">Docker</a>
+    
+    <a href="https://sangzhenya.github.io/tags/Dubbo/">Dubbo</a>
+    
+    <a href="https://sangzhenya.github.io/tags/Git/">Git</a>
+    
+    <a href="https://sangzhenya.github.io/tags/JDK8/">JDK8</a>
+    
+    <a href="https://sangzhenya.github.io/tags/JPA/">JPA</a>
+    
+    <a href="https://sangzhenya.github.io/tags/JUC/">JUC</a>
+    
+    <a href="https://sangzhenya.github.io/tags/JVM/">JVM</a>
+    
+    <a href="https://sangzhenya.github.io/tags/java/">java</a>
+    
+    <a href="https://sangzhenya.github.io/tags/Jenkins/">Jenkins</a>
+    
+    <a href="https://sangzhenya.github.io/tags/Kafka/">Kafka</a>
+    
+    <a href="https://sangzhenya.github.io/tags/Kubernetes/">Kubernetes</a>
+    
+    <a href="https://sangzhenya.github.io/tags/Linux/">Linux</a>
+    
+    <a href="https://sangzhenya.github.io/tags/Maven/">Maven</a>
+    
+    <a href="https://sangzhenya.github.io/tags/MyBaits/">MyBaits</a>
+    
+    <a href="https://sangzhenya.github.io/tags/MySQL/">MySQL</a>
+    
+    <a href="https://sangzhenya.github.io/tags/Netty/">Netty</a>
+    
+    <a href="https://sangzhenya.github.io/tags/Nginx/">Nginx</a>
+    
+    <a href="https://sangzhenya.github.io/tags/Rabbit-MQ/">Rabbit MQ</a>
+    
+    <a href="https://sangzhenya.github.io/tags/Redis/">Redis</a>
+    
+    <a href="https://sangzhenya.github.io/tags/Rocket-MQ/">Rocket MQ</a>
+    
+    <a href="https://sangzhenya.github.io/tags/Session/">Session</a>
+    
+    <a href="https://sangzhenya.github.io/tags/Spring/">Spring</a>
+    
+    <a href="https://sangzhenya.github.io/tags/Spring-Boot/">Spring Boot</a>
+    
+    <a href="https://sangzhenya.github.io/tags/Spring-Cloud/">Spring Cloud</a>
+    
+    <a href="https://sangzhenya.github.io/tags/Spring-Data/">Spring Data</a>
+    
+    <a href="https://sangzhenya.github.io/tags/Spring-MVC/">Spring MVC</a>
+    
+    <a href="https://sangzhenya.github.io/tags/Spring-Security/">Spring Security</a>
+    
+    <a href="https://sangzhenya.github.io/tags/Spring-%E6%B3%A8%E8%A7%A3/">Spring 注解</a>
+    
+    <a href="https://sangzhenya.github.io/tags/Tmux/">Tmux</a>
+    
+    <a href="https://sangzhenya.github.io/tags/Zookeeper/">Zookeeper</a>
+    
+    <a href="https://sangzhenya.github.io/tags/java/">java</a>
+    
+    <a href="https://sangzhenya.github.io/tags/%E4%BB%A3%E7%A0%81/">代码</a>
+    
+    <a href="https://sangzhenya.github.io/tags/%E5%85%B3%E4%BA%8E/">关于</a>
+    
+    <a href="https://sangzhenya.github.io/tags/%E5%BE%AE%E6%9C%8D%E5%8A%A1/">微服务</a>
+    
+    <a href="https://sangzhenya.github.io/tags/%E6%BA%90%E7%A0%81/">源码</a>
+    
+    <a href="https://sangzhenya.github.io/tags/%E7%AE%97%E6%B3%95/">算法</a>
+    
+    <a href="https://sangzhenya.github.io/tags/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/">设计模式</a>
+    
+    <a href="https://sangzhenya.github.io/tags/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/">读书笔记</a>
+    
+    <a href="https://sangzhenya.github.io/tags/%E9%9B%86%E5%90%88/">集合</a>
+    
+</div>
+    </section>
+
+    
+
+    <section class="widget">
+        <h3 class="widget-title">其它</h3>
+        <ul class="widget-list">
+            <li><a href="https://sangzhenya.github.io/index.xml">文章 RSS</a></li>
+        </ul>
+    </section>
+</div>
+            </div>
+        </div>
+    </div>
+    <footer id="footer">
+    <div class="container">
+        &copy; 2020 <a href="https://sangzhenya.github.io/">新月的博客 By 新月</a>.
+        Powered by <a rel="nofollow noreferer noopener" href="https://gohugo.io" target="_blank">Hugo</a>.
+        Theme based on <a href="https://github.com/flysnow-org/maupassant-hugo" target="_blank">maupassant</a>.
+        
+    </div>
+</footer>
+
+
+    
+    <script type="text/javascript">
+        window.MathJax = {
+            tex2jax: {
+                inlineMath: [['$', '$']],
+                processEscapes: true
+                }
+            };
+    </script>
+    <script src='https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-MML-AM_CHTML' async></script>
+
+
+<a id="rocket" href="#top"></a>
+<script type="text/javascript" src='https://sangzhenya.github.io/js/totop.js?v=0.0.0' async=""></script>
+
+
+
+
+
+
+</body>
+
+</html>

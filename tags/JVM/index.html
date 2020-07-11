@@ -76,11 +76,11 @@
     <article class="post">
         <header>
             <h1 class="post-title">
-                <a href="https://sangzhenya.github.io/post/Java/juc/Java-volatile/">Java volatile</a>
+                <a href="https://sangzhenya.github.io/post/Java/JVM/Java-JNDI/">Java JNDI</a>
             </h1>
         </header>
         <date class="post-meta meta-date">
-            2019年1月2日
+            2020年3月11日
         </date>
         
         <div class="post-meta meta-category">
@@ -91,8 +91,215 @@
         </div>
         
         <div class="post-content">
-            JMM JVM: Java 虚拟机 JMM: Java 内存模型 Java 内存模型 Java Memory Model 本身是一种抽象的概念并不真实存在，它描述的是一组规则或规范，通过这组规范定义了程序中的各个变量（包括实例字段、静态字段和构成数组对象元素）的访问方式。 JMM 关于同步的规定： 线程解锁前，必须把共享变量的值刷回主内存 线程加锁前，必须读取主内存到自己……
-            <p class="readmore"><a href="https://sangzhenya.github.io/post/Java/juc/Java-volatile/">阅读全文</a></p>
+            JNDI 即 Java Naming and Direcotry Interface 即 Java 命名与目录接口。是为 Java 编程的客户端提供的一个统一的命名服务和目录系统接口，不依赖于任何特定的服务实现。JDNI 的架构包含一个 API和一个 service provider interface(SPI)。Java 程序使用 JNDI API 去访问不同的命名服务和目录系统接口。SPI 则使得不同的命名服务和目录系统……
+            <p class="readmore"><a href="https://sangzhenya.github.io/post/Java/JVM/Java-JNDI/">阅读全文</a></p>
+        </div>
+    </article>
+    
+    <article class="post">
+        <header>
+            <h1 class="post-title">
+                <a href="https://sangzhenya.github.io/post/Java/JVM/Java-OOM/">Java OOM</a>
+            </h1>
+        </header>
+        <date class="post-meta meta-date">
+            2020年3月7日
+        </date>
+        
+        <div class="post-meta meta-category">
+            |
+            
+            <a href='https://sangzhenya.github.io/categories/Java'>Java</a>
+            
+        </div>
+        
+        <div class="post-content">
+            StackOverflowError 1 2 3 4 5 6 7 8 9 public class StackOverFlowErrorDemo { public static void main(String[] args) { stackOverFlow(); } private static void stackOverFlow() { stackOverFlow(); } } 递归调用过多，导致溢出。 1 2 3 4 5 6 7 8 9 10 11 12 Exception in thread &#34;main&#34; java.lang.StackOverflowError at demo.oom.StackOverFlowErrorDemo.stackOverFlow(StackOverFlowErrorDemo.java:13) at demo.oom.StackOverFlowErrorDemo.stackOverFlow(StackOverFlowErrorDemo.java:13) at demo.oom.StackOverFlowErrorDemo.stackOverFlow(StackOverFlowErrorDemo.java:13) at demo.oom.StackOverFlowErrorDemo.stackOverFlow(StackOverFlowErrorDemo.java:13) at demo.oom.StackOverFlowErrorDemo.stackOverFlow(StackOverFlowErrorDemo.java:13) at demo.oom.StackOverFlowErrorDemo.stackOverFlow(StackOverFlowErrorDemo.java:13) at demo.oom.StackOverFlowErrorDemo.stackOverFlow(StackOverFlowErrorDemo.java:13) at demo.oom.StackOverFlowErrorDemo.stackOverFlow(StackOverFlowErrorDemo.java:13) at demo.oom.StackOverFlowErrorDemo.stackOverFlow(StackOverFlowErrorDemo.java:13) at demo.oom.StackOverFlowErrorDemo.stackOverFlow(StackOverFlowErrorDemo.java:13) at demo.oom.StackOverFlowErrorDemo.stackOverFlow(StackOverFlowErrorDemo.java:13) OutOfMemoryError: Java heap space 1 2 3 4 5 6 7 8 9 public class JavaHeapSpaceDemo { public static void main(String[] args) { String string = &#34;demo&#34;; while (true) { string += string + new Random().nextInt(100000000); string.intern(); } } } 内存不足导致，堆内存溢出 1 2 3 4 5 6 Exception……
+            <p class="readmore"><a href="https://sangzhenya.github.io/post/Java/JVM/Java-OOM/">阅读全文</a></p>
+        </div>
+    </article>
+    
+    <article class="post">
+        <header>
+            <h1 class="post-title">
+                <a href="https://sangzhenya.github.io/post/Java/JVM/Java-JVM/">Java JVM</a>
+            </h1>
+        </header>
+        <date class="post-meta meta-date">
+            2020年3月3日
+        </date>
+        
+        <div class="post-meta meta-category">
+            |
+            
+            <a href='https://sangzhenya.github.io/categories/Java'>Java</a>
+            
+        </div>
+        
+        <div class="post-content">
+            MinorGC 的过程 复制 &ndash;&gt; 清空 &ndash;&gt; 互换 eden, SurviorFrom 复制到 SurviorTo, 年龄 + 1 首先 当 Eden 区满的时候回触发一次 GC，把仍然存活的对象复制到 SurviorFrom 区，当 Eden 去再次触发GC的时候会扫描 Eden区和From区域，对这个两个区域进行垃圾回收，经过这次回收后还存活的对象则直接复制到 To 区域（如果对象的年龄已经达到了老年的标准，则复制到……
+            <p class="readmore"><a href="https://sangzhenya.github.io/post/Java/JVM/Java-JVM/">阅读全文</a></p>
+        </div>
+    </article>
+    
+    <article class="post">
+        <header>
+            <h1 class="post-title">
+                <a href="https://sangzhenya.github.io/post/Java/JVM/Java-HotSpot-GC-%E7%AE%97%E6%B3%95%E5%AE%9E%E7%8E%B0/">Java HotSpot GC 算法实现</a>
+            </h1>
+        </header>
+        <date class="post-meta meta-date">
+            2020年3月1日
+        </date>
+        
+        <div class="post-meta meta-category">
+            |
+            
+            <a href='https://sangzhenya.github.io/categories/Java'>Java</a>
+            
+        </div>
+        
+        <div class="post-content">
+            枚举根节点 可达性分析对执行时间的敏感体现在 GC 停顿上，因为分析工作必须在一个能确保一致性的快照中进行，即整个分析期间整个执行系统看起来就像冻结在某个时间点上，不能出现分析过程中对象引用关系还在不断变化的情况，否则分析结果的准确性就无法得到保证。这也是导致 GC 进行时必须停顿所有 Java 执行线……
+            <p class="readmore"><a href="https://sangzhenya.github.io/post/Java/JVM/Java-HotSpot-GC-%E7%AE%97%E6%B3%95%E5%AE%9E%E7%8E%B0/">阅读全文</a></p>
+        </div>
+    </article>
+    
+    <article class="post">
+        <header>
+            <h1 class="post-title">
+                <a href="https://sangzhenya.github.io/post/Java/JVM/Java-GC-2/">Java GC 2</a>
+            </h1>
+        </header>
+        <date class="post-meta meta-date">
+            2020年2月25日
+        </date>
+        
+        <div class="post-meta meta-category">
+            |
+            
+            <a href='https://sangzhenya.github.io/categories/Java'>Java</a>
+            
+        </div>
+        
+        <div class="post-content">
+            几种垃圾回收器： Serial 串行垃圾回收器 为单线程环境设计且只可以使用一个线程进行垃圾回收，会暂停所有用户线程，直到收集结束。所以不适合服务器环境。 Serial 串行收集器是最古老，最稳定已经效率最高的收集器，只使用一个线程去回收，但是其在垃圾回收过程中可能产生较长的停顿（Stop-The-Word 状……
+            <p class="readmore"><a href="https://sangzhenya.github.io/post/Java/JVM/Java-GC-2/">阅读全文</a></p>
+        </div>
+    </article>
+    
+    <article class="post">
+        <header>
+            <h1 class="post-title">
+                <a href="https://sangzhenya.github.io/post/Java/JVM/Java-GC-1/">Java GC 1</a>
+            </h1>
+        </header>
+        <date class="post-meta meta-date">
+            2020年2月21日
+        </date>
+        
+        <div class="post-meta meta-category">
+            |
+            
+            <a href='https://sangzhenya.github.io/categories/Java'>Java</a>
+            
+        </div>
+        
+        <div class="post-content">
+            随着程序的运行，内存中的实例对象、变量等占据的内存越来越多，如果不及时进行回收，会降低成勋运行的效率，甚至引发系统异常。线程私有部分如程序计数器、虚拟机栈和本地方法栈三个部分随着线程而生，随着线程而灭所以不需要内存回收，垃圾回收的主要部分在堆中。考虑垃圾回收的时候需要思考 3 件事情……
+            <p class="readmore"><a href="https://sangzhenya.github.io/post/Java/JVM/Java-GC-1/">阅读全文</a></p>
+        </div>
+    </article>
+    
+    <article class="post">
+        <header>
+            <h1 class="post-title">
+                <a href="https://sangzhenya.github.io/post/Java/JVM/Java-%E8%99%9A%E6%8B%9F%E6%9C%BA%E5%86%85%E5%AD%98%E6%A8%A1%E5%9E%8B/">Java 虚拟机内存模型</a>
+            </h1>
+        </header>
+        <date class="post-meta meta-date">
+            2020年2月17日
+        </date>
+        
+        <div class="post-meta meta-category">
+            |
+            
+            <a href='https://sangzhenya.github.io/categories/Java'>Java</a>
+            
+        </div>
+        
+        <div class="post-content">
+            Java 虚拟机运行的时候会把它所管理的内存分划分为若干个不同的数据区域。按照线程之间是否可以共享分为两个部分。线程私有区包含：程序计数器、虚拟机栈、本地方法栈；线程共享区包含：堆、元数据区、直接内存。线程私有区的生命周期和线程相同。 Java 内存模型如下图所示： 线程私有区 程序计数器 程序计数器 是……
+            <p class="readmore"><a href="https://sangzhenya.github.io/post/Java/JVM/Java-%E8%99%9A%E6%8B%9F%E6%9C%BA%E5%86%85%E5%AD%98%E6%A8%A1%E5%9E%8B/">阅读全文</a></p>
+        </div>
+    </article>
+    
+    <article class="post">
+        <header>
+            <h1 class="post-title">
+                <a href="https://sangzhenya.github.io/post/Java/JVM/Java-%E9%80%83%E9%80%B8%E5%88%86%E6%9E%90/">Java 逃逸分析</a>
+            </h1>
+        </header>
+        <date class="post-meta meta-date">
+            2020年2月15日
+        </date>
+        
+        <div class="post-meta meta-category">
+            |
+            
+            <a href='https://sangzhenya.github.io/categories/Java'>Java</a>
+            
+        </div>
+        
+        <div class="post-content">
+            当一个对象在方法中被定义后，它可能被外部方法锁引用，例如作为调用参数传递到其他方法中，成为方法逃逸。甚至可能被外部线程访问到，例如赋值给类变量或可以在其他线程中访问的实例变量，称为线程逃逸。逃逸分析的基本行为就是分析对象动态作用区域。 如果分析到一个对象不会逃逸到方法或者线程之外，……
+            <p class="readmore"><a href="https://sangzhenya.github.io/post/Java/JVM/Java-%E9%80%83%E9%80%B8%E5%88%86%E6%9E%90/">阅读全文</a></p>
+        </div>
+    </article>
+    
+    <article class="post">
+        <header>
+            <h1 class="post-title">
+                <a href="https://sangzhenya.github.io/post/Java/JVM/Java-%E5%9B%9B%E7%A7%8D%E5%BC%95%E7%94%A8%E7%B1%BB%E5%9E%8B/">Java 四种引用类型</a>
+            </h1>
+        </header>
+        <date class="post-meta meta-date">
+            2020年2月11日
+        </date>
+        
+        <div class="post-meta meta-category">
+            |
+            
+            <a href='https://sangzhenya.github.io/categories/Java'>Java</a>
+            
+        </div>
+        
+        <div class="post-content">
+            强引用 当内存不足的时候， JVM 开始回收垃圾，对于强引用的对象，就算是出现了 OOM 也不会对该对象进行回收，死都不回收。 强引用是我们常见的普通对象引用，只要还有一个强引用指向一个对象，就表明对象还活着，垃圾收集器不会回收这种对象。在 Java 中最常见的就是强引用，把一个对象赋给一个引用变量，这个引用……
+            <p class="readmore"><a href="https://sangzhenya.github.io/post/Java/JVM/Java-%E5%9B%9B%E7%A7%8D%E5%BC%95%E7%94%A8%E7%B1%BB%E5%9E%8B/">阅读全文</a></p>
+        </div>
+    </article>
+    
+    <article class="post">
+        <header>
+            <h1 class="post-title">
+                <a href="https://sangzhenya.github.io/post/Java/JVM/Java-%E5%8F%8C%E4%BA%B2%E5%A7%94%E6%B4%BE%E6%A8%A1%E5%9E%8B/">Java 双亲委派模型</a>
+            </h1>
+        </header>
+        <date class="post-meta meta-date">
+            2020年2月7日
+        </date>
+        
+        <div class="post-meta meta-category">
+            |
+            
+            <a href='https://sangzhenya.github.io/categories/Java'>Java</a>
+            
+        </div>
+        
+        <div class="post-content">
+            类加载机制 类从被加载到虚拟机内存开始，到卸载出内存为止，整个生命周期包括：加载 -&gt; 验证 -&gt; 准备 -&gt; 解析 -&gt; 初始化 -&gt; 使用 -&gt; 卸载 7个阶段。其中 验证、准备、解析三个阶段可以统称为连接。如图所示： 以上过程中加载、验证、准备、初始化和卸载5个阶段的顺序是确定的，但是解析阶段则不一定，在一些情况下可……
+            <p class="readmore"><a href="https://sangzhenya.github.io/post/Java/JVM/Java-%E5%8F%8C%E4%BA%B2%E5%A7%94%E6%B4%BE%E6%A8%A1%E5%9E%8B/">阅读全文</a></p>
         </div>
     </article>
     
@@ -100,6 +307,26 @@
     
 
 
+
+<ol class="page-navigator">
+    
+
+    
+    <li  class="current">
+        <a href="https://sangzhenya.github.io/tags/JVM/">1</a>
+    </li>
+    
+    <li >
+        <a href="https://sangzhenya.github.io/tags/JVM/page/2/">2</a>
+    </li>
+    
+
+    
+    <li class="next">
+        <a href="https://sangzhenya.github.io/tags/JVM/page/2/">下一页</a>
+    </li>
+    
+</ol>
 
 
 
@@ -122,43 +349,43 @@
 <ul class="widget-list">
     
     <li>
-        <a href="https://sangzhenya.github.io/post/Java/jdk8/Java-8-Stream/" title="Java 8 Stream">Java 8 Stream</a>
+        <a href="https://sangzhenya.github.io/post/Java/JVM/Java-JNDI/" title="Java JNDI">Java JNDI</a>
     </li>
     
     <li>
-        <a href="https://sangzhenya.github.io/post/Java/jdk8/Java-8-Lambda/" title="Java 8 Lambda">Java 8 Lambda</a>
+        <a href="https://sangzhenya.github.io/post/Java/JVM/Java-OOM/" title="Java OOM">Java OOM</a>
     </li>
     
     <li>
-        <a href="https://sangzhenya.github.io/post/Java/juc/Java-ConcurrentHashMap/" title="Java ConcurrentHashMap">Java ConcurrentHashMap</a>
+        <a href="https://sangzhenya.github.io/post/Java/JVM/Java-JVM/" title="Java JVM">Java JVM</a>
     </li>
     
     <li>
-        <a href="https://sangzhenya.github.io/post/Java/juc/Java-CAS/" title="Java CAS">Java CAS</a>
+        <a href="https://sangzhenya.github.io/post/Java/JVM/Java-HotSpot-GC-%E7%AE%97%E6%B3%95%E5%AE%9E%E7%8E%B0/" title="Java HotSpot GC 算法实现">Java HotSpot GC 算法实现</a>
     </li>
     
     <li>
-        <a href="https://sangzhenya.github.io/post/Java/juc/Java-volatile/" title="Java volatile">Java volatile</a>
+        <a href="https://sangzhenya.github.io/post/Java/JVM/Java-GC-2/" title="Java GC 2">Java GC 2</a>
     </li>
     
     <li>
-        <a href="https://sangzhenya.github.io/post/Java/juc/Java-ReentrantLock/" title="Java ReentrantLock">Java ReentrantLock</a>
+        <a href="https://sangzhenya.github.io/post/Java/JVM/Java-GC-1/" title="Java GC 1">Java GC 1</a>
     </li>
     
     <li>
-        <a href="https://sangzhenya.github.io/post/Java/juc/Java-%E5%B9%B6%E5%8F%91%E6%8E%A7%E5%88%B6/" title="Java 并发控制">Java 并发控制</a>
+        <a href="https://sangzhenya.github.io/post/Java/JVM/Java-%E8%99%9A%E6%8B%9F%E6%9C%BA%E5%86%85%E5%AD%98%E6%A8%A1%E5%9E%8B/" title="Java 虚拟机内存模型">Java 虚拟机内存模型</a>
     </li>
     
     <li>
-        <a href="https://sangzhenya.github.io/post/Java/juc/Java-AQS/" title="Java AQS">Java AQS</a>
+        <a href="https://sangzhenya.github.io/post/Java/JVM/Java-%E9%80%83%E9%80%B8%E5%88%86%E6%9E%90/" title="Java 逃逸分析">Java 逃逸分析</a>
     </li>
     
     <li>
-        <a href="https://sangzhenya.github.io/post/DataBase/MyBatis/MyBaits-%E4%B8%8E-Spring-Boot/" title=""></a>
+        <a href="https://sangzhenya.github.io/post/Java/JVM/Java-%E5%9B%9B%E7%A7%8D%E5%BC%95%E7%94%A8%E7%B1%BB%E5%9E%8B/" title="Java 四种引用类型">Java 四种引用类型</a>
     </li>
     
     <li>
-        <a href="https://sangzhenya.github.io/post/DataBase/MyBatis/SQL-%E6%98%A0%E5%B0%84/" title=""></a>
+        <a href="https://sangzhenya.github.io/post/%E5%BE%AE%E6%9C%8D%E5%8A%A1/dubbo/Dubbo-%E5%8E%9F%E7%90%86/" title="Dubbo 原理">Dubbo 原理</a>
     </li>
     
 </ul>
@@ -170,9 +397,31 @@
         <h3 class="widget-title">分类</h3>
 <ul class="widget-list">
     
-    <li><a href="https://sangzhenya.github.io/categories/Java/">Java (8)</a></li>
+    <li><a href="https://sangzhenya.github.io/categories/Java/">Java (22)</a></li>
+    
+    <li><a href="https://sangzhenya.github.io/categories/MQ/">MQ (3)</a></li>
+    
+    <li><a href="https://sangzhenya.github.io/categories/MyBaits/">MyBaits (7)</a></li>
+    
+    <li><a href="https://sangzhenya.github.io/categories/MySQL/">MySQL (4)</a></li>
+    
+    <li><a href="https://sangzhenya.github.io/categories/Netty/">Netty (10)</a></li>
+    
+    <li><a href="https://sangzhenya.github.io/categories/Nginx/">Nginx (2)</a></li>
+    
+    <li><a href="https://sangzhenya.github.io/categories/Redis/">Redis (2)</a></li>
+    
+    <li><a href="https://sangzhenya.github.io/categories/Spring/">Spring (36)</a></li>
     
     <li><a href="https://sangzhenya.github.io/categories/%E5%85%B3%E4%BA%8E/">关于 (1)</a></li>
+    
+    <li><a href="https://sangzhenya.github.io/categories/%E5%85%B6%E4%BB%96/">其他 (8)</a></li>
+    
+    <li><a href="https://sangzhenya.github.io/categories/%E5%BE%AE%E6%9C%8D%E5%8A%A1/">微服务 (11)</a></li>
+    
+    <li><a href="https://sangzhenya.github.io/categories/%E7%AE%97%E6%B3%95/">算法 (3)</a></li>
+    
+    <li><a href="https://sangzhenya.github.io/categories/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/">读书笔记 (7)</a></li>
     
 </ul>
     </section>
@@ -181,7 +430,21 @@
         <h3 class="widget-title">标签</h3>
 <div class="tagcloud">
     
+    <a href="https://sangzhenya.github.io/tags/Active-MQ/">Active MQ</a>
+    
+    <a href="https://sangzhenya.github.io/tags/Cookie/">Cookie</a>
+    
+    <a href="https://sangzhenya.github.io/tags/Debug/">Debug</a>
+    
+    <a href="https://sangzhenya.github.io/tags/Docker/">Docker</a>
+    
+    <a href="https://sangzhenya.github.io/tags/Dubbo/">Dubbo</a>
+    
+    <a href="https://sangzhenya.github.io/tags/Git/">Git</a>
+    
     <a href="https://sangzhenya.github.io/tags/JDK8/">JDK8</a>
+    
+    <a href="https://sangzhenya.github.io/tags/JPA/">JPA</a>
     
     <a href="https://sangzhenya.github.io/tags/JUC/">JUC</a>
     
@@ -189,7 +452,65 @@
     
     <a href="https://sangzhenya.github.io/tags/java/">java</a>
     
+    <a href="https://sangzhenya.github.io/tags/Jenkins/">Jenkins</a>
+    
+    <a href="https://sangzhenya.github.io/tags/Kafka/">Kafka</a>
+    
+    <a href="https://sangzhenya.github.io/tags/Kubernetes/">Kubernetes</a>
+    
+    <a href="https://sangzhenya.github.io/tags/Linux/">Linux</a>
+    
+    <a href="https://sangzhenya.github.io/tags/Maven/">Maven</a>
+    
+    <a href="https://sangzhenya.github.io/tags/MyBaits/">MyBaits</a>
+    
+    <a href="https://sangzhenya.github.io/tags/MySQL/">MySQL</a>
+    
+    <a href="https://sangzhenya.github.io/tags/Netty/">Netty</a>
+    
+    <a href="https://sangzhenya.github.io/tags/Nginx/">Nginx</a>
+    
+    <a href="https://sangzhenya.github.io/tags/Rabbit-MQ/">Rabbit MQ</a>
+    
+    <a href="https://sangzhenya.github.io/tags/Redis/">Redis</a>
+    
+    <a href="https://sangzhenya.github.io/tags/Rocket-MQ/">Rocket MQ</a>
+    
+    <a href="https://sangzhenya.github.io/tags/Session/">Session</a>
+    
+    <a href="https://sangzhenya.github.io/tags/Spring/">Spring</a>
+    
+    <a href="https://sangzhenya.github.io/tags/Spring-Boot/">Spring Boot</a>
+    
+    <a href="https://sangzhenya.github.io/tags/Spring-Cloud/">Spring Cloud</a>
+    
+    <a href="https://sangzhenya.github.io/tags/Spring-Data/">Spring Data</a>
+    
+    <a href="https://sangzhenya.github.io/tags/Spring-MVC/">Spring MVC</a>
+    
+    <a href="https://sangzhenya.github.io/tags/Spring-Security/">Spring Security</a>
+    
+    <a href="https://sangzhenya.github.io/tags/Spring-%E6%B3%A8%E8%A7%A3/">Spring 注解</a>
+    
+    <a href="https://sangzhenya.github.io/tags/Tmux/">Tmux</a>
+    
+    <a href="https://sangzhenya.github.io/tags/Zookeeper/">Zookeeper</a>
+    
+    <a href="https://sangzhenya.github.io/tags/java/">java</a>
+    
+    <a href="https://sangzhenya.github.io/tags/%E4%BB%A3%E7%A0%81/">代码</a>
+    
     <a href="https://sangzhenya.github.io/tags/%E5%85%B3%E4%BA%8E/">关于</a>
+    
+    <a href="https://sangzhenya.github.io/tags/%E5%BE%AE%E6%9C%8D%E5%8A%A1/">微服务</a>
+    
+    <a href="https://sangzhenya.github.io/tags/%E6%BA%90%E7%A0%81/">源码</a>
+    
+    <a href="https://sangzhenya.github.io/tags/%E7%AE%97%E6%B3%95/">算法</a>
+    
+    <a href="https://sangzhenya.github.io/tags/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/">设计模式</a>
+    
+    <a href="https://sangzhenya.github.io/tags/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/">读书笔记</a>
     
     <a href="https://sangzhenya.github.io/tags/%E9%9B%86%E5%90%88/">集合</a>
     

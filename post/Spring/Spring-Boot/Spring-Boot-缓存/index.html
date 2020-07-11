@@ -1,0 +1,1266 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <title>Spring Boot 缓存 | 新月的博客</title>
+    <meta property="og:title" content="Spring Boot 缓存 - 新月的博客">
+    <meta property="og:type" content="article">
+        
+    <meta property="article:published_time" content='2019-02-21T09:00:00&#43;08:00'>
+        
+        
+    <meta property="article:modified_time" content='2019-02-21T09:00:00&#43;08:00'>
+        
+    <meta name="Keywords" content="">
+    <meta name="description" content="Spring Boot 缓存">
+        
+    <meta name="author" content="新月">
+    <meta property="og:url" content="https://sangzhenya.github.io/post/Spring/Spring-Boot/Spring-Boot-%E7%BC%93%E5%AD%98/">
+    <link rel="shortcut icon" href="https://sangzhenya.github.io/favicon.ico" type="image/x-icon">
+
+    <link rel="stylesheet" href='https://sangzhenya.github.io/css/normalize.css'>
+    <link rel="stylesheet" href='https://sangzhenya.github.io/css/style.css'>
+    <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+
+    
+
+
+    
+    
+</head>
+
+
+<body>
+    <header id="header" class="clearfix">
+    <div class="container">
+        <div class="col-group">
+            <div class="site-name ">
+                
+                    <a id="logo" href="https://sangzhenya.github.io/">
+                        新月的博客
+                    </a>
+                
+                <p class="description">晚来天欲雪，能饮一杯无？</p>
+            </div>
+            <div>
+                <nav id="nav-menu" class="clearfix">
+                    <a class="current" href="https://sangzhenya.github.io/">首页</a>
+                    
+                    <a  href="https://sangzhenya.github.io/archives/" title="归档">归档</a>
+                    
+                    <a  href="https://sangzhenya.github.io/about/" title="关于">关于</a>
+                    
+                </nav>
+            </div>
+        </div>
+    </div>
+</header>
+
+    <div id="body">
+        <div class="container">
+            <div class="col-group">
+
+                <div class="col-8" id="main">
+                    
+<div class="res-cons">
+    
+    <article class="post">
+        <header>
+            <h1 class="post-title">Spring Boot 缓存</h1>
+        </header>
+        <date class="post-meta meta-date">
+            2019年2月21日
+        </date>
+        
+        <div class="post-meta">
+            <span>|</span>
+            
+            <span class="meta-category"><a href='https://sangzhenya.github.io/categories/Spring'>Spring</a></span>
+            
+        </div>
+        
+        
+        
+        <div class="post-content">
+            <h3 id="jsr-107">JSR 107</h3>
+<p>首先 JSR 107 即 JCache API的首个早期草案，在 Java JCache 中定义了 5 个核心内容，即 CachingProvider，CacheMaager，Cache，Entry 和 Expiry。</p>
+<ol>
+<li>CachingProvider 中定义了创建、配置、获取、管理和控制多个 CacheManager, 一个应用可以在运行期间访问多个 CahingProvider。</li>
+<li>CacheManger 定义了创建、配置、获取和控制多个唯一命名的 Cache，这些 Cache 存在于 CacheManger 的上下文中。一个 CacheManger 仅被一个 CacheProvider 所拥有。</li>
+<li>Cache 是一个类似 Map 的数据结构并临时存储以 key 为索引的值，一个 Cache 仅被一个 CacheManger 所拥有。</li>
+<li>Entry 是一个存在于 Cache 中 key - value 对</li>
+<li>Expiry 每个存储在 Cache 中的条目有一个定义的有效期，一旦超过这个事件，条目为过期状态。一旦过期，条目将不可访问，更新或者删除，缓存的有效期有 ExpiryPolicy 设置。</li>
+</ol>
+<p>结构如下图所示：</p>
+<p><img src="https://i.loli.net/2020/06/24/1LHzeNhpbtrQoxu.png" alt="结构图"></p>
+<h3 id="spring-cache">Spring Cache</h3>
+<p>首先通过 <code>@EnableCaching</code> 开启基于注解的缓存，Spring 主要提供了两个核心抽象：</p>
+<ol>
+<li><code>Cache</code> 缓存接口，定义缓存操作常见的实现有： <code>RedisCache</code>, <code>EhCacheCache</code>, <code>ConcurrentMapCache</code> 等等。</li>
+<li><code>CacheManager</code> 缓存管理器，管理各种缓存组件。</li>
+</ol>
+<p>主要结构图如下：</p>
+<p><img src="https://i.loli.net/2020/06/28/OFqY8Mcampnv9DX.png" alt="结构图"></p>
+<p>主要的缓存注解有以下几个：</p>
+<ol>
+<li><code>@Cacheable</code> 针对于方法的设置，能够根据方法的请求参数对其结果进行缓存
+<ol>
+<li><code>cacheNames/value</code> 设置放到 cache 的名称，可以设置多个 <code>{&quot;books&quot;, &quot;isbns&quot;}</code></li>
+<li><code>key</code> 缓存的 key，如果不指定则默认使用方法的值，如果只有一个参数则直接使用该参数，否则会将所有参数封装成 <code>SimpleKey</code> 作为 key。</li>
+<li><code>keyGenerator</code> 设置 key 生成的规则</li>
+<li><code>cacheManager</code> 多个 CacheManager 的指定使用哪个 CacheManager</li>
+<li><code>cacheResolver</code> 设置缓存解析器，和 CacheManager 的作用类似，可以动态的决定放到哪个 cache 中，</li>
+<li><code>condition</code> 在特定情况下缓存</li>
+<li><code>unless</code> 否定缓存，指定的条件不缓存</li>
+<li><code>sync</code> 是否采用异步的方式</li>
+</ol>
+</li>
+<li><code>@CacheEvict</code> 清空缓存, 其既可以从某一个或多个 cache 删除指定的 key，也可以通过 <code>allEntries</code> 指定删除 cache 中所有的条目。此外默认清除缓存是在方法之后执行的，不过其还可以通过 <code>beforeInvocation</code> 属性指定是否在方法执行之前执行删除操作。</li>
+<li><code>@CachePut</code> 保证方法被调用，又希望结果被缓存</li>
+<li><code>@CacheConfig</code> 类级别的 common 的注解配置</li>
+</ol>
+<p>如果使用了 Spring Boot 则直接在 pom 文件中引入 cache 相关的依赖。</p>
+<div class="highlight"><div style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4">
+<table style="border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">1
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">2
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">3
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">4
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-xml" data-lang="xml"><span style="color:#000080">&lt;dependency&gt;</span>
+   <span style="color:#000080">&lt;groupId&gt;</span>org.springframework.boot<span style="color:#000080">&lt;/groupId&gt;</span>
+   <span style="color:#000080">&lt;artifactId&gt;</span>spring-boot-starter-cache<span style="color:#000080">&lt;/artifactId&gt;</span>
+<span style="color:#000080">&lt;/dependency&gt;</span>
+</code></pre></td></tr></table>
+</div>
+</div><h3 id="缓存的原理">缓存的原理</h3>
+<h4 id="自动配置的原理">自动配置的原理</h4>
+<p>首先通过 <code>CacheAutoConfiguration</code> 缓存配置类导入 <code>CacheConfigurationImportSelector</code> 和 <code>CacheManagerEntityManagerFactoryDependsOnPostProcessor</code> 会为容器导入 <code>GenericCacheConfiguration</code>， <code>RedisCacheConfiguration</code>，<code>SimpleCacheConfiguration</code> 等配置类。默认是 <code>SimpleCacheConfiguration</code>，会为容器中注入一个 <code>ConcurrentMapCacheManager</code> 即一个 CacheManager, 其 getCache 方法即通过一个名字获取一个缓存组件。如果存在则直接获取，否则则会去创建一个 cache。其将所有数据存储到一个 <code>ConcurrentMap</code> 中（<code>ConcurrentMapCache</code>）。</p>
+<div class="highlight"><div style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4">
+<table style="border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 1
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 2
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 3
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 4
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 5
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 6
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 7
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 8
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 9
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">10
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">11
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">12
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">13
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">14
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#3c5d5d;font-weight:bold">@Override</span>
+<span style="color:#000;font-weight:bold">public</span> Cache <span style="color:#900;font-weight:bold">getCache</span><span style="color:#000;font-weight:bold">(</span>String name<span style="color:#000;font-weight:bold">)</span> <span style="color:#000;font-weight:bold">{</span>
+		Cache cache <span style="color:#000;font-weight:bold">=</span> <span style="color:#000;font-weight:bold">this</span><span style="color:#000;font-weight:bold">.</span><span style="color:#008080">cacheMap</span><span style="color:#000;font-weight:bold">.</span><span style="color:#008080">get</span><span style="color:#000;font-weight:bold">(</span>name<span style="color:#000;font-weight:bold">);</span>
+		<span style="color:#000;font-weight:bold">if</span> <span style="color:#000;font-weight:bold">(</span>cache <span style="color:#000;font-weight:bold">==</span> <span style="color:#000;font-weight:bold">null</span> <span style="color:#000;font-weight:bold">&amp;&amp;</span> <span style="color:#000;font-weight:bold">this</span><span style="color:#000;font-weight:bold">.</span><span style="color:#008080">dynamic</span><span style="color:#000;font-weight:bold">)</span> <span style="color:#000;font-weight:bold">{</span>
+			<span style="color:#000;font-weight:bold">synchronized</span> <span style="color:#000;font-weight:bold">(</span><span style="color:#000;font-weight:bold">this</span><span style="color:#000;font-weight:bold">.</span><span style="color:#008080">cacheMap</span><span style="color:#000;font-weight:bold">)</span> <span style="color:#000;font-weight:bold">{</span>
+				cache <span style="color:#000;font-weight:bold">=</span> <span style="color:#000;font-weight:bold">this</span><span style="color:#000;font-weight:bold">.</span><span style="color:#008080">cacheMap</span><span style="color:#000;font-weight:bold">.</span><span style="color:#008080">get</span><span style="color:#000;font-weight:bold">(</span>name<span style="color:#000;font-weight:bold">);</span>
+				<span style="color:#000;font-weight:bold">if</span> <span style="color:#000;font-weight:bold">(</span>cache <span style="color:#000;font-weight:bold">==</span> <span style="color:#000;font-weight:bold">null</span><span style="color:#000;font-weight:bold">)</span> <span style="color:#000;font-weight:bold">{</span>
+					cache <span style="color:#000;font-weight:bold">=</span> createConcurrentMapCache<span style="color:#000;font-weight:bold">(</span>name<span style="color:#000;font-weight:bold">);</span>
+					<span style="color:#000;font-weight:bold">this</span><span style="color:#000;font-weight:bold">.</span><span style="color:#008080">cacheMap</span><span style="color:#000;font-weight:bold">.</span><span style="color:#008080">put</span><span style="color:#000;font-weight:bold">(</span>name<span style="color:#000;font-weight:bold">,</span> cache<span style="color:#000;font-weight:bold">);</span>
+				<span style="color:#000;font-weight:bold">}</span>
+			<span style="color:#000;font-weight:bold">}</span>
+		<span style="color:#000;font-weight:bold">}</span>
+		<span style="color:#000;font-weight:bold">return</span> cache<span style="color:#000;font-weight:bold">;</span>
+	<span style="color:#000;font-weight:bold">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><div class="highlight"><div style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4">
+<table style="border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">1
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">2
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">3
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">4
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">5
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">6
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#000;font-weight:bold">protected</span> Cache <span style="color:#900;font-weight:bold">createConcurrentMapCache</span><span style="color:#000;font-weight:bold">(</span>String name<span style="color:#000;font-weight:bold">)</span> <span style="color:#000;font-weight:bold">{</span>
+		SerializationDelegate actualSerialization <span style="color:#000;font-weight:bold">=</span> <span style="color:#000;font-weight:bold">(</span>isStoreByValue<span style="color:#000;font-weight:bold">()</span> <span style="color:#000;font-weight:bold">?</span> <span style="color:#000;font-weight:bold">this</span><span style="color:#000;font-weight:bold">.</span><span style="color:#008080">serialization</span> <span style="color:#000;font-weight:bold">:</span> <span style="color:#000;font-weight:bold">null</span><span style="color:#000;font-weight:bold">);</span>
+		<span style="color:#000;font-weight:bold">return</span> <span style="color:#000;font-weight:bold">new</span> ConcurrentMapCache<span style="color:#000;font-weight:bold">(</span>name<span style="color:#000;font-weight:bold">,</span> <span style="color:#000;font-weight:bold">new</span> ConcurrentHashMap<span style="color:#000;font-weight:bold">&lt;&gt;(</span>256<span style="color:#000;font-weight:bold">),</span>
+				isAllowNullValues<span style="color:#000;font-weight:bold">(),</span> actualSerialization<span style="color:#000;font-weight:bold">);</span>
+
+	<span style="color:#000;font-weight:bold">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>容器启动的时候通过 aop 的方式为标注了 cache 相关注解的方法添加切点和方法，主要的类有以下几个：<code>ProxyCachingConfiguration</code> 配置 Cache AOP 的主要配置类。<code>BeanFactoryCacheOperationSourceAdvisor</code>  即 Advisor，<code>CacheInterceptor</code> 切点方法(Advice)，<code>CacheOperationSourcePointcut</code> 切点。</p>
+<p><code>ProxyCachingConfiguration</code> 主要代码如下：</p>
+<div class="highlight"><div style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4">
+<table style="border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 1
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 2
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 3
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 4
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 5
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 6
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 7
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 8
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 9
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">10
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">11
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">12
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">13
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">14
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">15
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">16
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">17
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">18
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">19
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#3c5d5d;font-weight:bold">@Configuration</span>
+<span style="color:#3c5d5d;font-weight:bold">@Role</span><span style="color:#000;font-weight:bold">(</span>BeanDefinition<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">ROLE_INFRASTRUCTURE</span><span style="color:#000;font-weight:bold">)</span>
+<span style="color:#000;font-weight:bold">public</span> <span style="color:#000;font-weight:bold">class</span> <span style="color:#458;font-weight:bold">ProxyCachingConfiguration</span> <span style="color:#000;font-weight:bold">extends</span> AbstractCachingConfiguration <span style="color:#000;font-weight:bold">{</span>
+
+  <span style="color:#998;font-style:italic">// 为容器中添加 Advisor, 其内部包含 PointCut
+</span><span style="color:#998;font-style:italic"></span>	<span style="color:#3c5d5d;font-weight:bold">@Bean</span><span style="color:#000;font-weight:bold">(</span>name <span style="color:#000;font-weight:bold">=</span> CacheManagementConfigUtils<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">CACHE_ADVISOR_BEAN_NAME</span><span style="color:#000;font-weight:bold">)</span>
+	<span style="color:#3c5d5d;font-weight:bold">@Role</span><span style="color:#000;font-weight:bold">(</span>BeanDefinition<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">ROLE_INFRASTRUCTURE</span><span style="color:#000;font-weight:bold">)</span>
+	<span style="color:#000;font-weight:bold">public</span> BeanFactoryCacheOperationSourceAdvisor <span style="color:#900;font-weight:bold">cacheAdvisor</span><span style="color:#000;font-weight:bold">()</span> <span style="color:#000;font-weight:bold">{</span>
+		<span style="color:#998;font-style:italic">//....
+</span><span style="color:#998;font-style:italic"></span>	<span style="color:#000;font-weight:bold">}</span>
+
+  <span style="color:#998;font-style:italic">// 为容器引入 CacheInterceptor
+</span><span style="color:#998;font-style:italic"></span>	<span style="color:#3c5d5d;font-weight:bold">@Bean</span>
+	<span style="color:#3c5d5d;font-weight:bold">@Role</span><span style="color:#000;font-weight:bold">(</span>BeanDefinition<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">ROLE_INFRASTRUCTURE</span><span style="color:#000;font-weight:bold">)</span>
+	<span style="color:#000;font-weight:bold">public</span> CacheInterceptor <span style="color:#900;font-weight:bold">cacheInterceptor</span><span style="color:#000;font-weight:bold">()</span> <span style="color:#000;font-weight:bold">{</span>
+		<span style="color:#998;font-style:italic">//...
+</span><span style="color:#998;font-style:italic"></span>	<span style="color:#000;font-weight:bold">}</span>
+<span style="color:#000;font-weight:bold">}</span>
+
+</code></pre></td></tr></table>
+</div>
+</div><p>Advisor, Advice 和 PointCut 的关系可以使用下图表示，即 Advisor 包含 Advice 和 PointCut，PointCut 表明在什么地方执行方法，Advice 表示则表示在方法之前之后还是包含的方法的方式执行具体什么方法。</p>
+<p><img src="https://i.loli.net/2020/06/30/z3C5ErPK7ti4XU9.png" alt="Adivsor, Advice, PointCut"></p>
+<p><code>CacheOperationSourcePointcut</code> 比较简单，其继承了 <code>StaticMethodMatcherPointcut</code>，拿到所有标注了cache 相关注解的方法。</p>
+<p><code>CacheInterceptor</code> 也比较简单，简单的看为一个 around advice，主要方法在其父类 <code>CacheAspectSupport</code> 实现，即 <code>execute</code> 该方法会在标注了 cache 相关注解的方法调用的时候执行。</p>
+<h4 id="运行的步骤">运行的步骤</h4>
+<p>如果一个方法标注了 <code>@Cacheable </code>  注解，那么每次在执行方法之前都会去检查缓存中是否已经存在了，如果对应的 cache 不存在则会根据配置的 cache name 创建一个 cache，然后根据生成的 key 从 cache 中找对应的 item，如果存在则直接返回 cache 中的值，否则会继续执行方法然后将方法返回的结果放到 cache 中。简单的调用图如下：</p>
+<p><img src="https://i.loli.net/2020/06/30/UdPbFvSHWg4kxKB.png" alt="简单的调用流程"></p>
+<p>上图调用流程完毕之后会执行下面的代码：</p>
+<div class="highlight"><div style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4">
+<table style="border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 1
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 2
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 3
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 4
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 5
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 6
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 7
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 8
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 9
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">10
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">11
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">12
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">13
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">14
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">15
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">16
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">17
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">18
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">19
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">20
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">21
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">22
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">23
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">24
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">25
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">26
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">27
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">28
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">29
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#998;font-style:italic">// Collect puts from any @Cacheable miss, if no cached item is found
+</span><span style="color:#998;font-style:italic"></span>List<span style="color:#000;font-weight:bold">&lt;</span>CachePutRequest<span style="color:#000;font-weight:bold">&gt;</span> cachePutRequests <span style="color:#000;font-weight:bold">=</span> <span style="color:#000;font-weight:bold">new</span> LinkedList<span style="color:#000;font-weight:bold">&lt;&gt;();</span>
+<span style="color:#000;font-weight:bold">if</span> <span style="color:#000;font-weight:bold">(</span>cacheHit <span style="color:#000;font-weight:bold">==</span> <span style="color:#000;font-weight:bold">null</span><span style="color:#000;font-weight:bold">)</span> <span style="color:#000;font-weight:bold">{</span>
+  collectPutRequests<span style="color:#000;font-weight:bold">(</span>contexts<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">get</span><span style="color:#000;font-weight:bold">(</span>CacheableOperation<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">class</span><span style="color:#000;font-weight:bold">),</span>
+                     CacheOperationExpressionEvaluator<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">NO_RESULT</span><span style="color:#000;font-weight:bold">,</span> cachePutRequests<span style="color:#000;font-weight:bold">);</span>
+<span style="color:#000;font-weight:bold">}</span>
+
+Object cacheValue<span style="color:#000;font-weight:bold">;</span>
+Object returnValue<span style="color:#000;font-weight:bold">;</span>
+<span style="color:#000;font-weight:bold">if</span> <span style="color:#000;font-weight:bold">(</span>cacheHit <span style="color:#000;font-weight:bold">!=</span> <span style="color:#000;font-weight:bold">null</span> <span style="color:#000;font-weight:bold">&amp;&amp;</span> <span style="color:#000;font-weight:bold">!</span>hasCachePut<span style="color:#000;font-weight:bold">(</span>contexts<span style="color:#000;font-weight:bold">))</span> <span style="color:#000;font-weight:bold">{</span>
+  <span style="color:#998;font-style:italic">// If there are no put requests, just use the cache hit
+</span><span style="color:#998;font-style:italic"></span>  cacheValue <span style="color:#000;font-weight:bold">=</span> cacheHit<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">get</span><span style="color:#000;font-weight:bold">();</span>
+  returnValue <span style="color:#000;font-weight:bold">=</span> wrapCacheValue<span style="color:#000;font-weight:bold">(</span>method<span style="color:#000;font-weight:bold">,</span> cacheValue<span style="color:#000;font-weight:bold">);</span>
+<span style="color:#000;font-weight:bold">}</span>
+<span style="color:#000;font-weight:bold">else</span> <span style="color:#000;font-weight:bold">{</span>
+  <span style="color:#998;font-style:italic">// Invoke the method if we don&#39;t have a cache hit
+</span><span style="color:#998;font-style:italic"></span>  returnValue <span style="color:#000;font-weight:bold">=</span> invokeOperation<span style="color:#000;font-weight:bold">(</span>invoker<span style="color:#000;font-weight:bold">);</span>
+  cacheValue <span style="color:#000;font-weight:bold">=</span> unwrapReturnValue<span style="color:#000;font-weight:bold">(</span>returnValue<span style="color:#000;font-weight:bold">);</span>
+<span style="color:#000;font-weight:bold">}</span>
+<span style="color:#998;font-style:italic">// Collect any explicit @CachePuts
+</span><span style="color:#998;font-style:italic"></span>collectPutRequests<span style="color:#000;font-weight:bold">(</span>contexts<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">get</span><span style="color:#000;font-weight:bold">(</span>CachePutOperation<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">class</span><span style="color:#000;font-weight:bold">),</span> cacheValue<span style="color:#000;font-weight:bold">,</span> cachePutRequests<span style="color:#000;font-weight:bold">);</span>
+
+<span style="color:#998;font-style:italic">// Process any collected put requests, either from @CachePut or a @Cacheable miss
+</span><span style="color:#998;font-style:italic"></span><span style="color:#000;font-weight:bold">for</span> <span style="color:#000;font-weight:bold">(</span>CachePutRequest cachePutRequest <span style="color:#000;font-weight:bold">:</span> cachePutRequests<span style="color:#000;font-weight:bold">)</span> <span style="color:#000;font-weight:bold">{</span>
+  cachePutRequest<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">apply</span><span style="color:#000;font-weight:bold">(</span>cacheValue<span style="color:#000;font-weight:bold">);</span>
+<span style="color:#000;font-weight:bold">}</span>
+
+<span style="color:#998;font-style:italic">// Process any late evictions
+</span><span style="color:#998;font-style:italic"></span>processCacheEvicts<span style="color:#000;font-weight:bold">(</span>contexts<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">get</span><span style="color:#000;font-weight:bold">(</span>CacheEvictOperation<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">class</span><span style="color:#000;font-weight:bold">),</span> <span style="color:#000;font-weight:bold">false</span><span style="color:#000;font-weight:bold">,</span> cacheValue<span style="color:#000;font-weight:bold">);</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>补充一点就是生成 key 的逻辑：</p>
+<div class="highlight"><div style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4">
+<table style="border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 1
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 2
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 3
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 4
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 5
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 6
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 7
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 8
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 9
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">10
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">11
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">12
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">13
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">14
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">15
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">16
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">17
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">18
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">19
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">20
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">21
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">22
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#998;font-style:italic">// 如果定义了 SPEL 则根据 SPEL 生成，否则则直接使用 SimpleKeyGenerator
+</span><span style="color:#998;font-style:italic"></span><span style="color:#000;font-weight:bold">protected</span> Object <span style="color:#900;font-weight:bold">generateKey</span><span style="color:#000;font-weight:bold">(</span><span style="color:#3c5d5d;font-weight:bold">@Nullable</span> Object result<span style="color:#000;font-weight:bold">)</span> <span style="color:#000;font-weight:bold">{</span>
+  <span style="color:#000;font-weight:bold">if</span> <span style="color:#000;font-weight:bold">(</span>StringUtils<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">hasText</span><span style="color:#000;font-weight:bold">(</span><span style="color:#000;font-weight:bold">this</span><span style="color:#000;font-weight:bold">.</span><span style="color:#008080">metadata</span><span style="color:#000;font-weight:bold">.</span><span style="color:#008080">operation</span><span style="color:#000;font-weight:bold">.</span><span style="color:#008080">getKey</span><span style="color:#000;font-weight:bold">()))</span> <span style="color:#000;font-weight:bold">{</span>
+    EvaluationContext evaluationContext <span style="color:#000;font-weight:bold">=</span> createEvaluationContext<span style="color:#000;font-weight:bold">(</span>result<span style="color:#000;font-weight:bold">);</span>
+    <span style="color:#000;font-weight:bold">return</span> evaluator<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">key</span><span style="color:#000;font-weight:bold">(</span><span style="color:#000;font-weight:bold">this</span><span style="color:#000;font-weight:bold">.</span><span style="color:#008080">metadata</span><span style="color:#000;font-weight:bold">.</span><span style="color:#008080">operation</span><span style="color:#000;font-weight:bold">.</span><span style="color:#008080">getKey</span><span style="color:#000;font-weight:bold">(),</span> <span style="color:#000;font-weight:bold">this</span><span style="color:#000;font-weight:bold">.</span><span style="color:#008080">metadata</span><span style="color:#000;font-weight:bold">.</span><span style="color:#008080">methodKey</span><span style="color:#000;font-weight:bold">,</span> evaluationContext<span style="color:#000;font-weight:bold">);</span>
+  <span style="color:#000;font-weight:bold">}</span>
+  <span style="color:#000;font-weight:bold">return</span> <span style="color:#000;font-weight:bold">this</span><span style="color:#000;font-weight:bold">.</span><span style="color:#008080">metadata</span><span style="color:#000;font-weight:bold">.</span><span style="color:#008080">keyGenerator</span><span style="color:#000;font-weight:bold">.</span><span style="color:#008080">generate</span><span style="color:#000;font-weight:bold">(</span><span style="color:#000;font-weight:bold">this</span><span style="color:#000;font-weight:bold">.</span><span style="color:#008080">target</span><span style="color:#000;font-weight:bold">,</span> <span style="color:#000;font-weight:bold">this</span><span style="color:#000;font-weight:bold">.</span><span style="color:#008080">metadata</span><span style="color:#000;font-weight:bold">.</span><span style="color:#008080">method</span><span style="color:#000;font-weight:bold">,</span> <span style="color:#000;font-weight:bold">this</span><span style="color:#000;font-weight:bold">.</span><span style="color:#008080">args</span><span style="color:#000;font-weight:bold">);</span>
+<span style="color:#000;font-weight:bold">}</span>
+
+<span style="color:#998;font-style:italic">// 默认规则，如果没有参数则使用空 SimpleKey， 如果只有一个参数则直接使用该参数，如果有多个参数则包装成 SimpleKey
+</span><span style="color:#998;font-style:italic"></span><span style="color:#000;font-weight:bold">public</span> <span style="color:#000;font-weight:bold">static</span> Object <span style="color:#900;font-weight:bold">generateKey</span><span style="color:#000;font-weight:bold">(</span>Object<span style="color:#000;font-weight:bold">...</span> params<span style="color:#000;font-weight:bold">)</span> <span style="color:#000;font-weight:bold">{</span>
+  <span style="color:#000;font-weight:bold">if</span> <span style="color:#000;font-weight:bold">(</span>params<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">length</span> <span style="color:#000;font-weight:bold">==</span> 0<span style="color:#000;font-weight:bold">)</span> <span style="color:#000;font-weight:bold">{</span>
+    <span style="color:#000;font-weight:bold">return</span> SimpleKey<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">EMPTY</span><span style="color:#000;font-weight:bold">;</span>
+  <span style="color:#000;font-weight:bold">}</span>
+  <span style="color:#000;font-weight:bold">if</span> <span style="color:#000;font-weight:bold">(</span>params<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">length</span> <span style="color:#000;font-weight:bold">==</span> 1<span style="color:#000;font-weight:bold">)</span> <span style="color:#000;font-weight:bold">{</span>
+    Object param <span style="color:#000;font-weight:bold">=</span> params<span style="color:#000;font-weight:bold">[</span>0<span style="color:#000;font-weight:bold">];</span>
+    <span style="color:#000;font-weight:bold">if</span> <span style="color:#000;font-weight:bold">(</span>param <span style="color:#000;font-weight:bold">!=</span> <span style="color:#000;font-weight:bold">null</span> <span style="color:#000;font-weight:bold">&amp;&amp;</span> <span style="color:#000;font-weight:bold">!</span>param<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">getClass</span><span style="color:#000;font-weight:bold">().</span><span style="color:#008080">isArray</span><span style="color:#000;font-weight:bold">())</span> <span style="color:#000;font-weight:bold">{</span>
+      <span style="color:#000;font-weight:bold">return</span> param<span style="color:#000;font-weight:bold">;</span>
+    <span style="color:#000;font-weight:bold">}</span>
+  <span style="color:#000;font-weight:bold">}</span>
+  <span style="color:#000;font-weight:bold">return</span> <span style="color:#000;font-weight:bold">new</span> SimpleKey<span style="color:#000;font-weight:bold">(</span>params<span style="color:#000;font-weight:bold">);</span>
+<span style="color:#000;font-weight:bold">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>到这里缓存运行的部分就结束了。</p>
+<h3 id="cache-注解相关属性">Cache 注解相关属性</h3>
+<p>首先看一下 <code>keyGenerator</code> 配置，如果默认的 <code>SimpleKeyGenerator</code> 无法满足需求的话也可以自定义一个 <code>KeyGenerator</code>，然后通过 <code>keyGenerator</code> 配置自定义的 Key Generator 例如：</p>
+<div class="highlight"><div style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4">
+<table style="border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">1
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">2
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">3
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">4
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">5
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">6
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">7
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">8
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">9
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#3c5d5d;font-weight:bold">@Bean</span><span style="color:#000;font-weight:bold">(</span><span style="color:#d14">&#34;customizedKeyGenerator&#34;</span><span style="color:#000;font-weight:bold">)</span>
+<span style="color:#000;font-weight:bold">public</span> KeyGenerator <span style="color:#900;font-weight:bold">keyGenerator</span><span style="color:#000;font-weight:bold">()</span> <span style="color:#000;font-weight:bold">{</span>
+  <span style="color:#000;font-weight:bold">return</span> <span style="color:#000;font-weight:bold">new</span> KeyGenerator<span style="color:#000;font-weight:bold">()</span> <span style="color:#000;font-weight:bold">{</span>
+    <span style="color:#3c5d5d;font-weight:bold">@Override</span>
+    <span style="color:#000;font-weight:bold">public</span> Object <span style="color:#900;font-weight:bold">generate</span><span style="color:#000;font-weight:bold">(</span>Object target<span style="color:#000;font-weight:bold">,</span> Method method<span style="color:#000;font-weight:bold">,</span> Object<span style="color:#000;font-weight:bold">...</span> params<span style="color:#000;font-weight:bold">)</span> <span style="color:#000;font-weight:bold">{</span>
+      <span style="color:#000;font-weight:bold">return</span> method<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">getName</span><span style="color:#000;font-weight:bold">()</span> <span style="color:#000;font-weight:bold">+</span> <span style="color:#d14">&#34;::&#34;</span> <span style="color:#000;font-weight:bold">+</span> Arrays<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">asList</span><span style="color:#000;font-weight:bold">(</span>params<span style="color:#000;font-weight:bold">).</span><span style="color:#008080">toString</span><span style="color:#000;font-weight:bold">();</span>
+    <span style="color:#000;font-weight:bold">}</span>
+  <span style="color:#000;font-weight:bold">};</span>
+<span style="color:#000;font-weight:bold">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><div class="highlight"><div style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4">
+<table style="border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">1
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">2
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#3c5d5d;font-weight:bold">@Cacheable</span><span style="color:#000;font-weight:bold">(</span>cacheNames<span style="color:#000;font-weight:bold">=</span><span style="color:#d14">&#34;books&#34;</span><span style="color:#000;font-weight:bold">,</span> keyGenerator<span style="color:#000;font-weight:bold">=</span><span style="color:#d14">&#34;customizedKeyGenerator&#34;</span><span style="color:#000;font-weight:bold">)</span>
+<span style="color:#000;font-weight:bold">public</span> Book <span style="color:#900;font-weight:bold">findBook</span><span style="color:#000;font-weight:bold">(</span>ISBN isbn<span style="color:#000;font-weight:bold">,</span> <span style="color:#458;font-weight:bold">boolean</span> checkWarehouse<span style="color:#000;font-weight:bold">,</span> <span style="color:#458;font-weight:bold">boolean</span> includeUsed<span style="color:#000;font-weight:bold">)</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>然后看一下 <code>condition</code> 的配置，例如只有在名称小于 32 的时候才进行缓存。</p>
+<div class="highlight"><div style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4">
+<table style="border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">1
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">2
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#3c5d5d;font-weight:bold">@Cacheable</span><span style="color:#000;font-weight:bold">(</span>cacheNames<span style="color:#000;font-weight:bold">=</span><span style="color:#d14">&#34;book&#34;</span><span style="color:#000;font-weight:bold">,</span> condition<span style="color:#000;font-weight:bold">=</span><span style="color:#d14">&#34;#name.length() &lt; 32&#34;</span><span style="color:#000;font-weight:bold">)</span> 
+<span style="color:#000;font-weight:bold">public</span> Book <span style="color:#900;font-weight:bold">findBook</span><span style="color:#000;font-weight:bold">(</span>String name<span style="color:#000;font-weight:bold">)</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>此外为了对 condition 进行补充，Spring 还提供了 <code>unless</code> 配置，即在上述的条件满足的情况下如果也满足 <code>unless</code> 中的条件则还是进行缓存的，例如：</p>
+<div class="highlight"><div style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4">
+<table style="border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">1
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">2
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#3c5d5d;font-weight:bold">@Cacheable</span><span style="color:#000;font-weight:bold">(</span>cacheNames<span style="color:#000;font-weight:bold">=</span><span style="color:#d14">&#34;book&#34;</span><span style="color:#000;font-weight:bold">,</span> condition<span style="color:#000;font-weight:bold">=</span><span style="color:#d14">&#34;#name.length() &lt; 32&#34;</span><span style="color:#000;font-weight:bold">,</span> unless<span style="color:#000;font-weight:bold">=</span><span style="color:#d14">&#34;#result.hardback&#34;</span><span style="color:#000;font-weight:bold">)</span> 
+<span style="color:#000;font-weight:bold">public</span> Book <span style="color:#900;font-weight:bold">findBook</span><span style="color:#000;font-weight:bold">(</span>String name<span style="color:#000;font-weight:bold">)</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>当然也是支持 Optional 的，例如：</p>
+<div class="highlight"><div style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4">
+<table style="border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">1
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">2
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#3c5d5d;font-weight:bold">@Cacheable</span><span style="color:#000;font-weight:bold">(</span>cacheNames<span style="color:#000;font-weight:bold">=</span><span style="color:#d14">&#34;book&#34;</span><span style="color:#000;font-weight:bold">,</span> condition<span style="color:#000;font-weight:bold">=</span><span style="color:#d14">&#34;#name.length() &lt; 32&#34;</span><span style="color:#000;font-weight:bold">,</span> unless<span style="color:#000;font-weight:bold">=</span><span style="color:#d14">&#34;#result?.hardback&#34;</span><span style="color:#000;font-weight:bold">)</span>
+<span style="color:#000;font-weight:bold">public</span> Optional<span style="color:#000;font-weight:bold">&lt;</span>Book<span style="color:#000;font-weight:bold">&gt;</span> <span style="color:#900;font-weight:bold">findBook</span><span style="color:#000;font-weight:bold">(</span>String name<span style="color:#000;font-weight:bold">)</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>默认情况下是以异步的方式操作缓存的，针对于多线程的情况，也可以指定缓存以同步的方式进行，只需要设置 <code>sync</code> 属性即可，如果设置了该属性那么则无法使用 <code>unless</code> 属性，也不能指定多个缓存。</p>
+<div class="highlight"><div style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4">
+<table style="border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">1
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">2
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#3c5d5d;font-weight:bold">@Cacheable</span><span style="color:#000;font-weight:bold">(</span>cacheNames<span style="color:#000;font-weight:bold">=</span><span style="color:#d14">&#34;foos&#34;</span><span style="color:#000;font-weight:bold">,</span> sync<span style="color:#000;font-weight:bold">=</span><span style="color:#000;font-weight:bold">true</span><span style="color:#000;font-weight:bold">)</span> 
+<span style="color:#000;font-weight:bold">public</span> Foo <span style="color:#900;font-weight:bold">executeExpensiveOperation</span><span style="color:#000;font-weight:bold">(</span>String id<span style="color:#000;font-weight:bold">)</span> <span style="color:#000;font-weight:bold">{...}</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>针对于需要复杂的 cache 配置的情况可以使用 <code>@Caching</code> 注解，例如下面的例子</p>
+<div class="highlight"><div style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4">
+<table style="border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 1
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 2
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 3
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 4
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 5
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 6
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 7
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 8
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 9
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">10
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">11
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#3c5d5d;font-weight:bold">@Caching</span><span style="color:#000;font-weight:bold">(</span>
+  cacheable <span style="color:#000;font-weight:bold">=</span> <span style="color:#000;font-weight:bold">{</span><span style="color:#3c5d5d;font-weight:bold">@Cacheable</span><span style="color:#000;font-weight:bold">(</span>value <span style="color:#000;font-weight:bold">=</span> <span style="color:#d14">&#34;bk1&#34;</span><span style="color:#000;font-weight:bold">,</span> key <span style="color:#000;font-weight:bold">=</span> <span style="color:#d14">&#34;#id&#34;</span><span style="color:#000;font-weight:bold">)},</span>
+  put <span style="color:#000;font-weight:bold">=</span> <span style="color:#000;font-weight:bold">{</span>
+    <span style="color:#3c5d5d;font-weight:bold">@CachePut</span><span style="color:#000;font-weight:bold">(</span>value <span style="color:#000;font-weight:bold">=</span> <span style="color:#d14">&#34;bk2&#34;</span><span style="color:#000;font-weight:bold">,</span> key <span style="color:#000;font-weight:bold">=</span> <span style="color:#d14">&#34;#result.name&#34;</span><span style="color:#000;font-weight:bold">),</span>
+    <span style="color:#3c5d5d;font-weight:bold">@CachePut</span><span style="color:#000;font-weight:bold">(</span>value <span style="color:#000;font-weight:bold">=</span> <span style="color:#d14">&#34;bk2&#34;</span><span style="color:#000;font-weight:bold">,</span> key <span style="color:#000;font-weight:bold">=</span> <span style="color:#d14">&#34;#result.title&#34;</span><span style="color:#000;font-weight:bold">)</span>
+  <span style="color:#000;font-weight:bold">},</span>
+  evict <span style="color:#000;font-weight:bold">=</span> <span style="color:#000;font-weight:bold">{</span>
+    <span style="color:#3c5d5d;font-weight:bold">@CacheEvict</span><span style="color:#000;font-weight:bold">(</span>value <span style="color:#000;font-weight:bold">=</span> <span style="color:#d14">&#34;list&#34;</span><span style="color:#000;font-weight:bold">,</span> allEntries <span style="color:#000;font-weight:bold">=</span> <span style="color:#000;font-weight:bold">true</span><span style="color:#000;font-weight:bold">)</span>
+  <span style="color:#000;font-weight:bold">}</span>
+<span style="color:#000;font-weight:bold">)</span>
+<span style="color:#000;font-weight:bold">public</span> Book <span style="color:#900;font-weight:bold">updateBooking</span><span style="color:#000;font-weight:bold">(</span>String id<span style="color:#000;font-weight:bold">)</span> <span style="color:#000;font-weight:bold">{...}</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>另外如果某些定制选项应用于类的所有操作，那么配置起来可能会很麻烦。例如，为类的每个缓存操作指定要使用的缓存名称可以由单个类级别定义替换，这里可以使用 <code>@CacheConfig</code> 配置，例如一个简单的配置如下：</p>
+<div class="highlight"><div style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4">
+<table style="border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">1
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">2
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">3
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">4
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">5
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#3c5d5d;font-weight:bold">@CacheConfig</span><span style="color:#000;font-weight:bold">(</span><span style="color:#d14">&#34;books&#34;</span><span style="color:#000;font-weight:bold">)</span> 
+<span style="color:#000;font-weight:bold">public</span> <span style="color:#000;font-weight:bold">class</span> <span style="color:#458;font-weight:bold">BookRepositoryImpl</span> <span style="color:#000;font-weight:bold">implements</span> BookRepository <span style="color:#000;font-weight:bold">{</span>
+    <span style="color:#3c5d5d;font-weight:bold">@Cacheable</span>
+    <span style="color:#000;font-weight:bold">public</span> Book <span style="color:#900;font-weight:bold">findBook</span><span style="color:#000;font-weight:bold">(</span>ISBN isbn<span style="color:#000;font-weight:bold">)</span> <span style="color:#000;font-weight:bold">{...}</span>
+<span style="color:#000;font-weight:bold">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><h3 id="使用-redis-作为缓存">使用 Redis 作为缓存</h3>
+<p>如果使用 Spring Boot 则可以通过 pom 文件引入 redis 相关的依赖，例如：</p>
+<div class="highlight"><div style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4">
+<table style="border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">1
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">2
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">3
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">4
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-xml" data-lang="xml"><span style="color:#000080">&lt;dependency&gt;</span>
+  <span style="color:#000080">&lt;groupId&gt;</span>org.springframework.boot<span style="color:#000080">&lt;/groupId&gt;</span>
+  <span style="color:#000080">&lt;artifactId&gt;</span>spring-boot-starter-data-redis<span style="color:#000080">&lt;/artifactId&gt;</span>
+<span style="color:#000080">&lt;/dependency&gt;</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>简单的配置如下：</p>
+<div class="highlight"><div style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4">
+<table style="border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">1
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">2
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">3
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">4
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">5
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">6
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yaml" data-lang="yaml"><span style="color:#000;font-weight:bold">spring</span>:<span style="color:#bbb">
+</span><span style="color:#bbb">  </span><span style="color:#000;font-weight:bold">redis</span>:<span style="color:#bbb">
+</span><span style="color:#bbb">    </span><span style="color:#000;font-weight:bold">port</span>:<span style="color:#bbb"> </span><span style="color:#099">6002</span><span style="color:#bbb">
+</span><span style="color:#bbb">    </span><span style="color:#000;font-weight:bold">host</span>:<span style="color:#bbb"> </span><span style="color:#999;font-weight:bold;font-style:italic">*.*.*.*</span><span style="color:#bbb">
+</span><span style="color:#bbb">    </span><span style="color:#998;font-style:italic">#password: ***</span><span style="color:#bbb">
+</span><span style="color:#bbb">    </span><span style="color:#998;font-style:italic">#database: *</span><span style="color:#bbb">
+</span></code></pre></td></tr></table>
+</div>
+</div><p>如果引用了 Redis 相关的依赖哪儿 <code>RedisCacheConfiguration</code> 则会生效，为容器引入 <code>RedisCacheManager</code> 用于管理 Redis 的 Cache 相同的内容。当然和其他类似的依赖类似，也可以通过  去自定义 Redis 相关的内容，简单的例子如下：</p>
+<div class="highlight"><div style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4">
+<table style="border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">1
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">2
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">3
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">4
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">5
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">6
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">7
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">8
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">9
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#3c5d5d;font-weight:bold">@Bean</span>
+<span style="color:#000;font-weight:bold">public</span> RedisCacheManagerBuilderCustomizer <span style="color:#900;font-weight:bold">myRedisCacheManagerBuilderCustomizer</span><span style="color:#000;font-weight:bold">()</span> <span style="color:#000;font-weight:bold">{</span>
+  <span style="color:#000;font-weight:bold">return</span> <span style="color:#000;font-weight:bold">(</span>builder<span style="color:#000;font-weight:bold">)</span> <span style="color:#000;font-weight:bold">-&gt;</span> builder
+    <span style="color:#000;font-weight:bold">.</span><span style="color:#008080">withCacheConfiguration</span><span style="color:#000;font-weight:bold">(</span><span style="color:#d14">&#34;cache1&#34;</span><span style="color:#000;font-weight:bold">,</span>
+                            RedisCacheConfiguration<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">defaultCacheConfig</span><span style="color:#000;font-weight:bold">().</span><span style="color:#008080">entryTtl</span><span style="color:#000;font-weight:bold">(</span>Duration<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">ofSeconds</span><span style="color:#000;font-weight:bold">(</span>10<span style="color:#000;font-weight:bold">)))</span>
+    <span style="color:#000;font-weight:bold">.</span><span style="color:#008080">withCacheConfiguration</span><span style="color:#000;font-weight:bold">(</span><span style="color:#d14">&#34;cache2&#34;</span><span style="color:#000;font-weight:bold">,</span>
+                            RedisCacheConfiguration<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">defaultCacheConfig</span><span style="color:#000;font-weight:bold">().</span><span style="color:#008080">entryTtl</span><span style="color:#000;font-weight:bold">(</span>Duration<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">ofMinutes</span><span style="color:#000;font-weight:bold">(</span>1<span style="color:#000;font-weight:bold">)));</span>
+
+<span style="color:#000;font-weight:bold">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>配置了以上的内容之后在此使用到缓存的时候就会自动使用 redis 作为缓存了。</p>
+<p>在新版本的 Spring boot 中默认使用 <code>Lettuce</code> 作为默认的  Redis Client</p>
+<pre><code class="language-log" data-lang="log">LettuceConnectionConfiguration#redisConnectionFactory matched:
+      - @ConditionalOnMissingBean (types: org.springframework.data.redis.connection.RedisConnectionFactory; SearchStrategy: all) did not find any beans (OnBeanCondition)
+</code></pre><h4 id="redis-自动配置过程">Redis 自动配置过程</h4>
+<p>首先看一下 <code>RedisAutoConfiguration</code> 这个配置类，在引入了 Redis 相关的依赖的时候才会起作用，其为容器中引入了两份 Config 和两个 Bean，Config 分别是 <code>LettuceConnectionConfiguration</code> 和 <code>JedisConnectionConfiguration</code> 即两个 Redis Client 的客户端配置，两个 Bean 是操作 Redis 的 Template 是对 Redis 操作的封装（PS: 感觉 Spring 提供了各种各样的 Template）。</p>
+<div class="highlight"><div style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4">
+<table style="border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 1
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 2
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 3
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 4
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 5
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 6
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 7
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 8
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 9
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">10
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">11
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">12
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">13
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">14
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">15
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">16
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">17
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">18
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">19
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">20
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">21
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">22
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">23
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">24
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">25
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">26
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#3c5d5d;font-weight:bold">@Configuration</span><span style="color:#000;font-weight:bold">(</span>proxyBeanMethods <span style="color:#000;font-weight:bold">=</span> <span style="color:#000;font-weight:bold">false</span><span style="color:#000;font-weight:bold">)</span>
+<span style="color:#3c5d5d;font-weight:bold">@ConditionalOnClass</span><span style="color:#000;font-weight:bold">(</span>RedisOperations<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">class</span><span style="color:#000;font-weight:bold">)</span>
+<span style="color:#3c5d5d;font-weight:bold">@EnableConfigurationProperties</span><span style="color:#000;font-weight:bold">(</span>RedisProperties<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">class</span><span style="color:#000;font-weight:bold">)</span>
+<span style="color:#3c5d5d;font-weight:bold">@Import</span><span style="color:#000;font-weight:bold">({</span> LettuceConnectionConfiguration<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">class</span><span style="color:#000;font-weight:bold">,</span> JedisConnectionConfiguration<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">class</span> <span style="color:#000;font-weight:bold">})</span>
+<span style="color:#000;font-weight:bold">public</span> <span style="color:#000;font-weight:bold">class</span> <span style="color:#458;font-weight:bold">RedisAutoConfiguration</span> <span style="color:#000;font-weight:bold">{</span>
+
+	<span style="color:#3c5d5d;font-weight:bold">@Bean</span>
+	<span style="color:#3c5d5d;font-weight:bold">@ConditionalOnMissingBean</span><span style="color:#000;font-weight:bold">(</span>name <span style="color:#000;font-weight:bold">=</span> <span style="color:#d14">&#34;redisTemplate&#34;</span><span style="color:#000;font-weight:bold">)</span>
+	<span style="color:#000;font-weight:bold">public</span> RedisTemplate<span style="color:#000;font-weight:bold">&lt;</span>Object<span style="color:#000;font-weight:bold">,</span> Object<span style="color:#000;font-weight:bold">&gt;</span> <span style="color:#900;font-weight:bold">redisTemplate</span><span style="color:#000;font-weight:bold">(</span>RedisConnectionFactory redisConnectionFactory<span style="color:#000;font-weight:bold">)</span>
+			<span style="color:#000;font-weight:bold">throws</span> UnknownHostException <span style="color:#000;font-weight:bold">{</span>
+		RedisTemplate<span style="color:#000;font-weight:bold">&lt;</span>Object<span style="color:#000;font-weight:bold">,</span> Object<span style="color:#000;font-weight:bold">&gt;</span> template <span style="color:#000;font-weight:bold">=</span> <span style="color:#000;font-weight:bold">new</span> RedisTemplate<span style="color:#000;font-weight:bold">&lt;&gt;();</span>
+		template<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">setConnectionFactory</span><span style="color:#000;font-weight:bold">(</span>redisConnectionFactory<span style="color:#000;font-weight:bold">);</span>
+		<span style="color:#000;font-weight:bold">return</span> template<span style="color:#000;font-weight:bold">;</span>
+	<span style="color:#000;font-weight:bold">}</span>
+
+	<span style="color:#3c5d5d;font-weight:bold">@Bean</span>
+	<span style="color:#3c5d5d;font-weight:bold">@ConditionalOnMissingBean</span>
+	<span style="color:#000;font-weight:bold">public</span> StringRedisTemplate <span style="color:#900;font-weight:bold">stringRedisTemplate</span><span style="color:#000;font-weight:bold">(</span>RedisConnectionFactory redisConnectionFactory<span style="color:#000;font-weight:bold">)</span>
+			<span style="color:#000;font-weight:bold">throws</span> UnknownHostException <span style="color:#000;font-weight:bold">{</span>
+		StringRedisTemplate template <span style="color:#000;font-weight:bold">=</span> <span style="color:#000;font-weight:bold">new</span> StringRedisTemplate<span style="color:#000;font-weight:bold">();</span>
+		template<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">setConnectionFactory</span><span style="color:#000;font-weight:bold">(</span>redisConnectionFactory<span style="color:#000;font-weight:bold">);</span>
+		<span style="color:#000;font-weight:bold">return</span> template<span style="color:#000;font-weight:bold">;</span>
+	<span style="color:#000;font-weight:bold">}</span>
+
+<span style="color:#000;font-weight:bold">}</span>
+
+</code></pre></td></tr></table>
+</div>
+</div><p>然后看一下 <code>LettuceConnectionConfiguration</code> Spring Boot 默认是使用这一份配置，其主要为容器引入了 <code>LettuceConnectionFactory</code> 实现 <code>RedisConnectionFactory </code>接口。</p>
+<div class="highlight"><div style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4">
+<table style="border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 1
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 2
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 3
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 4
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 5
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 6
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 7
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 8
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 9
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">10
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">11
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">12
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">13
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">14
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">15
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">16
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">17
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">18
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">19
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">20
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">21
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">22
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">23
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">24
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">25
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">26
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">27
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#3c5d5d;font-weight:bold">@Configuration</span><span style="color:#000;font-weight:bold">(</span>proxyBeanMethods <span style="color:#000;font-weight:bold">=</span> <span style="color:#000;font-weight:bold">false</span><span style="color:#000;font-weight:bold">)</span>
+<span style="color:#3c5d5d;font-weight:bold">@ConditionalOnClass</span><span style="color:#000;font-weight:bold">(</span>RedisClient<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">class</span><span style="color:#000;font-weight:bold">)</span>
+<span style="color:#000;font-weight:bold">class</span> <span style="color:#458;font-weight:bold">LettuceConnectionConfiguration</span> <span style="color:#000;font-weight:bold">extends</span> RedisConnectionConfiguration <span style="color:#000;font-weight:bold">{</span>
+
+	LettuceConnectionConfiguration<span style="color:#000;font-weight:bold">(</span>RedisProperties properties<span style="color:#000;font-weight:bold">,</span>
+			ObjectProvider<span style="color:#000;font-weight:bold">&lt;</span>RedisSentinelConfiguration<span style="color:#000;font-weight:bold">&gt;</span> sentinelConfigurationProvider<span style="color:#000;font-weight:bold">,</span>
+			ObjectProvider<span style="color:#000;font-weight:bold">&lt;</span>RedisClusterConfiguration<span style="color:#000;font-weight:bold">&gt;</span> clusterConfigurationProvider<span style="color:#000;font-weight:bold">)</span> <span style="color:#000;font-weight:bold">{</span>
+		<span style="color:#000;font-weight:bold">super</span><span style="color:#000;font-weight:bold">(</span>properties<span style="color:#000;font-weight:bold">,</span> sentinelConfigurationProvider<span style="color:#000;font-weight:bold">,</span> clusterConfigurationProvider<span style="color:#000;font-weight:bold">);</span>
+	<span style="color:#000;font-weight:bold">}</span>
+
+	<span style="color:#3c5d5d;font-weight:bold">@Bean</span><span style="color:#000;font-weight:bold">(</span>destroyMethod <span style="color:#000;font-weight:bold">=</span> <span style="color:#d14">&#34;shutdown&#34;</span><span style="color:#000;font-weight:bold">)</span>
+	<span style="color:#3c5d5d;font-weight:bold">@ConditionalOnMissingBean</span><span style="color:#000;font-weight:bold">(</span>ClientResources<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">class</span><span style="color:#000;font-weight:bold">)</span>
+	DefaultClientResources <span style="color:#900;font-weight:bold">lettuceClientResources</span><span style="color:#000;font-weight:bold">()</span> <span style="color:#000;font-weight:bold">{</span>
+		<span style="color:#000;font-weight:bold">return</span> DefaultClientResources<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">create</span><span style="color:#000;font-weight:bold">();</span>
+	<span style="color:#000;font-weight:bold">}</span>
+
+	<span style="color:#3c5d5d;font-weight:bold">@Bean</span>
+	<span style="color:#3c5d5d;font-weight:bold">@ConditionalOnMissingBean</span><span style="color:#000;font-weight:bold">(</span>RedisConnectionFactory<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">class</span><span style="color:#000;font-weight:bold">)</span>
+	LettuceConnectionFactory <span style="color:#900;font-weight:bold">redisConnectionFactory</span><span style="color:#000;font-weight:bold">(</span>
+			ObjectProvider<span style="color:#000;font-weight:bold">&lt;</span>LettuceClientConfigurationBuilderCustomizer<span style="color:#000;font-weight:bold">&gt;</span> builderCustomizers<span style="color:#000;font-weight:bold">,</span>
+			ClientResources clientResources<span style="color:#000;font-weight:bold">)</span> <span style="color:#000;font-weight:bold">throws</span> UnknownHostException <span style="color:#000;font-weight:bold">{</span>
+		LettuceClientConfiguration clientConfig <span style="color:#000;font-weight:bold">=</span> getLettuceClientConfiguration<span style="color:#000;font-weight:bold">(</span>builderCustomizers<span style="color:#000;font-weight:bold">,</span> clientResources<span style="color:#000;font-weight:bold">,</span>
+				getProperties<span style="color:#000;font-weight:bold">().</span><span style="color:#008080">getLettuce</span><span style="color:#000;font-weight:bold">().</span><span style="color:#008080">getPool</span><span style="color:#000;font-weight:bold">());</span>
+		<span style="color:#000;font-weight:bold">return</span> createLettuceConnectionFactory<span style="color:#000;font-weight:bold">(</span>clientConfig<span style="color:#000;font-weight:bold">);</span>
+	<span style="color:#000;font-weight:bold">}</span>
+	<span style="color:#998;font-style:italic">// 	...
+</span><span style="color:#998;font-style:italic"></span><span style="color:#000;font-weight:bold">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>然后看一下 Redis Cache 相关的配置, 主要是 <code>RedisCacheConfiguration</code> 配置类，其在 <code>RedisConnectionFactory</code> 存在的情况下才会起作用，所以需要引入 Redis 相关的依赖的，<code>RedisAutoConfiguration</code> 起作用后才会生效。其主要为容器引入了 <code>RedisCacheManager</code> 用于管理 Cache。</p>
+<div class="highlight"><div style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4">
+<table style="border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 1
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 2
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 3
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 4
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 5
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 6
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 7
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 8
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 9
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">10
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">11
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">12
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">13
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">14
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">15
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">16
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">17
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">18
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">19
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">20
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">21
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">22
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">23
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">24
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">25
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#3c5d5d;font-weight:bold">@Configuration</span><span style="color:#000;font-weight:bold">(</span>proxyBeanMethods <span style="color:#000;font-weight:bold">=</span> <span style="color:#000;font-weight:bold">false</span><span style="color:#000;font-weight:bold">)</span>
+<span style="color:#3c5d5d;font-weight:bold">@ConditionalOnClass</span><span style="color:#000;font-weight:bold">(</span>RedisConnectionFactory<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">class</span><span style="color:#000;font-weight:bold">)</span>
+<span style="color:#3c5d5d;font-weight:bold">@AutoConfigureAfter</span><span style="color:#000;font-weight:bold">(</span>RedisAutoConfiguration<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">class</span><span style="color:#000;font-weight:bold">)</span>
+<span style="color:#3c5d5d;font-weight:bold">@ConditionalOnBean</span><span style="color:#000;font-weight:bold">(</span>RedisConnectionFactory<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">class</span><span style="color:#000;font-weight:bold">)</span>
+<span style="color:#3c5d5d;font-weight:bold">@ConditionalOnMissingBean</span><span style="color:#000;font-weight:bold">(</span>CacheManager<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">class</span><span style="color:#000;font-weight:bold">)</span>
+<span style="color:#3c5d5d;font-weight:bold">@Conditional</span><span style="color:#000;font-weight:bold">(</span>CacheCondition<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">class</span><span style="color:#000;font-weight:bold">)</span>
+<span style="color:#000;font-weight:bold">class</span> <span style="color:#458;font-weight:bold">RedisCacheConfiguration</span> <span style="color:#000;font-weight:bold">{</span>
+
+	<span style="color:#3c5d5d;font-weight:bold">@Bean</span>
+	RedisCacheManager <span style="color:#900;font-weight:bold">cacheManager</span><span style="color:#000;font-weight:bold">(</span>CacheProperties cacheProperties<span style="color:#000;font-weight:bold">,</span> CacheManagerCustomizers cacheManagerCustomizers<span style="color:#000;font-weight:bold">,</span>
+			ObjectProvider<span style="color:#000;font-weight:bold">&lt;</span>org<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">springframework</span><span style="color:#000;font-weight:bold">.</span><span style="color:#008080">data</span><span style="color:#000;font-weight:bold">.</span><span style="color:#008080">redis</span><span style="color:#000;font-weight:bold">.</span><span style="color:#008080">cache</span><span style="color:#000;font-weight:bold">.</span><span style="color:#008080">RedisCacheConfiguration</span><span style="color:#000;font-weight:bold">&gt;</span> redisCacheConfiguration<span style="color:#000;font-weight:bold">,</span>
+			ObjectProvider<span style="color:#000;font-weight:bold">&lt;</span>RedisCacheManagerBuilderCustomizer<span style="color:#000;font-weight:bold">&gt;</span> redisCacheManagerBuilderCustomizers<span style="color:#000;font-weight:bold">,</span>
+			RedisConnectionFactory redisConnectionFactory<span style="color:#000;font-weight:bold">,</span> ResourceLoader resourceLoader<span style="color:#000;font-weight:bold">)</span> <span style="color:#000;font-weight:bold">{</span>
+		RedisCacheManagerBuilder builder <span style="color:#000;font-weight:bold">=</span> RedisCacheManager<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">builder</span><span style="color:#000;font-weight:bold">(</span>redisConnectionFactory<span style="color:#000;font-weight:bold">).</span><span style="color:#008080">cacheDefaults</span><span style="color:#000;font-weight:bold">(</span>
+				determineConfiguration<span style="color:#000;font-weight:bold">(</span>cacheProperties<span style="color:#000;font-weight:bold">,</span> redisCacheConfiguration<span style="color:#000;font-weight:bold">,</span> resourceLoader<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">getClassLoader</span><span style="color:#000;font-weight:bold">()));</span>
+		List<span style="color:#000;font-weight:bold">&lt;</span>String<span style="color:#000;font-weight:bold">&gt;</span> cacheNames <span style="color:#000;font-weight:bold">=</span> cacheProperties<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">getCacheNames</span><span style="color:#000;font-weight:bold">();</span>
+		<span style="color:#000;font-weight:bold">if</span> <span style="color:#000;font-weight:bold">(!</span>cacheNames<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">isEmpty</span><span style="color:#000;font-weight:bold">())</span> <span style="color:#000;font-weight:bold">{</span>
+			builder<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">initialCacheNames</span><span style="color:#000;font-weight:bold">(</span><span style="color:#000;font-weight:bold">new</span> LinkedHashSet<span style="color:#000;font-weight:bold">&lt;&gt;(</span>cacheNames<span style="color:#000;font-weight:bold">));</span>
+		<span style="color:#000;font-weight:bold">}</span>
+		redisCacheManagerBuilderCustomizers<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">orderedStream</span><span style="color:#000;font-weight:bold">().</span><span style="color:#008080">forEach</span><span style="color:#000;font-weight:bold">((</span>customizer<span style="color:#000;font-weight:bold">)</span> <span style="color:#000;font-weight:bold">-&gt;</span> customizer<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">customize</span><span style="color:#000;font-weight:bold">(</span>builder<span style="color:#000;font-weight:bold">));</span>
+		<span style="color:#000;font-weight:bold">return</span> cacheManagerCustomizers<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">customize</span><span style="color:#000;font-weight:bold">(</span>builder<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">build</span><span style="color:#000;font-weight:bold">());</span>
+	<span style="color:#000;font-weight:bold">}</span>
+	<span style="color:#998;font-style:italic">//...
+</span><span style="color:#998;font-style:italic"></span><span style="color:#000;font-weight:bold">}</span>
+
+</code></pre></td></tr></table>
+</div>
+</div><p>有了 <code>RedisCacheManger</code>, 即可以通过其获取 <code>RedisCache</code> ，<code>RedisCache</code> 会根据缓存的操作处理 Redis 中的数据。对于 Redis 来说获取 Cache 和 从 Cache 中获取具体的 Item 流程如下，对于 <code>getCache</code> 来说会使用 <code>AbstractCacheManager</code> 中的 <code>getCache</code> 方法。</p>
+<div class="highlight"><div style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4">
+<table style="border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 1
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 2
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 3
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 4
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 5
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 6
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 7
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 8
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 9
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">10
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">11
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">12
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">13
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">14
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">15
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">16
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">17
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">18
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">19
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">20
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">21
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">22
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#000;font-weight:bold">public</span> Cache <span style="color:#900;font-weight:bold">getCache</span><span style="color:#000;font-weight:bold">(</span>String name<span style="color:#000;font-weight:bold">)</span> <span style="color:#000;font-weight:bold">{</span>
+  <span style="color:#998;font-style:italic">// Quick check for existing cache...
+</span><span style="color:#998;font-style:italic"></span>  Cache cache <span style="color:#000;font-weight:bold">=</span> <span style="color:#000;font-weight:bold">this</span><span style="color:#000;font-weight:bold">.</span><span style="color:#008080">cacheMap</span><span style="color:#000;font-weight:bold">.</span><span style="color:#008080">get</span><span style="color:#000;font-weight:bold">(</span>name<span style="color:#000;font-weight:bold">);</span>
+  <span style="color:#000;font-weight:bold">if</span> <span style="color:#000;font-weight:bold">(</span>cache <span style="color:#000;font-weight:bold">!=</span> <span style="color:#000;font-weight:bold">null</span><span style="color:#000;font-weight:bold">)</span> <span style="color:#000;font-weight:bold">{</span>
+    <span style="color:#000;font-weight:bold">return</span> cache<span style="color:#000;font-weight:bold">;</span>
+  <span style="color:#000;font-weight:bold">}</span>
+
+  <span style="color:#998;font-style:italic">// The provider may support on-demand cache creation...
+</span><span style="color:#998;font-style:italic"></span>  Cache missingCache <span style="color:#000;font-weight:bold">=</span> getMissingCache<span style="color:#000;font-weight:bold">(</span>name<span style="color:#000;font-weight:bold">);</span>
+  <span style="color:#000;font-weight:bold">if</span> <span style="color:#000;font-weight:bold">(</span>missingCache <span style="color:#000;font-weight:bold">!=</span> <span style="color:#000;font-weight:bold">null</span><span style="color:#000;font-weight:bold">)</span> <span style="color:#000;font-weight:bold">{</span>
+    <span style="color:#998;font-style:italic">// Fully synchronize now for missing cache registration
+</span><span style="color:#998;font-style:italic"></span>    <span style="color:#000;font-weight:bold">synchronized</span> <span style="color:#000;font-weight:bold">(</span><span style="color:#000;font-weight:bold">this</span><span style="color:#000;font-weight:bold">.</span><span style="color:#008080">cacheMap</span><span style="color:#000;font-weight:bold">)</span> <span style="color:#000;font-weight:bold">{</span>
+      cache <span style="color:#000;font-weight:bold">=</span> <span style="color:#000;font-weight:bold">this</span><span style="color:#000;font-weight:bold">.</span><span style="color:#008080">cacheMap</span><span style="color:#000;font-weight:bold">.</span><span style="color:#008080">get</span><span style="color:#000;font-weight:bold">(</span>name<span style="color:#000;font-weight:bold">);</span>
+      <span style="color:#000;font-weight:bold">if</span> <span style="color:#000;font-weight:bold">(</span>cache <span style="color:#000;font-weight:bold">==</span> <span style="color:#000;font-weight:bold">null</span><span style="color:#000;font-weight:bold">)</span> <span style="color:#000;font-weight:bold">{</span>
+        cache <span style="color:#000;font-weight:bold">=</span> decorateCache<span style="color:#000;font-weight:bold">(</span>missingCache<span style="color:#000;font-weight:bold">);</span>
+        <span style="color:#000;font-weight:bold">this</span><span style="color:#000;font-weight:bold">.</span><span style="color:#008080">cacheMap</span><span style="color:#000;font-weight:bold">.</span><span style="color:#008080">put</span><span style="color:#000;font-weight:bold">(</span>name<span style="color:#000;font-weight:bold">,</span> cache<span style="color:#000;font-weight:bold">);</span>
+        updateCacheNames<span style="color:#000;font-weight:bold">(</span>name<span style="color:#000;font-weight:bold">);</span>
+      <span style="color:#000;font-weight:bold">}</span>
+    <span style="color:#000;font-weight:bold">}</span>
+  <span style="color:#000;font-weight:bold">}</span>
+  <span style="color:#000;font-weight:bold">return</span> cache<span style="color:#000;font-weight:bold">;</span>
+<span style="color:#000;font-weight:bold">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>如果没有 cache 则会通过 <code>getMissingCache</code> 生成一个 Cache, <code>RedisCacheManger</code> 中的实现如下：</p>
+<div class="highlight"><div style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4">
+<table style="border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">1
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">2
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">3
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">4
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">5
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">6
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#000;font-weight:bold">protected</span> RedisCache <span style="color:#900;font-weight:bold">getMissingCache</span><span style="color:#000;font-weight:bold">(</span>String name<span style="color:#000;font-weight:bold">)</span> <span style="color:#000;font-weight:bold">{</span>
+  <span style="color:#000;font-weight:bold">return</span> allowInFlightCacheCreation <span style="color:#000;font-weight:bold">?</span> createRedisCache<span style="color:#000;font-weight:bold">(</span>name<span style="color:#000;font-weight:bold">,</span> defaultCacheConfig<span style="color:#000;font-weight:bold">)</span> <span style="color:#000;font-weight:bold">:</span> <span style="color:#000;font-weight:bold">null</span><span style="color:#000;font-weight:bold">;</span>
+<span style="color:#000;font-weight:bold">}</span>
+<span style="color:#000;font-weight:bold">protected</span> RedisCache <span style="color:#900;font-weight:bold">createRedisCache</span><span style="color:#000;font-weight:bold">(</span>String name<span style="color:#000;font-weight:bold">,</span> <span style="color:#3c5d5d;font-weight:bold">@Nullable</span> RedisCacheConfiguration cacheConfig<span style="color:#000;font-weight:bold">)</span> <span style="color:#000;font-weight:bold">{</span>
+  <span style="color:#000;font-weight:bold">return</span> <span style="color:#000;font-weight:bold">new</span> RedisCache<span style="color:#000;font-weight:bold">(</span>name<span style="color:#000;font-weight:bold">,</span> cacheWriter<span style="color:#000;font-weight:bold">,</span> cacheConfig <span style="color:#000;font-weight:bold">!=</span> <span style="color:#000;font-weight:bold">null</span> <span style="color:#000;font-weight:bold">?</span> cacheConfig <span style="color:#000;font-weight:bold">:</span> defaultCacheConfig<span style="color:#000;font-weight:bold">);</span>
+<span style="color:#000;font-weight:bold">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>在引入 <code>RedisCacheManger</code> 的时候就已经引入一份 默认的 cache 配置。而从 Cache 中查找缓存条目则在 <code>RedisCache</code> 中通过 <code>RedisCacheWriter</code> 去操作 Redis 数据库。</p>
+<div class="highlight"><div style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4">
+<table style="border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">1
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">2
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">3
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">4
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">5
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">6
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">7
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#000;font-weight:bold">protected</span> Object <span style="color:#900;font-weight:bold">lookup</span><span style="color:#000;font-weight:bold">(</span>Object key<span style="color:#000;font-weight:bold">)</span> <span style="color:#000;font-weight:bold">{</span>
+  <span style="color:#458;font-weight:bold">byte</span><span style="color:#000;font-weight:bold">[]</span> value <span style="color:#000;font-weight:bold">=</span> cacheWriter<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">get</span><span style="color:#000;font-weight:bold">(</span>name<span style="color:#000;font-weight:bold">,</span> createAndConvertCacheKey<span style="color:#000;font-weight:bold">(</span>key<span style="color:#000;font-weight:bold">));</span>
+  <span style="color:#000;font-weight:bold">if</span> <span style="color:#000;font-weight:bold">(</span>value <span style="color:#000;font-weight:bold">==</span> <span style="color:#000;font-weight:bold">null</span><span style="color:#000;font-weight:bold">)</span> <span style="color:#000;font-weight:bold">{</span>
+    <span style="color:#000;font-weight:bold">return</span> <span style="color:#000;font-weight:bold">null</span><span style="color:#000;font-weight:bold">;</span>
+  <span style="color:#000;font-weight:bold">}</span>
+  <span style="color:#000;font-weight:bold">return</span> deserializeCacheValue<span style="color:#000;font-weight:bold">(</span>value<span style="color:#000;font-weight:bold">);</span>
+<span style="color:#000;font-weight:bold">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><h4 id="redis-序列化机制">Redis 序列化机制</h4>
+<p>上面也提到了 Redis Auto Config 会为容器中引入两个 Template 分别是： <code>RedisTemplate</code> 和 <code>StringRedisTemplate</code> 。前者操作的是都是对象，后者则是操作 String。对于 <code>RedisTemplate</code> 来说默认使用的 JDK 序列化方式。</p>
+<div class="highlight"><div style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4">
+<table style="border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">1
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">2
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">3
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">4
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#000;font-weight:bold">if</span> <span style="color:#000;font-weight:bold">(</span>defaultSerializer <span style="color:#000;font-weight:bold">==</span> <span style="color:#000;font-weight:bold">null</span><span style="color:#000;font-weight:bold">)</span> <span style="color:#000;font-weight:bold">{</span>
+  defaultSerializer <span style="color:#000;font-weight:bold">=</span> <span style="color:#000;font-weight:bold">new</span> JdkSerializationRedisSerializer<span style="color:#000;font-weight:bold">(</span>
+    classLoader <span style="color:#000;font-weight:bold">!=</span> <span style="color:#000;font-weight:bold">null</span> <span style="color:#000;font-weight:bold">?</span> classLoader <span style="color:#000;font-weight:bold">:</span> <span style="color:#000;font-weight:bold">this</span><span style="color:#000;font-weight:bold">.</span><span style="color:#008080">getClass</span><span style="color:#000;font-weight:bold">().</span><span style="color:#008080">getClassLoader</span><span style="color:#000;font-weight:bold">());</span>
+<span style="color:#000;font-weight:bold">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>可以替换 JSON 的序列化方式：</p>
+<div class="highlight"><div style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4">
+<table style="border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">1
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">2
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">3
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">4
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">5
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">6
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">7
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#3c5d5d;font-weight:bold">@Bean</span>
+<span style="color:#000;font-weight:bold">public</span> RedisTemplate<span style="color:#000;font-weight:bold">&lt;</span>Object<span style="color:#000;font-weight:bold">,</span> Object<span style="color:#000;font-weight:bold">&gt;</span> <span style="color:#900;font-weight:bold">redisTemplate</span><span style="color:#000;font-weight:bold">(</span>RedisConnectionFactory redisConnectionFactory<span style="color:#000;font-weight:bold">)</span> <span style="color:#000;font-weight:bold">{</span>
+  RedisTemplate<span style="color:#000;font-weight:bold">&lt;</span>Object<span style="color:#000;font-weight:bold">,</span> Object<span style="color:#000;font-weight:bold">&gt;</span> template <span style="color:#000;font-weight:bold">=</span> <span style="color:#000;font-weight:bold">new</span> RedisTemplate<span style="color:#000;font-weight:bold">&lt;&gt;();</span>
+  template<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">setConnectionFactory</span><span style="color:#000;font-weight:bold">(</span>redisConnectionFactory<span style="color:#000;font-weight:bold">);</span>
+  template<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">setDefaultSerializer</span><span style="color:#000;font-weight:bold">(</span><span style="color:#000;font-weight:bold">new</span> GenericJackson2JsonRedisSerializer<span style="color:#000;font-weight:bold">(</span><span style="color:#000;font-weight:bold">new</span> ObjectMapper<span style="color:#000;font-weight:bold">()));</span>
+  <span style="color:#000;font-weight:bold">return</span> template<span style="color:#000;font-weight:bold">;</span>
+<span style="color:#000;font-weight:bold">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><h4 id="自定义-cachemanager">自定义 <code>CacheManager</code></h4>
+<p>首先看一下默认的 <code>cacheManager</code> 的实现如下, 默认使用的是 JDK 的序列化机制，如果要替换成 JSON 的序列化方式可以通过自定义一个 CacheManager 的方式。</p>
+<div class="highlight"><div style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4">
+<table style="border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 1
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 2
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 3
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 4
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 5
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 6
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 7
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 8
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 9
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">10
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">11
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">12
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">13
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">14
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">15
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">16
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">17
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">18
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">19
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">20
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">21
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">22
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">23
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">24
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">25
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">26
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">27
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">28
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">29
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">30
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">31
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">32
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#3c5d5d;font-weight:bold">@Bean</span>
+RedisCacheManager <span style="color:#900;font-weight:bold">cacheManager</span><span style="color:#000;font-weight:bold">(</span>CacheProperties cacheProperties<span style="color:#000;font-weight:bold">,</span> CacheManagerCustomizers cacheManagerCustomizers<span style="color:#000;font-weight:bold">,</span>
+                               ObjectProvider<span style="color:#000;font-weight:bold">&lt;</span>org<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">springframework</span><span style="color:#000;font-weight:bold">.</span><span style="color:#008080">data</span><span style="color:#000;font-weight:bold">.</span><span style="color:#008080">redis</span><span style="color:#000;font-weight:bold">.</span><span style="color:#008080">cache</span><span style="color:#000;font-weight:bold">.</span><span style="color:#008080">RedisCacheConfiguration</span><span style="color:#000;font-weight:bold">&gt;</span> redisCacheConfiguration<span style="color:#000;font-weight:bold">,</span>
+                               ObjectProvider<span style="color:#000;font-weight:bold">&lt;</span>RedisCacheManagerBuilderCustomizer<span style="color:#000;font-weight:bold">&gt;</span> redisCacheManagerBuilderCustomizers<span style="color:#000;font-weight:bold">,</span>
+                               RedisConnectionFactory redisConnectionFactory<span style="color:#000;font-weight:bold">,</span> ResourceLoader resourceLoader<span style="color:#000;font-weight:bold">)</span> <span style="color:#000;font-weight:bold">{</span>
+  RedisCacheManagerBuilder builder <span style="color:#000;font-weight:bold">=</span> RedisCacheManager<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">builder</span><span style="color:#000;font-weight:bold">(</span>redisConnectionFactory<span style="color:#000;font-weight:bold">).</span><span style="color:#008080">cacheDefaults</span><span style="color:#000;font-weight:bold">(</span>
+    determineConfiguration<span style="color:#000;font-weight:bold">(</span>cacheProperties<span style="color:#000;font-weight:bold">,</span> redisCacheConfiguration<span style="color:#000;font-weight:bold">,</span> resourceLoader<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">getClassLoader</span><span style="color:#000;font-weight:bold">()));</span>
+  List<span style="color:#000;font-weight:bold">&lt;</span>String<span style="color:#000;font-weight:bold">&gt;</span> cacheNames <span style="color:#000;font-weight:bold">=</span> cacheProperties<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">getCacheNames</span><span style="color:#000;font-weight:bold">();</span>
+  <span style="color:#000;font-weight:bold">if</span> <span style="color:#000;font-weight:bold">(!</span>cacheNames<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">isEmpty</span><span style="color:#000;font-weight:bold">())</span> <span style="color:#000;font-weight:bold">{</span>
+    builder<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">initialCacheNames</span><span style="color:#000;font-weight:bold">(</span><span style="color:#000;font-weight:bold">new</span> LinkedHashSet<span style="color:#000;font-weight:bold">&lt;&gt;(</span>cacheNames<span style="color:#000;font-weight:bold">));</span>
+  <span style="color:#000;font-weight:bold">}</span>
+  redisCacheManagerBuilderCustomizers<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">orderedStream</span><span style="color:#000;font-weight:bold">().</span><span style="color:#008080">forEach</span><span style="color:#000;font-weight:bold">((</span>customizer<span style="color:#000;font-weight:bold">)</span> <span style="color:#000;font-weight:bold">-&gt;</span> customizer<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">customize</span><span style="color:#000;font-weight:bold">(</span>builder<span style="color:#000;font-weight:bold">));</span>
+  <span style="color:#000;font-weight:bold">return</span> cacheManagerCustomizers<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">customize</span><span style="color:#000;font-weight:bold">(</span>builder<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">build</span><span style="color:#000;font-weight:bold">());</span>
+<span style="color:#000;font-weight:bold">}</span>
+
+<span style="color:#000;font-weight:bold">private</span> org<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">springframework</span><span style="color:#000;font-weight:bold">.</span><span style="color:#008080">data</span><span style="color:#000;font-weight:bold">.</span><span style="color:#008080">redis</span><span style="color:#000;font-weight:bold">.</span><span style="color:#008080">cache</span><span style="color:#000;font-weight:bold">.</span><span style="color:#008080">RedisCacheConfiguration</span> <span style="color:#900;font-weight:bold">determineConfiguration</span><span style="color:#000;font-weight:bold">(</span>
+  CacheProperties cacheProperties<span style="color:#000;font-weight:bold">,</span>
+  ObjectProvider<span style="color:#000;font-weight:bold">&lt;</span>org<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">springframework</span><span style="color:#000;font-weight:bold">.</span><span style="color:#008080">data</span><span style="color:#000;font-weight:bold">.</span><span style="color:#008080">redis</span><span style="color:#000;font-weight:bold">.</span><span style="color:#008080">cache</span><span style="color:#000;font-weight:bold">.</span><span style="color:#008080">RedisCacheConfiguration</span><span style="color:#000;font-weight:bold">&gt;</span> redisCacheConfiguration<span style="color:#000;font-weight:bold">,</span>
+  ClassLoader classLoader<span style="color:#000;font-weight:bold">)</span> <span style="color:#000;font-weight:bold">{</span>
+  <span style="color:#000;font-weight:bold">return</span> redisCacheConfiguration<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">getIfAvailable</span><span style="color:#000;font-weight:bold">(()</span> <span style="color:#000;font-weight:bold">-&gt;</span> createConfiguration<span style="color:#000;font-weight:bold">(</span>cacheProperties<span style="color:#000;font-weight:bold">,</span> classLoader<span style="color:#000;font-weight:bold">));</span>
+<span style="color:#000;font-weight:bold">}</span>
+
+<span style="color:#000;font-weight:bold">private</span> org<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">springframework</span><span style="color:#000;font-weight:bold">.</span><span style="color:#008080">data</span><span style="color:#000;font-weight:bold">.</span><span style="color:#008080">redis</span><span style="color:#000;font-weight:bold">.</span><span style="color:#008080">cache</span><span style="color:#000;font-weight:bold">.</span><span style="color:#008080">RedisCacheConfiguration</span> <span style="color:#900;font-weight:bold">createConfiguration</span><span style="color:#000;font-weight:bold">(</span>
+  CacheProperties cacheProperties<span style="color:#000;font-weight:bold">,</span> ClassLoader classLoader<span style="color:#000;font-weight:bold">)</span> <span style="color:#000;font-weight:bold">{</span>
+  Redis redisProperties <span style="color:#000;font-weight:bold">=</span> cacheProperties<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">getRedis</span><span style="color:#000;font-weight:bold">();</span>
+  org<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">springframework</span><span style="color:#000;font-weight:bold">.</span><span style="color:#008080">data</span><span style="color:#000;font-weight:bold">.</span><span style="color:#008080">redis</span><span style="color:#000;font-weight:bold">.</span><span style="color:#008080">cache</span><span style="color:#000;font-weight:bold">.</span><span style="color:#008080">RedisCacheConfiguration</span> config <span style="color:#000;font-weight:bold">=</span> org<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">springframework</span><span style="color:#000;font-weight:bold">.</span><span style="color:#008080">data</span><span style="color:#000;font-weight:bold">.</span><span style="color:#008080">redis</span><span style="color:#000;font-weight:bold">.</span><span style="color:#008080">cache</span><span style="color:#000;font-weight:bold">.</span><span style="color:#008080">RedisCacheConfiguration</span>
+    <span style="color:#000;font-weight:bold">.</span><span style="color:#008080">defaultCacheConfig</span><span style="color:#000;font-weight:bold">();</span>
+  config <span style="color:#000;font-weight:bold">=</span> config<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">serializeValuesWith</span><span style="color:#000;font-weight:bold">(</span>
+    SerializationPair<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">fromSerializer</span><span style="color:#000;font-weight:bold">(</span><span style="color:#000;font-weight:bold">new</span> JdkSerializationRedisSerializer<span style="color:#000;font-weight:bold">(</span>classLoader<span style="color:#000;font-weight:bold">)));</span>
+  <span style="color:#998;font-style:italic">//...
+</span><span style="color:#998;font-style:italic"></span>  <span style="color:#000;font-weight:bold">return</span> config<span style="color:#000;font-weight:bold">;</span>
+<span style="color:#000;font-weight:bold">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>例如自定义一个 <code>CacheManager</code>， 简单的示例如下：</p>
+<div class="highlight"><div style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4">
+<table style="border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 1
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 2
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 3
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 4
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 5
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 6
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 7
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 8
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 9
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">10
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">11
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">12
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">13
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">14
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">15
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">16
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#3c5d5d;font-weight:bold">@Bean</span>
+<span style="color:#000;font-weight:bold">public</span> CacheManager <span style="color:#900;font-weight:bold">cacheManager</span><span style="color:#000;font-weight:bold">(</span>RedisConnectionFactory connectionFactory<span style="color:#000;font-weight:bold">)</span> <span style="color:#000;font-weight:bold">{</span>
+   <span style="color:#000;font-weight:bold">return</span> RedisCacheManager<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">builder</span><span style="color:#000;font-weight:bold">(</span>RedisCacheWriter<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">lockingRedisCacheWriter</span><span style="color:#000;font-weight:bold">(</span>connectionFactory<span style="color:#000;font-weight:bold">))</span>
+     <span style="color:#000;font-weight:bold">.</span><span style="color:#008080">cacheDefaults</span><span style="color:#000;font-weight:bold">(</span>defaultCacheConfig<span style="color:#000;font-weight:bold">(</span><span style="color:#000;font-weight:bold">new</span> ObjectMapper<span style="color:#000;font-weight:bold">()))</span>
+     <span style="color:#000;font-weight:bold">.</span><span style="color:#008080">withInitialCacheConfigurations</span><span style="color:#000;font-weight:bold">(</span>singletonMap<span style="color:#000;font-weight:bold">(</span><span style="color:#d14">&#34;demo&#34;</span><span style="color:#000;font-weight:bold">,</span> defaultCacheConfig<span style="color:#000;font-weight:bold">(</span><span style="color:#000;font-weight:bold">new</span> ObjectMapper<span style="color:#000;font-weight:bold">())))</span>
+     <span style="color:#000;font-weight:bold">.</span><span style="color:#008080">transactionAware</span><span style="color:#000;font-weight:bold">()</span>
+     <span style="color:#000;font-weight:bold">.</span><span style="color:#008080">build</span><span style="color:#000;font-weight:bold">();</span>
+ <span style="color:#000;font-weight:bold">}</span>
+
+<span style="color:#3c5d5d;font-weight:bold">@Bean</span>
+<span style="color:#3c5d5d;font-weight:bold">@Primary</span>
+<span style="color:#000;font-weight:bold">public</span> RedisCacheConfiguration <span style="color:#900;font-weight:bold">defaultCacheConfig</span><span style="color:#000;font-weight:bold">(</span>ObjectMapper objectMapper<span style="color:#000;font-weight:bold">)</span> <span style="color:#000;font-weight:bold">{</span>
+  <span style="color:#000;font-weight:bold">return</span> RedisCacheConfiguration<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">defaultCacheConfig</span><span style="color:#000;font-weight:bold">()</span>
+    <span style="color:#000;font-weight:bold">.</span><span style="color:#008080">serializeKeysWith</span><span style="color:#000;font-weight:bold">(</span>RedisSerializationContext<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">SerializationPair</span><span style="color:#000;font-weight:bold">.</span><span style="color:#008080">fromSerializer</span><span style="color:#000;font-weight:bold">(</span><span style="color:#000;font-weight:bold">new</span> StringRedisSerializer<span style="color:#000;font-weight:bold">()))</span>
+    <span style="color:#000;font-weight:bold">.</span><span style="color:#008080">serializeValuesWith</span><span style="color:#000;font-weight:bold">(</span>RedisSerializationContext<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">SerializationPair</span><span style="color:#000;font-weight:bold">.</span><span style="color:#008080">fromSerializer</span><span style="color:#000;font-weight:bold">(</span><span style="color:#000;font-weight:bold">new</span> GenericJackson2JsonRedisSerializer<span style="color:#000;font-weight:bold">()));</span>
+<span style="color:#000;font-weight:bold">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>当然也可以通过设置 <code>RedisCacheManagerBuilderCustomizer</code> 的方式设置 JSON 的序列化方式：</p>
+<div class="highlight"><div style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4">
+<table style="border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">1
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">2
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">3
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">4
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">5
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">6
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#3c5d5d;font-weight:bold">@Bean</span>
+<span style="color:#000;font-weight:bold">public</span> RedisCacheManagerBuilderCustomizer <span style="color:#900;font-weight:bold">redisCacheManagerBuilderCustomizer</span><span style="color:#000;font-weight:bold">()</span> <span style="color:#000;font-weight:bold">{</span>
+  <span style="color:#000;font-weight:bold">return</span> builder <span style="color:#000;font-weight:bold">-&gt;</span> builder<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">cacheDefaults</span><span style="color:#000;font-weight:bold">(</span>RedisCacheConfiguration<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">defaultCacheConfig</span><span style="color:#000;font-weight:bold">()</span>
+                                          <span style="color:#000;font-weight:bold">.</span><span style="color:#008080">serializeKeysWith</span><span style="color:#000;font-weight:bold">(</span>RedisSerializationContext<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">SerializationPair</span><span style="color:#000;font-weight:bold">.</span><span style="color:#008080">fromSerializer</span><span style="color:#000;font-weight:bold">(</span><span style="color:#000;font-weight:bold">new</span> StringRedisSerializer<span style="color:#000;font-weight:bold">()))</span>
+                                          <span style="color:#000;font-weight:bold">.</span><span style="color:#008080">serializeValuesWith</span><span style="color:#000;font-weight:bold">(</span>RedisSerializationContext<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">SerializationPair</span><span style="color:#000;font-weight:bold">.</span><span style="color:#008080">fromSerializer</span><span style="color:#000;font-weight:bold">(</span><span style="color:#000;font-weight:bold">new</span> GenericJackson2JsonRedisSerializer<span style="color:#000;font-weight:bold">())));</span>
+<span style="color:#000;font-weight:bold">}</span>
+</code></pre></td></tr></table>
+</div>
+</div>
+        </div>
+
+        
+
+
+        
+
+<div class="post-archive">
+    <h2>See Also</h2>
+    <ul class="listing">
+        
+        <li><a href="https://sangzhenya.github.io/post/Spring/Spring-Boot/Spring-Boot-%E9%85%8D%E7%BD%AE%E6%96%87%E4%BB%B6/">Spring Boot 配置文件</a></li>
+        
+        <li><a href="https://sangzhenya.github.io/post/Spring/Spring-Boot/Spring-Boot-%E9%94%99%E8%AF%AF%E5%A4%84%E7%90%86%E6%9C%BA%E5%88%B6/">Spring Boot 错误处理机制</a></li>
+        
+        <li><a href="https://sangzhenya.github.io/post/Spring/Spring-Security/Spring-Securit-%E5%85%A5%E9%97%A8/">Spring Security 入门</a></li>
+        
+        <li><a href="https://sangzhenya.github.io/post/Spring/Spring-MVC/Spring-MVC-Web-%E7%BB%84%E4%BB%B6/">Spring MVC Web 组件</a></li>
+        
+        <li><a href="https://sangzhenya.github.io/post/Spring/Spring-MVC/Spring-MVC-Model-And-View/">Spring MVC Model And View</a></li>
+        
+    </ul>
+</div>
+
+
+        <div class="post-meta meta-tags">
+            
+            <ul class="clearfix">
+                
+                <li><a href='https://sangzhenya.github.io/tags/Spring'>Spring</a></li>
+                
+                <li><a href='https://sangzhenya.github.io/tags/Spring-Boot'>Spring Boot</a></li>
+                
+            </ul>
+            
+        </div>
+    </article>
+    
+    
+
+    
+    
+</div>
+
+                </div>
+
+                <div id="secondary">
+    <section class="widget">
+        <form id="search" action='//www.google.com/search' method="get" accept-charset="utf-8" target="_blank" _lpchecked="1">
+      
+      <input type="text" name="q" maxlength="20" placeholder="Search">
+      <input type="hidden" name="sitesearch" value="https://sangzhenya.github.io/">
+      <button type="submit" class="submit icon-search"></button>
+</form>
+    </section>
+    
+    <section class="widget">
+        <h3 class="widget-title">最近文章</h3>
+<ul class="widget-list">
+    
+    <li>
+        <a href="https://sangzhenya.github.io/post/Java/JVM/Java-JNDI/" title="Java JNDI">Java JNDI</a>
+    </li>
+    
+    <li>
+        <a href="https://sangzhenya.github.io/post/Java/JVM/Java-OOM/" title="Java OOM">Java OOM</a>
+    </li>
+    
+    <li>
+        <a href="https://sangzhenya.github.io/post/Java/JVM/Java-JVM/" title="Java JVM">Java JVM</a>
+    </li>
+    
+    <li>
+        <a href="https://sangzhenya.github.io/post/Java/JVM/Java-HotSpot-GC-%E7%AE%97%E6%B3%95%E5%AE%9E%E7%8E%B0/" title="Java HotSpot GC 算法实现">Java HotSpot GC 算法实现</a>
+    </li>
+    
+    <li>
+        <a href="https://sangzhenya.github.io/post/Java/JVM/Java-GC-2/" title="Java GC 2">Java GC 2</a>
+    </li>
+    
+    <li>
+        <a href="https://sangzhenya.github.io/post/Java/JVM/Java-GC-1/" title="Java GC 1">Java GC 1</a>
+    </li>
+    
+    <li>
+        <a href="https://sangzhenya.github.io/post/Java/JVM/Java-%E8%99%9A%E6%8B%9F%E6%9C%BA%E5%86%85%E5%AD%98%E6%A8%A1%E5%9E%8B/" title="Java 虚拟机内存模型">Java 虚拟机内存模型</a>
+    </li>
+    
+    <li>
+        <a href="https://sangzhenya.github.io/post/Java/JVM/Java-%E9%80%83%E9%80%B8%E5%88%86%E6%9E%90/" title="Java 逃逸分析">Java 逃逸分析</a>
+    </li>
+    
+    <li>
+        <a href="https://sangzhenya.github.io/post/Java/JVM/Java-%E5%9B%9B%E7%A7%8D%E5%BC%95%E7%94%A8%E7%B1%BB%E5%9E%8B/" title="Java 四种引用类型">Java 四种引用类型</a>
+    </li>
+    
+    <li>
+        <a href="https://sangzhenya.github.io/post/%E5%BE%AE%E6%9C%8D%E5%8A%A1/dubbo/Dubbo-%E5%8E%9F%E7%90%86/" title="Dubbo 原理">Dubbo 原理</a>
+    </li>
+    
+</ul>
+    </section>
+
+    
+
+    <section class="widget">
+        <h3 class="widget-title">分类</h3>
+<ul class="widget-list">
+    
+    <li><a href="https://sangzhenya.github.io/categories/Java/">Java (22)</a></li>
+    
+    <li><a href="https://sangzhenya.github.io/categories/MQ/">MQ (3)</a></li>
+    
+    <li><a href="https://sangzhenya.github.io/categories/MyBaits/">MyBaits (7)</a></li>
+    
+    <li><a href="https://sangzhenya.github.io/categories/MySQL/">MySQL (4)</a></li>
+    
+    <li><a href="https://sangzhenya.github.io/categories/Netty/">Netty (10)</a></li>
+    
+    <li><a href="https://sangzhenya.github.io/categories/Nginx/">Nginx (2)</a></li>
+    
+    <li><a href="https://sangzhenya.github.io/categories/Redis/">Redis (2)</a></li>
+    
+    <li><a href="https://sangzhenya.github.io/categories/Spring/">Spring (36)</a></li>
+    
+    <li><a href="https://sangzhenya.github.io/categories/%E5%85%B3%E4%BA%8E/">关于 (1)</a></li>
+    
+    <li><a href="https://sangzhenya.github.io/categories/%E5%85%B6%E4%BB%96/">其他 (8)</a></li>
+    
+    <li><a href="https://sangzhenya.github.io/categories/%E5%BE%AE%E6%9C%8D%E5%8A%A1/">微服务 (11)</a></li>
+    
+    <li><a href="https://sangzhenya.github.io/categories/%E7%AE%97%E6%B3%95/">算法 (3)</a></li>
+    
+    <li><a href="https://sangzhenya.github.io/categories/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/">读书笔记 (7)</a></li>
+    
+</ul>
+    </section>
+
+    <section class="widget">
+        <h3 class="widget-title">标签</h3>
+<div class="tagcloud">
+    
+    <a href="https://sangzhenya.github.io/tags/Active-MQ/">Active MQ</a>
+    
+    <a href="https://sangzhenya.github.io/tags/Cookie/">Cookie</a>
+    
+    <a href="https://sangzhenya.github.io/tags/Debug/">Debug</a>
+    
+    <a href="https://sangzhenya.github.io/tags/Docker/">Docker</a>
+    
+    <a href="https://sangzhenya.github.io/tags/Dubbo/">Dubbo</a>
+    
+    <a href="https://sangzhenya.github.io/tags/Git/">Git</a>
+    
+    <a href="https://sangzhenya.github.io/tags/JDK8/">JDK8</a>
+    
+    <a href="https://sangzhenya.github.io/tags/JPA/">JPA</a>
+    
+    <a href="https://sangzhenya.github.io/tags/JUC/">JUC</a>
+    
+    <a href="https://sangzhenya.github.io/tags/JVM/">JVM</a>
+    
+    <a href="https://sangzhenya.github.io/tags/java/">java</a>
+    
+    <a href="https://sangzhenya.github.io/tags/Jenkins/">Jenkins</a>
+    
+    <a href="https://sangzhenya.github.io/tags/Kafka/">Kafka</a>
+    
+    <a href="https://sangzhenya.github.io/tags/Kubernetes/">Kubernetes</a>
+    
+    <a href="https://sangzhenya.github.io/tags/Linux/">Linux</a>
+    
+    <a href="https://sangzhenya.github.io/tags/Maven/">Maven</a>
+    
+    <a href="https://sangzhenya.github.io/tags/MyBaits/">MyBaits</a>
+    
+    <a href="https://sangzhenya.github.io/tags/MySQL/">MySQL</a>
+    
+    <a href="https://sangzhenya.github.io/tags/Netty/">Netty</a>
+    
+    <a href="https://sangzhenya.github.io/tags/Nginx/">Nginx</a>
+    
+    <a href="https://sangzhenya.github.io/tags/Rabbit-MQ/">Rabbit MQ</a>
+    
+    <a href="https://sangzhenya.github.io/tags/Redis/">Redis</a>
+    
+    <a href="https://sangzhenya.github.io/tags/Rocket-MQ/">Rocket MQ</a>
+    
+    <a href="https://sangzhenya.github.io/tags/Session/">Session</a>
+    
+    <a href="https://sangzhenya.github.io/tags/Spring/">Spring</a>
+    
+    <a href="https://sangzhenya.github.io/tags/Spring-Boot/">Spring Boot</a>
+    
+    <a href="https://sangzhenya.github.io/tags/Spring-Cloud/">Spring Cloud</a>
+    
+    <a href="https://sangzhenya.github.io/tags/Spring-Data/">Spring Data</a>
+    
+    <a href="https://sangzhenya.github.io/tags/Spring-MVC/">Spring MVC</a>
+    
+    <a href="https://sangzhenya.github.io/tags/Spring-Security/">Spring Security</a>
+    
+    <a href="https://sangzhenya.github.io/tags/Spring-%E6%B3%A8%E8%A7%A3/">Spring 注解</a>
+    
+    <a href="https://sangzhenya.github.io/tags/Tmux/">Tmux</a>
+    
+    <a href="https://sangzhenya.github.io/tags/Zookeeper/">Zookeeper</a>
+    
+    <a href="https://sangzhenya.github.io/tags/java/">java</a>
+    
+    <a href="https://sangzhenya.github.io/tags/%E4%BB%A3%E7%A0%81/">代码</a>
+    
+    <a href="https://sangzhenya.github.io/tags/%E5%85%B3%E4%BA%8E/">关于</a>
+    
+    <a href="https://sangzhenya.github.io/tags/%E5%BE%AE%E6%9C%8D%E5%8A%A1/">微服务</a>
+    
+    <a href="https://sangzhenya.github.io/tags/%E6%BA%90%E7%A0%81/">源码</a>
+    
+    <a href="https://sangzhenya.github.io/tags/%E7%AE%97%E6%B3%95/">算法</a>
+    
+    <a href="https://sangzhenya.github.io/tags/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/">设计模式</a>
+    
+    <a href="https://sangzhenya.github.io/tags/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/">读书笔记</a>
+    
+    <a href="https://sangzhenya.github.io/tags/%E9%9B%86%E5%90%88/">集合</a>
+    
+</div>
+    </section>
+
+    
+
+    <section class="widget">
+        <h3 class="widget-title">其它</h3>
+        <ul class="widget-list">
+            <li><a href="https://sangzhenya.github.io/index.xml">文章 RSS</a></li>
+        </ul>
+    </section>
+</div>
+            </div>
+        </div>
+    </div>
+    <footer id="footer">
+    <div class="container">
+        &copy; 2020 <a href="https://sangzhenya.github.io/">新月的博客 By 新月</a>.
+        Powered by <a rel="nofollow noreferer noopener" href="https://gohugo.io" target="_blank">Hugo</a>.
+        Theme based on <a href="https://github.com/flysnow-org/maupassant-hugo" target="_blank">maupassant</a>.
+        
+    </div>
+</footer>
+
+
+    
+    <script type="text/javascript">
+        window.MathJax = {
+            tex2jax: {
+                inlineMath: [['$', '$']],
+                processEscapes: true
+                }
+            };
+    </script>
+    <script src='https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-MML-AM_CHTML' async></script>
+
+
+<a id="rocket" href="#top"></a>
+<script type="text/javascript" src='https://sangzhenya.github.io/js/totop.js?v=0.0.0' async=""></script>
+
+
+
+
+
+
+</body>
+
+</html>

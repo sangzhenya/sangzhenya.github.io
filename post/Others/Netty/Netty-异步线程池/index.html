@@ -1,0 +1,494 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <title>Netty 异步线程池 | 新月的博客</title>
+    <meta property="og:title" content="Netty 异步线程池 - 新月的博客">
+    <meta property="og:type" content="article">
+        
+    <meta property="article:published_time" content='2019-03-27T09:00:00&#43;08:00'>
+        
+        
+    <meta property="article:modified_time" content='2019-03-27T09:00:00&#43;08:00'>
+        
+    <meta name="Keywords" content="">
+    <meta name="description" content="Netty 异步线程池">
+        
+    <meta name="author" content="新月">
+    <meta property="og:url" content="https://sangzhenya.github.io/post/Others/Netty/Netty-%E5%BC%82%E6%AD%A5%E7%BA%BF%E7%A8%8B%E6%B1%A0/">
+    <link rel="shortcut icon" href="https://sangzhenya.github.io/favicon.ico" type="image/x-icon">
+
+    <link rel="stylesheet" href='https://sangzhenya.github.io/css/normalize.css'>
+    <link rel="stylesheet" href='https://sangzhenya.github.io/css/style.css'>
+    <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+
+    
+
+
+    
+    
+</head>
+
+
+<body>
+    <header id="header" class="clearfix">
+    <div class="container">
+        <div class="col-group">
+            <div class="site-name ">
+                
+                    <a id="logo" href="https://sangzhenya.github.io/">
+                        新月的博客
+                    </a>
+                
+                <p class="description">晚来天欲雪，能饮一杯无？</p>
+            </div>
+            <div>
+                <nav id="nav-menu" class="clearfix">
+                    <a class="current" href="https://sangzhenya.github.io/">首页</a>
+                    
+                    <a  href="https://sangzhenya.github.io/archives/" title="归档">归档</a>
+                    
+                    <a  href="https://sangzhenya.github.io/about/" title="关于">关于</a>
+                    
+                </nav>
+            </div>
+        </div>
+    </div>
+</header>
+
+    <div id="body">
+        <div class="container">
+            <div class="col-group">
+
+                <div class="col-8" id="main">
+                    
+<div class="res-cons">
+    
+    <article class="post">
+        <header>
+            <h1 class="post-title">Netty 异步线程池</h1>
+        </header>
+        <date class="post-meta meta-date">
+            2019年3月27日
+        </date>
+        
+        <div class="post-meta">
+            <span>|</span>
+            
+            <span class="meta-category"><a href='https://sangzhenya.github.io/categories/Netty'>Netty</a></span>
+            
+        </div>
+        
+        
+        
+        <div class="post-content">
+            <p>在 Netty 中做耗时的，不可预料的操作，比如数据库，网络请求，会严重影响 Netty 对 Socket 的处理速度。解决方案则是将任务添加到异步线程池中，主要有两种方式：</p>
+<ol>
+<li>handler 中加入线程池</li>
+<li>context 中加入线程池</li>
+</ol>
+<h3 id="handler-中加入线程池">Handler 中加入线程池</h3>
+<p>在 Handler 中添加一个 EventExecutorGroup，需要创建线程的时候使用 group.submit 创建线程，整个流程则变成如下：</p>
+<p><img src="http://img.programya.com/20200129085852.png" alt=""></p>
+<p>当 IO 线程轮询到一个 Socket 事件，然后 IO 线程开始处理，当遇到耗时的 handler 的时候会将耗时的任务交给 业务线程池处理。当耗时的任务执行完毕再执行 pipeline write 方法的时候会将任务交给这个任务的 IO 线程。</p>
+<p>看一下 AbstractChannelHandlerContext 的 write 方法</p>
+<div class="highlight"><div style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4">
+<table style="border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 1
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 2
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 3
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 4
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 5
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 6
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 7
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 8
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 9
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">10
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">11
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">12
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">13
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">14
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">15
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">16
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">17
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">18
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">19
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">20
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">21
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">22
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">23
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">24
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">25
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">26
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">27
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">28
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">29
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">30
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">31
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">32
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">33
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">34
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">35
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">36
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">37
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#000;font-weight:bold">private</span> <span style="color:#458;font-weight:bold">void</span> <span style="color:#900;font-weight:bold">write</span><span style="color:#000;font-weight:bold">(</span>Object msg<span style="color:#000;font-weight:bold">,</span> <span style="color:#458;font-weight:bold">boolean</span> flush<span style="color:#000;font-weight:bold">,</span> ChannelPromise promise<span style="color:#000;font-weight:bold">)</span> <span style="color:#000;font-weight:bold">{</span>
+  ObjectUtil<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">checkNotNull</span><span style="color:#000;font-weight:bold">(</span>msg<span style="color:#000;font-weight:bold">,</span> <span style="color:#d14">&#34;msg&#34;</span><span style="color:#000;font-weight:bold">);</span>
+  <span style="color:#000;font-weight:bold">try</span> <span style="color:#000;font-weight:bold">{</span>
+    <span style="color:#000;font-weight:bold">if</span> <span style="color:#000;font-weight:bold">(</span>isNotValidPromise<span style="color:#000;font-weight:bold">(</span>promise<span style="color:#000;font-weight:bold">,</span> <span style="color:#000;font-weight:bold">true</span><span style="color:#000;font-weight:bold">))</span> <span style="color:#000;font-weight:bold">{</span>
+      ReferenceCountUtil<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">release</span><span style="color:#000;font-weight:bold">(</span>msg<span style="color:#000;font-weight:bold">);</span>
+      <span style="color:#998;font-style:italic">// cancelled
+</span><span style="color:#998;font-style:italic"></span>      <span style="color:#000;font-weight:bold">return</span><span style="color:#000;font-weight:bold">;</span>
+    <span style="color:#000;font-weight:bold">}</span>
+  <span style="color:#000;font-weight:bold">}</span> <span style="color:#000;font-weight:bold">catch</span> <span style="color:#000;font-weight:bold">(</span>RuntimeException e<span style="color:#000;font-weight:bold">)</span> <span style="color:#000;font-weight:bold">{</span>
+    ReferenceCountUtil<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">release</span><span style="color:#000;font-weight:bold">(</span>msg<span style="color:#000;font-weight:bold">);</span>
+    <span style="color:#000;font-weight:bold">throw</span> e<span style="color:#000;font-weight:bold">;</span>
+  <span style="color:#000;font-weight:bold">}</span>
+
+  <span style="color:#000;font-weight:bold">final</span> AbstractChannelHandlerContext next <span style="color:#000;font-weight:bold">=</span> findContextOutbound<span style="color:#000;font-weight:bold">(</span>flush <span style="color:#000;font-weight:bold">?</span>
+                                                                 <span style="color:#000;font-weight:bold">(</span>MASK_WRITE <span style="color:#000;font-weight:bold">|</span> MASK_FLUSH<span style="color:#000;font-weight:bold">)</span> <span style="color:#000;font-weight:bold">:</span> MASK_WRITE<span style="color:#000;font-weight:bold">);</span>
+  <span style="color:#000;font-weight:bold">final</span> Object m <span style="color:#000;font-weight:bold">=</span> pipeline<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">touch</span><span style="color:#000;font-weight:bold">(</span>msg<span style="color:#000;font-weight:bold">,</span> next<span style="color:#000;font-weight:bold">);</span>
+  EventExecutor executor <span style="color:#000;font-weight:bold">=</span> next<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">executor</span><span style="color:#000;font-weight:bold">();</span>
+  <span style="color:#000;font-weight:bold">if</span> <span style="color:#000;font-weight:bold">(</span>executor<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">inEventLoop</span><span style="color:#000;font-weight:bold">())</span> <span style="color:#000;font-weight:bold">{</span>
+    <span style="color:#998;font-style:italic">// 如果在当前线程则执行 write 或 writeAndFlush
+</span><span style="color:#998;font-style:italic"></span>    <span style="color:#000;font-weight:bold">if</span> <span style="color:#000;font-weight:bold">(</span>flush<span style="color:#000;font-weight:bold">)</span> <span style="color:#000;font-weight:bold">{</span>
+      next<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">invokeWriteAndFlush</span><span style="color:#000;font-weight:bold">(</span>m<span style="color:#000;font-weight:bold">,</span> promise<span style="color:#000;font-weight:bold">);</span>
+    <span style="color:#000;font-weight:bold">}</span> <span style="color:#000;font-weight:bold">else</span> <span style="color:#000;font-weight:bold">{</span>
+      next<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">invokeWrite</span><span style="color:#000;font-weight:bold">(</span>m<span style="color:#000;font-weight:bold">,</span> promise<span style="color:#000;font-weight:bold">);</span>
+    <span style="color:#000;font-weight:bold">}</span>
+  <span style="color:#000;font-weight:bold">}</span> <span style="color:#000;font-weight:bold">else</span> <span style="color:#000;font-weight:bold">{</span>
+    <span style="color:#998;font-style:italic">// 如果不在当前线程，则就当前任务封装成 task 然后放入 mpsc 队列中，
+</span><span style="color:#998;font-style:italic"></span>    <span style="color:#998;font-style:italic">// 等待 IO 任务执行完毕后执行队列中的任务
+</span><span style="color:#998;font-style:italic"></span>    <span style="color:#000;font-weight:bold">final</span> WriteTask task <span style="color:#000;font-weight:bold">=</span> WriteTask<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">newInstance</span><span style="color:#000;font-weight:bold">(</span>next<span style="color:#000;font-weight:bold">,</span> m<span style="color:#000;font-weight:bold">,</span> promise<span style="color:#000;font-weight:bold">,</span> flush<span style="color:#000;font-weight:bold">);</span>
+    <span style="color:#000;font-weight:bold">if</span> <span style="color:#000;font-weight:bold">(!</span>safeExecute<span style="color:#000;font-weight:bold">(</span>executor<span style="color:#000;font-weight:bold">,</span> task<span style="color:#000;font-weight:bold">,</span> promise<span style="color:#000;font-weight:bold">,</span> m<span style="color:#000;font-weight:bold">,</span> <span style="color:#000;font-weight:bold">!</span>flush<span style="color:#000;font-weight:bold">))</span> <span style="color:#000;font-weight:bold">{</span>
+      <span style="color:#998;font-style:italic">// We failed to submit the WriteTask. We need to cancel it so we decrement the pending bytes
+</span><span style="color:#998;font-style:italic"></span>      <span style="color:#998;font-style:italic">// and put it back in the Recycler for re-use later.
+</span><span style="color:#998;font-style:italic"></span>      <span style="color:#998;font-style:italic">//
+</span><span style="color:#998;font-style:italic"></span>      <span style="color:#998;font-style:italic">// See https://github.com/netty/netty/issues/8343.
+</span><span style="color:#998;font-style:italic"></span>      task<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">cancel</span><span style="color:#000;font-weight:bold">();</span>
+    <span style="color:#000;font-weight:bold">}</span>
+  <span style="color:#000;font-weight:bold">}</span>
+<span style="color:#000;font-weight:bold">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><h3 id="context-中加入线程池">Context 中加入线程池</h3>
+<p>在添加 Handler 的类中添加一个 EventExecutorGroup，在添加 Handler 到 pipeline 中的时候使用 <code>p.addLast(group, serverHandler);</code> 进行添加。Handler 中代码就能使用普通的方式处理耗时业务了。当在调用 addLast 方法的添加线程池后，handler 优先使用这个线程池，如果不添加在使用 IO 线程。例如 AbstractChannelHandlerContext  的 invokeChannelRead 方法如下：</p>
+<div class="highlight"><div style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4">
+<table style="border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 1
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 2
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 3
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 4
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 5
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 6
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 7
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 8
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 9
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">10
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">11
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">12
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">13
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">14
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">15
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#000;font-weight:bold">static</span> <span style="color:#458;font-weight:bold">void</span> <span style="color:#900;font-weight:bold">invokeChannelRead</span><span style="color:#000;font-weight:bold">(</span><span style="color:#000;font-weight:bold">final</span> AbstractChannelHandlerContext next<span style="color:#000;font-weight:bold">,</span> Object msg<span style="color:#000;font-weight:bold">)</span> <span style="color:#000;font-weight:bold">{</span>
+  <span style="color:#000;font-weight:bold">final</span> Object m <span style="color:#000;font-weight:bold">=</span> next<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">pipeline</span><span style="color:#000;font-weight:bold">.</span><span style="color:#008080">touch</span><span style="color:#000;font-weight:bold">(</span>ObjectUtil<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">checkNotNull</span><span style="color:#000;font-weight:bold">(</span>msg<span style="color:#000;font-weight:bold">,</span> <span style="color:#d14">&#34;msg&#34;</span><span style="color:#000;font-weight:bold">),</span> next<span style="color:#000;font-weight:bold">);</span>
+  EventExecutor executor <span style="color:#000;font-weight:bold">=</span> next<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">executor</span><span style="color:#000;font-weight:bold">();</span>
+  <span style="color:#000;font-weight:bold">if</span> <span style="color:#000;font-weight:bold">(</span>executor<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">inEventLoop</span><span style="color:#000;font-weight:bold">())</span> <span style="color:#000;font-weight:bold">{</span>
+    next<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">invokeChannelRead</span><span style="color:#000;font-weight:bold">(</span>m<span style="color:#000;font-weight:bold">);</span>
+  <span style="color:#000;font-weight:bold">}</span> <span style="color:#000;font-weight:bold">else</span> <span style="color:#000;font-weight:bold">{</span>
+    <span style="color:#998;font-style:italic">// 如果不是当前线程则使用 异步任务的方式执行
+</span><span style="color:#998;font-style:italic"></span>    executor<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">execute</span><span style="color:#000;font-weight:bold">(</span><span style="color:#000;font-weight:bold">new</span> Runnable<span style="color:#000;font-weight:bold">()</span> <span style="color:#000;font-weight:bold">{</span>
+      <span style="color:#3c5d5d;font-weight:bold">@Override</span>
+      <span style="color:#000;font-weight:bold">public</span> <span style="color:#458;font-weight:bold">void</span> <span style="color:#900;font-weight:bold">run</span><span style="color:#000;font-weight:bold">()</span> <span style="color:#000;font-weight:bold">{</span>
+        next<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">invokeChannelRead</span><span style="color:#000;font-weight:bold">(</span>m<span style="color:#000;font-weight:bold">);</span>
+      <span style="color:#000;font-weight:bold">}</span>
+    <span style="color:#000;font-weight:bold">});</span>
+  <span style="color:#000;font-weight:bold">}</span>
+<span style="color:#000;font-weight:bold">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><h3 id="两种方式的比较">两种方式的比较</h3>
+<p>第一种方式是在 Handler  中添加异步，更加自由，比如如果需要访问数据库，就可以异步，其他不需要异步的可以直接执行。此外异步会拖长接口响应的事件，因为需要将任务放入到 mpscTask 中，如果 IO 时间很短，task 很多，可能一个循环下去，都没有事件执行整个 task，导致响应时间过慢。</p>
+<p>第二种方式是 Netty 标准方式，但是这么做会导致这个 handler 都交给业务线程池。不论是否耗时都加入到队列中。不够灵活。</p>
+
+        </div>
+
+        
+
+
+        
+
+<div class="post-archive">
+    <h2>See Also</h2>
+    <ul class="listing">
+        
+        <li><a href="https://sangzhenya.github.io/post/Others/Netty/Netty-%E4%B8%89%E5%A4%A7%E7%BB%84%E4%BB%B6/">Netty 三大组件</a></li>
+        
+        <li><a href="https://sangzhenya.github.io/post/Others/Netty/Netty-%E5%85%A5%E9%97%A8/">Netty 入门</a></li>
+        
+        <li><a href="https://sangzhenya.github.io/post/Others/Netty/Netty-%E5%90%AF%E5%8A%A8%E6%B3%A8%E5%86%8C%E6%BA%90%E7%A0%81/">Netty 源码</a></li>
+        
+        <li><a href="https://sangzhenya.github.io/post/Others/Netty/Netty-%E6%A0%B8%E5%BF%83/">Netty 核心</a></li>
+        
+        <li><a href="https://sangzhenya.github.io/post/Others/Netty/Netty-%E7%BA%BF%E7%A8%8B%E6%A8%A1%E5%9E%8B/">Netty 线程模型</a></li>
+        
+    </ul>
+</div>
+
+
+        <div class="post-meta meta-tags">
+            
+            <ul class="clearfix">
+                
+                <li><a href='https://sangzhenya.github.io/tags/Netty'>Netty</a></li>
+                
+                <li><a href='https://sangzhenya.github.io/tags/%E6%BA%90%E7%A0%81'>源码</a></li>
+                
+            </ul>
+            
+        </div>
+    </article>
+    
+    
+
+    
+    
+</div>
+
+                </div>
+
+                <div id="secondary">
+    <section class="widget">
+        <form id="search" action='//www.google.com/search' method="get" accept-charset="utf-8" target="_blank" _lpchecked="1">
+      
+      <input type="text" name="q" maxlength="20" placeholder="Search">
+      <input type="hidden" name="sitesearch" value="https://sangzhenya.github.io/">
+      <button type="submit" class="submit icon-search"></button>
+</form>
+    </section>
+    
+    <section class="widget">
+        <h3 class="widget-title">最近文章</h3>
+<ul class="widget-list">
+    
+    <li>
+        <a href="https://sangzhenya.github.io/post/Java/JVM/Java-JNDI/" title="Java JNDI">Java JNDI</a>
+    </li>
+    
+    <li>
+        <a href="https://sangzhenya.github.io/post/Java/JVM/Java-OOM/" title="Java OOM">Java OOM</a>
+    </li>
+    
+    <li>
+        <a href="https://sangzhenya.github.io/post/Java/JVM/Java-JVM/" title="Java JVM">Java JVM</a>
+    </li>
+    
+    <li>
+        <a href="https://sangzhenya.github.io/post/Java/JVM/Java-HotSpot-GC-%E7%AE%97%E6%B3%95%E5%AE%9E%E7%8E%B0/" title="Java HotSpot GC 算法实现">Java HotSpot GC 算法实现</a>
+    </li>
+    
+    <li>
+        <a href="https://sangzhenya.github.io/post/Java/JVM/Java-GC-2/" title="Java GC 2">Java GC 2</a>
+    </li>
+    
+    <li>
+        <a href="https://sangzhenya.github.io/post/Java/JVM/Java-GC-1/" title="Java GC 1">Java GC 1</a>
+    </li>
+    
+    <li>
+        <a href="https://sangzhenya.github.io/post/Java/JVM/Java-%E8%99%9A%E6%8B%9F%E6%9C%BA%E5%86%85%E5%AD%98%E6%A8%A1%E5%9E%8B/" title="Java 虚拟机内存模型">Java 虚拟机内存模型</a>
+    </li>
+    
+    <li>
+        <a href="https://sangzhenya.github.io/post/Java/JVM/Java-%E9%80%83%E9%80%B8%E5%88%86%E6%9E%90/" title="Java 逃逸分析">Java 逃逸分析</a>
+    </li>
+    
+    <li>
+        <a href="https://sangzhenya.github.io/post/Java/JVM/Java-%E5%9B%9B%E7%A7%8D%E5%BC%95%E7%94%A8%E7%B1%BB%E5%9E%8B/" title="Java 四种引用类型">Java 四种引用类型</a>
+    </li>
+    
+    <li>
+        <a href="https://sangzhenya.github.io/post/%E5%BE%AE%E6%9C%8D%E5%8A%A1/dubbo/Dubbo-%E5%8E%9F%E7%90%86/" title="Dubbo 原理">Dubbo 原理</a>
+    </li>
+    
+</ul>
+    </section>
+
+    
+
+    <section class="widget">
+        <h3 class="widget-title">分类</h3>
+<ul class="widget-list">
+    
+    <li><a href="https://sangzhenya.github.io/categories/Java/">Java (22)</a></li>
+    
+    <li><a href="https://sangzhenya.github.io/categories/MQ/">MQ (3)</a></li>
+    
+    <li><a href="https://sangzhenya.github.io/categories/MyBaits/">MyBaits (7)</a></li>
+    
+    <li><a href="https://sangzhenya.github.io/categories/MySQL/">MySQL (4)</a></li>
+    
+    <li><a href="https://sangzhenya.github.io/categories/Netty/">Netty (10)</a></li>
+    
+    <li><a href="https://sangzhenya.github.io/categories/Nginx/">Nginx (2)</a></li>
+    
+    <li><a href="https://sangzhenya.github.io/categories/Redis/">Redis (2)</a></li>
+    
+    <li><a href="https://sangzhenya.github.io/categories/Spring/">Spring (36)</a></li>
+    
+    <li><a href="https://sangzhenya.github.io/categories/%E5%85%B3%E4%BA%8E/">关于 (1)</a></li>
+    
+    <li><a href="https://sangzhenya.github.io/categories/%E5%85%B6%E4%BB%96/">其他 (8)</a></li>
+    
+    <li><a href="https://sangzhenya.github.io/categories/%E5%BE%AE%E6%9C%8D%E5%8A%A1/">微服务 (11)</a></li>
+    
+    <li><a href="https://sangzhenya.github.io/categories/%E7%AE%97%E6%B3%95/">算法 (3)</a></li>
+    
+    <li><a href="https://sangzhenya.github.io/categories/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/">读书笔记 (7)</a></li>
+    
+</ul>
+    </section>
+
+    <section class="widget">
+        <h3 class="widget-title">标签</h3>
+<div class="tagcloud">
+    
+    <a href="https://sangzhenya.github.io/tags/Active-MQ/">Active MQ</a>
+    
+    <a href="https://sangzhenya.github.io/tags/Cookie/">Cookie</a>
+    
+    <a href="https://sangzhenya.github.io/tags/Debug/">Debug</a>
+    
+    <a href="https://sangzhenya.github.io/tags/Docker/">Docker</a>
+    
+    <a href="https://sangzhenya.github.io/tags/Dubbo/">Dubbo</a>
+    
+    <a href="https://sangzhenya.github.io/tags/Git/">Git</a>
+    
+    <a href="https://sangzhenya.github.io/tags/JDK8/">JDK8</a>
+    
+    <a href="https://sangzhenya.github.io/tags/JPA/">JPA</a>
+    
+    <a href="https://sangzhenya.github.io/tags/JUC/">JUC</a>
+    
+    <a href="https://sangzhenya.github.io/tags/JVM/">JVM</a>
+    
+    <a href="https://sangzhenya.github.io/tags/java/">java</a>
+    
+    <a href="https://sangzhenya.github.io/tags/Jenkins/">Jenkins</a>
+    
+    <a href="https://sangzhenya.github.io/tags/Kafka/">Kafka</a>
+    
+    <a href="https://sangzhenya.github.io/tags/Kubernetes/">Kubernetes</a>
+    
+    <a href="https://sangzhenya.github.io/tags/Linux/">Linux</a>
+    
+    <a href="https://sangzhenya.github.io/tags/Maven/">Maven</a>
+    
+    <a href="https://sangzhenya.github.io/tags/MyBaits/">MyBaits</a>
+    
+    <a href="https://sangzhenya.github.io/tags/MySQL/">MySQL</a>
+    
+    <a href="https://sangzhenya.github.io/tags/Netty/">Netty</a>
+    
+    <a href="https://sangzhenya.github.io/tags/Nginx/">Nginx</a>
+    
+    <a href="https://sangzhenya.github.io/tags/Rabbit-MQ/">Rabbit MQ</a>
+    
+    <a href="https://sangzhenya.github.io/tags/Redis/">Redis</a>
+    
+    <a href="https://sangzhenya.github.io/tags/Rocket-MQ/">Rocket MQ</a>
+    
+    <a href="https://sangzhenya.github.io/tags/Session/">Session</a>
+    
+    <a href="https://sangzhenya.github.io/tags/Spring/">Spring</a>
+    
+    <a href="https://sangzhenya.github.io/tags/Spring-Boot/">Spring Boot</a>
+    
+    <a href="https://sangzhenya.github.io/tags/Spring-Cloud/">Spring Cloud</a>
+    
+    <a href="https://sangzhenya.github.io/tags/Spring-Data/">Spring Data</a>
+    
+    <a href="https://sangzhenya.github.io/tags/Spring-MVC/">Spring MVC</a>
+    
+    <a href="https://sangzhenya.github.io/tags/Spring-Security/">Spring Security</a>
+    
+    <a href="https://sangzhenya.github.io/tags/Spring-%E6%B3%A8%E8%A7%A3/">Spring 注解</a>
+    
+    <a href="https://sangzhenya.github.io/tags/Tmux/">Tmux</a>
+    
+    <a href="https://sangzhenya.github.io/tags/Zookeeper/">Zookeeper</a>
+    
+    <a href="https://sangzhenya.github.io/tags/java/">java</a>
+    
+    <a href="https://sangzhenya.github.io/tags/%E4%BB%A3%E7%A0%81/">代码</a>
+    
+    <a href="https://sangzhenya.github.io/tags/%E5%85%B3%E4%BA%8E/">关于</a>
+    
+    <a href="https://sangzhenya.github.io/tags/%E5%BE%AE%E6%9C%8D%E5%8A%A1/">微服务</a>
+    
+    <a href="https://sangzhenya.github.io/tags/%E6%BA%90%E7%A0%81/">源码</a>
+    
+    <a href="https://sangzhenya.github.io/tags/%E7%AE%97%E6%B3%95/">算法</a>
+    
+    <a href="https://sangzhenya.github.io/tags/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/">设计模式</a>
+    
+    <a href="https://sangzhenya.github.io/tags/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/">读书笔记</a>
+    
+    <a href="https://sangzhenya.github.io/tags/%E9%9B%86%E5%90%88/">集合</a>
+    
+</div>
+    </section>
+
+    
+
+    <section class="widget">
+        <h3 class="widget-title">其它</h3>
+        <ul class="widget-list">
+            <li><a href="https://sangzhenya.github.io/index.xml">文章 RSS</a></li>
+        </ul>
+    </section>
+</div>
+            </div>
+        </div>
+    </div>
+    <footer id="footer">
+    <div class="container">
+        &copy; 2020 <a href="https://sangzhenya.github.io/">新月的博客 By 新月</a>.
+        Powered by <a rel="nofollow noreferer noopener" href="https://gohugo.io" target="_blank">Hugo</a>.
+        Theme based on <a href="https://github.com/flysnow-org/maupassant-hugo" target="_blank">maupassant</a>.
+        
+    </div>
+</footer>
+
+
+    
+    <script type="text/javascript">
+        window.MathJax = {
+            tex2jax: {
+                inlineMath: [['$', '$']],
+                processEscapes: true
+                }
+            };
+    </script>
+    <script src='https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-MML-AM_CHTML' async></script>
+
+
+<a id="rocket" href="#top"></a>
+<script type="text/javascript" src='https://sangzhenya.github.io/js/totop.js?v=0.0.0' async=""></script>
+
+
+
+
+
+
+</body>
+
+</html>

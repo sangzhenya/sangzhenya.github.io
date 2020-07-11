@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Redis on 新月的博客</title>
+    <link>https://sangzhenya.github.io/tags/Redis/</link>
+    <description>Recent content in Redis on 新月的博客</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>zh-CN</language>
+    <lastBuildDate>Mon, 27 May 2019 09:00:00 +0800</lastBuildDate>
+    
+	<atom:link href="https://sangzhenya.github.io/tags/Redis/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>Redis 高级</title>
+      <link>https://sangzhenya.github.io/post/DataBase/Redis/Redis-%E9%AB%98%E7%BA%A7/</link>
+      <pubDate>Mon, 27 May 2019 09:00:00 +0800</pubDate>
+      
+      <guid>https://sangzhenya.github.io/post/DataBase/Redis/Redis-%E9%AB%98%E7%BA%A7/</guid>
+      <description>Redis 持久化 RDB Redis DataBase，在指定的时间间隔内将内存中的数据集快照写入磁盘，恢复的时候是将快照文件直接读到内存中。Redis 会单独的创建一个子进程来进行持久化，会先将数据写入到一个临时传文件中，等待持久化过程结束时在用这个临时文件替换上次持久化号的文件。整个过程中主进程是不进行</description>
+    </item>
+    
+    <item>
+      <title>Redis</title>
+      <link>https://sangzhenya.github.io/post/DataBase/Redis/Redis/</link>
+      <pubDate>Sat, 25 May 2019 09:00:00 +0800</pubDate>
+      
+      <guid>https://sangzhenya.github.io/post/DataBase/Redis/Redis/</guid>
+      <description>NoSQL NoSQL 即 Not Only Sql, 不仅仅是 SQL。泛指非关系型数据库。 易扩展 NoSQL 数据库种类繁多，共同点都是去掉了关系数据库的关系型特性。数据之间无关系，这样就非常容易扩展。 大数据量高性能 NoSQL 数据库都具有非常高的读写性能，主要得益于其无关性，数据库结构简单。 多样灵活的数据模型 NoSQL 无需事先为要存储的数据建立字段</description>
+    </item>
+    
+  </channel>
+</rss>

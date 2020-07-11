@@ -1,0 +1,487 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <title>MyBatis 缓存 | 新月的博客</title>
+    <meta property="og:title" content="MyBatis 缓存 - 新月的博客">
+    <meta property="og:type" content="article">
+        
+    <meta property="article:published_time" content='2019-05-07T09:00:00&#43;08:00'>
+        
+        
+    <meta property="article:modified_time" content='2019-05-07T09:00:00&#43;08:00'>
+        
+    <meta name="Keywords" content="">
+    <meta name="description" content="MyBatis 缓存">
+        
+    <meta name="author" content="新月">
+    <meta property="og:url" content="https://sangzhenya.github.io/post/DataBase/MyBatis/MyBaits-%E7%BC%93%E5%AD%98/">
+    <link rel="shortcut icon" href="https://sangzhenya.github.io/favicon.ico" type="image/x-icon">
+
+    <link rel="stylesheet" href='https://sangzhenya.github.io/css/normalize.css'>
+    <link rel="stylesheet" href='https://sangzhenya.github.io/css/style.css'>
+    <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+
+    
+
+
+    
+    
+</head>
+
+
+<body>
+    <header id="header" class="clearfix">
+    <div class="container">
+        <div class="col-group">
+            <div class="site-name ">
+                
+                    <a id="logo" href="https://sangzhenya.github.io/">
+                        新月的博客
+                    </a>
+                
+                <p class="description">晚来天欲雪，能饮一杯无？</p>
+            </div>
+            <div>
+                <nav id="nav-menu" class="clearfix">
+                    <a class="current" href="https://sangzhenya.github.io/">首页</a>
+                    
+                    <a  href="https://sangzhenya.github.io/archives/" title="归档">归档</a>
+                    
+                    <a  href="https://sangzhenya.github.io/about/" title="关于">关于</a>
+                    
+                </nav>
+            </div>
+        </div>
+    </div>
+</header>
+
+    <div id="body">
+        <div class="container">
+            <div class="col-group">
+
+                <div class="col-8" id="main">
+                    
+<div class="res-cons">
+    
+    <article class="post">
+        <header>
+            <h1 class="post-title">MyBatis 缓存</h1>
+        </header>
+        <date class="post-meta meta-date">
+            2019年5月7日
+        </date>
+        
+        <div class="post-meta">
+            <span>|</span>
+            
+            <span class="meta-category"><a href='https://sangzhenya.github.io/categories/MyBaits'>MyBaits</a></span>
+            
+        </div>
+        
+        
+        
+        <div class="post-content">
+            <p>MyBatis 具有非常强大的缓存特性，可以方便的配置和定制。其默认定义了两级缓存：分布是一集缓存和二级缓存。</p>
+<p><img src="http://img.programya.com/20191228112730.png" alt="缓存示意图"></p>
+<p>一级缓存：又称本地缓存。作用域为 sqlSession, 当 Session flush 或 close 之后，该 Session 中的所有 Cache 将被清空。其默认情况一级缓存开启，而且不能关闭，不过可以通过调用 <code>clearCache</code> 来清空本地缓存可以通过设置 <code>localCacheScope</code> 来修改缓存的作用域，有 SESSION | STATEMENT 两种。默认值为 SESSION，这种情况下会缓存一个会话中执行的所有查询。 若设置值为 STATEMENT，本地会话仅用在语句执行上，对相同 SqlSession 的不同调用将不会共享数据。同一次 Session 期间只要查询过的数据都会被保存在当前 Sql Session 的一个 Map 中，key 是 hashCode + sqlId + 查询 sql 的语句+ 参数。其会再以下四种情况下会失效：</p>
+<ol>
+<li>不同 Sql Session 之间的查询。</li>
+<li>同一个 Sql Session 查询条件不同时。</li>
+<li>同一个 Sql Session 但是在两个查询之间执行了增删改操作。</li>
+<li>同一个 Sql Session 两次查询之间手动清空了缓存。</li>
+</ol>
+<p>二级缓存是基于 namespace 级别的缓存，不同的 namespace 对应不同的缓存 map。二级缓存需要手动配置开启，其还要求 POJO 实现 <code>Serializable</code> 接口。二级缓存在 Sql Session 提交或者关闭之后才会生效。开启需要以下两个步骤：</p>
+<ol>
+<li>在配置中设置 <code>cacheEnabled</code> 为 <code>true</code>。</li>
+<li>在许 cache 缓存的地方加上 <code>&lt;cache /&gt;</code> 配置。</li>
+</ol>
+<p>配置如下：</p>
+<div class="highlight"><div style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4">
+<table style="border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">1
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">2
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">3
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">4
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">5
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">6
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">7
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-xml" data-lang="xml"><span style="color:#000080">&lt;mapper</span> <span style="color:#008080">namespace=</span><span style="color:#d14">&#34;com.xinyue.imybatis.mapper.UserMapper&#34;</span><span style="color:#000080">&gt;</span>
+    <span style="color:#000080">&lt;cache</span> <span style="color:#008080">eviction=</span><span style="color:#d14">&#34;LRU&#34;</span> <span style="color:#008080">flushInterval=</span><span style="color:#d14">&#34;360000&#34;</span> <span style="color:#000080">/&gt;</span>
+    <span style="color:#998;font-style:italic">&lt;!-- eviction 缓存策略，有 LRU 最少使用；FIFO 先进先出；SOFT 软引用；WEAK 弱引用四种方式，默认是 LRU
+</span><span style="color:#998;font-style:italic"> 				flushInterval 刷新间隔配置的是毫秒数；size 缓存中存放多少元素；type 指定自定义缓存的全类名，需要实现 Cache 接口；
+</span><span style="color:#998;font-style:italic">				readOnly 是否只读，true 表示从缓存中获取的操作只是读的操作不会修改数据，会直接将引用交给用户。false 表示可能会修改，则会使用序列化和反序列化的方式克隆一份新的数据
+</span><span style="color:#998;font-style:italic"> 				--&gt;</span>
+<span style="color:#000080">&lt;/mapper&gt;</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>与缓存相关的配置还有以下几点：</p>
+<p><code>select</code> 标签上的 <code>useCache</code> 属性，配置当前查询是否使用二级缓存。</p>
+<p><code>sql</code> 标签上的 <code>flush</code> 属性，增删改默认为 <code>true</code>，查询默认为 <code>false</code>。sql 执行完之后会同时清空一二级缓存。</p>
+<p>当然也可以使用第三方的 Cache ，例如 EhCache 首先需要在 pom 文件中加出来相关的依赖：</p>
+<div class="highlight"><div style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4">
+<table style="border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 1
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 2
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 3
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 4
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 5
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 6
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 7
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 8
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 9
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">10
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">11
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">12
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">13
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">14
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">15
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">16
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">17
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">18
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">19
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-xml" data-lang="xml"><span style="color:#998;font-style:italic">&lt;!-- https://mvnrepository.com/artifact/org.ehcache/ehcache --&gt;</span>
+<span style="color:#000080">&lt;dependency&gt;</span>
+  <span style="color:#000080">&lt;groupId&gt;</span>org.ehcache<span style="color:#000080">&lt;/groupId&gt;</span>
+  <span style="color:#000080">&lt;artifactId&gt;</span>ehcache<span style="color:#000080">&lt;/artifactId&gt;</span>
+  <span style="color:#000080">&lt;version&gt;</span>3.8.1<span style="color:#000080">&lt;/version&gt;</span>
+<span style="color:#000080">&lt;/dependency&gt;</span>
+<span style="color:#998;font-style:italic">&lt;!-- https://mvnrepository.com/artifact/org.mybatis.caches/mybatis-ehcache --&gt;</span>
+<span style="color:#000080">&lt;dependency&gt;</span>
+  <span style="color:#000080">&lt;groupId&gt;</span>org.mybatis.caches<span style="color:#000080">&lt;/groupId&gt;</span>
+  <span style="color:#000080">&lt;artifactId&gt;</span>mybatis-ehcache<span style="color:#000080">&lt;/artifactId&gt;</span>
+  <span style="color:#000080">&lt;version&gt;</span>1.1.0<span style="color:#000080">&lt;/version&gt;</span>
+<span style="color:#000080">&lt;/dependency&gt;</span>
+<span style="color:#998;font-style:italic">&lt;!-- https://mvnrepository.com/artifact/org.slf4j/slf4j-simple --&gt;</span>
+<span style="color:#000080">&lt;dependency&gt;</span>
+  <span style="color:#000080">&lt;groupId&gt;</span>org.slf4j<span style="color:#000080">&lt;/groupId&gt;</span>
+  <span style="color:#000080">&lt;artifactId&gt;</span>slf4j-simple<span style="color:#000080">&lt;/artifactId&gt;</span>
+  <span style="color:#000080">&lt;version&gt;</span>1.7.30<span style="color:#000080">&lt;/version&gt;</span>
+  <span style="color:#000080">&lt;scope&gt;</span>test<span style="color:#000080">&lt;/scope&gt;</span>
+<span style="color:#000080">&lt;/dependency&gt;</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>之后指定 <code>cache</code> 的 <code>type</code> 属性为 <code>org.mybatis.caches.ehcache.EhcacheCache</code> 。</p>
+<p>最后编写 <code>ehcache</code> 的配置文件：</p>
+<div class="highlight"><div style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4">
+<table style="border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 1
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 2
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 3
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 4
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 5
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 6
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 7
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 8
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 9
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">10
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">11
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">12
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">13
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">14
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-xml" data-lang="xml"><span style="color:#000080">&lt;ehcache&gt;</span>
+ <span style="color:#998;font-style:italic">&lt;!-- cache 保存路径 --&gt;</span>
+ <span style="color:#000080">&lt;diskStore</span> <span style="color:#008080">path=</span><span style="color:#d14">&#34;~/temp/ehcache&#34;</span> <span style="color:#000080">/&gt;</span>
+ <span style="color:#000080">&lt;defaultCache</span> 
+   <span style="color:#008080">maxElementsInMemory=</span><span style="color:#d14">&#34;10000&#34;</span> 
+   <span style="color:#008080">maxElementsOnDisk=</span><span style="color:#d14">&#34;10000000&#34;</span>
+   <span style="color:#008080">eternal=</span><span style="color:#d14">&#34;false&#34;</span> 
+   <span style="color:#008080">overflowToDisk=</span><span style="color:#d14">&#34;true&#34;</span> 
+   <span style="color:#008080">timeToIdleSeconds=</span><span style="color:#d14">&#34;120&#34;</span>
+   <span style="color:#008080">timeToLiveSeconds=</span><span style="color:#d14">&#34;120&#34;</span> 
+   <span style="color:#008080">diskExpiryThreadIntervalSeconds=</span><span style="color:#d14">&#34;120&#34;</span>
+   <span style="color:#008080">memoryStoreEvictionPolicy=</span><span style="color:#d14">&#34;LRU&#34;</span><span style="color:#000080">&gt;</span>
+ <span style="color:#000080">&lt;/defaultCache&gt;</span>
+<span style="color:#000080">&lt;/ehcache&gt;</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>其中 <code>defaultCache</code> 是配置 <code>ehcache</code> 的管理策略：</p>
+<ol>
+<li><code>maxElementsInMemory</code> 内存缓存中元素的最大数目，必须</li>
+<li><code>maxElementsOnDisk</code>  磁盘缓存中元素的周达数目，0 表示无限制，必须</li>
+<li><code>eternal</code> 设置元素是否是永不过期。如果为 <code>true</code>，则缓存的数据始终有效；如果为 <code>false</code> 那么还要根据 <code>timeToIdleSeconds</code>，<code>timeToLiveSeconds</code> 判断，必须</li>
+<li><code>overflowToDisk</code> 设置当前内存缓存溢出的时候是否将过期的元素缓存到磁盘上，必须</li>
+<li><code>timeToIdleSeconds</code> 当缓存在 <code>EhCache</code> 中数据前后两次访问时间超过 <code>timeToIdleSeconds</code> 的属性值时，缓存数据会被删除；默认为 0 即无限</li>
+<li><code>timeToLiveSeconds</code> 缓存元素的有效生命周期，默认为 0 即无限</li>
+<li><code>diskSpoolBufferSizeMB</code> 设置磁盘缓存的缓存区大小，默认是 30M，每个 Cache 都应该有自己的缓冲区</li>
+<li><code>diskPersistent</code> 在 VM 重启的时候是否启用磁盘保存 <code>EhCache</code> 中的数据，默认是 <code>false</code></li>
+<li><code>diskExpiryThreadIntervalSeconds</code> 磁盘缓存的清理线程运行间隔，默认是 120s，相应的线程进行一次 EhCache 中数据的清理</li>
+<li><code>memoryStoreEvictionPolicy</code> 当缓存达到最大，有新元素加入的时候，移除缓存侧策略。默认为 LRU，也可以选择 LFU 和 FIFO 两种</li>
+</ol>
+
+        </div>
+
+        
+
+
+        
+
+<div class="post-archive">
+    <h2>See Also</h2>
+    <ul class="listing">
+        
+        <li><a href="https://sangzhenya.github.io/post/DataBase/MyBatis/MyBaits-%E5%8A%A8%E6%80%81-SQL/">MyBatis 动态 SQL</a></li>
+        
+        <li><a href="https://sangzhenya.github.io/post/DataBase/MyBatis/MyBaits-%E6%8F%92%E4%BB%B6/">MyBaits 插件</a></li>
+        
+    </ul>
+</div>
+
+
+        <div class="post-meta meta-tags">
+            
+            <ul class="clearfix">
+                
+                <li><a href='https://sangzhenya.github.io/tags/MyBaits'>MyBaits</a></li>
+                
+            </ul>
+            
+        </div>
+    </article>
+    
+    
+
+    
+    
+</div>
+
+                </div>
+
+                <div id="secondary">
+    <section class="widget">
+        <form id="search" action='//www.google.com/search' method="get" accept-charset="utf-8" target="_blank" _lpchecked="1">
+      
+      <input type="text" name="q" maxlength="20" placeholder="Search">
+      <input type="hidden" name="sitesearch" value="https://sangzhenya.github.io/">
+      <button type="submit" class="submit icon-search"></button>
+</form>
+    </section>
+    
+    <section class="widget">
+        <h3 class="widget-title">最近文章</h3>
+<ul class="widget-list">
+    
+    <li>
+        <a href="https://sangzhenya.github.io/post/Java/JVM/Java-JNDI/" title="Java JNDI">Java JNDI</a>
+    </li>
+    
+    <li>
+        <a href="https://sangzhenya.github.io/post/Java/JVM/Java-OOM/" title="Java OOM">Java OOM</a>
+    </li>
+    
+    <li>
+        <a href="https://sangzhenya.github.io/post/Java/JVM/Java-JVM/" title="Java JVM">Java JVM</a>
+    </li>
+    
+    <li>
+        <a href="https://sangzhenya.github.io/post/Java/JVM/Java-HotSpot-GC-%E7%AE%97%E6%B3%95%E5%AE%9E%E7%8E%B0/" title="Java HotSpot GC 算法实现">Java HotSpot GC 算法实现</a>
+    </li>
+    
+    <li>
+        <a href="https://sangzhenya.github.io/post/Java/JVM/Java-GC-2/" title="Java GC 2">Java GC 2</a>
+    </li>
+    
+    <li>
+        <a href="https://sangzhenya.github.io/post/Java/JVM/Java-GC-1/" title="Java GC 1">Java GC 1</a>
+    </li>
+    
+    <li>
+        <a href="https://sangzhenya.github.io/post/Java/JVM/Java-%E8%99%9A%E6%8B%9F%E6%9C%BA%E5%86%85%E5%AD%98%E6%A8%A1%E5%9E%8B/" title="Java 虚拟机内存模型">Java 虚拟机内存模型</a>
+    </li>
+    
+    <li>
+        <a href="https://sangzhenya.github.io/post/Java/JVM/Java-%E9%80%83%E9%80%B8%E5%88%86%E6%9E%90/" title="Java 逃逸分析">Java 逃逸分析</a>
+    </li>
+    
+    <li>
+        <a href="https://sangzhenya.github.io/post/Java/JVM/Java-%E5%9B%9B%E7%A7%8D%E5%BC%95%E7%94%A8%E7%B1%BB%E5%9E%8B/" title="Java 四种引用类型">Java 四种引用类型</a>
+    </li>
+    
+    <li>
+        <a href="https://sangzhenya.github.io/post/%E5%BE%AE%E6%9C%8D%E5%8A%A1/dubbo/Dubbo-%E5%8E%9F%E7%90%86/" title="Dubbo 原理">Dubbo 原理</a>
+    </li>
+    
+</ul>
+    </section>
+
+    
+
+    <section class="widget">
+        <h3 class="widget-title">分类</h3>
+<ul class="widget-list">
+    
+    <li><a href="https://sangzhenya.github.io/categories/Java/">Java (22)</a></li>
+    
+    <li><a href="https://sangzhenya.github.io/categories/MQ/">MQ (3)</a></li>
+    
+    <li><a href="https://sangzhenya.github.io/categories/MyBaits/">MyBaits (7)</a></li>
+    
+    <li><a href="https://sangzhenya.github.io/categories/MySQL/">MySQL (4)</a></li>
+    
+    <li><a href="https://sangzhenya.github.io/categories/Netty/">Netty (10)</a></li>
+    
+    <li><a href="https://sangzhenya.github.io/categories/Nginx/">Nginx (2)</a></li>
+    
+    <li><a href="https://sangzhenya.github.io/categories/Redis/">Redis (2)</a></li>
+    
+    <li><a href="https://sangzhenya.github.io/categories/Spring/">Spring (36)</a></li>
+    
+    <li><a href="https://sangzhenya.github.io/categories/%E5%85%B3%E4%BA%8E/">关于 (1)</a></li>
+    
+    <li><a href="https://sangzhenya.github.io/categories/%E5%85%B6%E4%BB%96/">其他 (8)</a></li>
+    
+    <li><a href="https://sangzhenya.github.io/categories/%E5%BE%AE%E6%9C%8D%E5%8A%A1/">微服务 (11)</a></li>
+    
+    <li><a href="https://sangzhenya.github.io/categories/%E7%AE%97%E6%B3%95/">算法 (3)</a></li>
+    
+    <li><a href="https://sangzhenya.github.io/categories/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/">读书笔记 (7)</a></li>
+    
+</ul>
+    </section>
+
+    <section class="widget">
+        <h3 class="widget-title">标签</h3>
+<div class="tagcloud">
+    
+    <a href="https://sangzhenya.github.io/tags/Active-MQ/">Active MQ</a>
+    
+    <a href="https://sangzhenya.github.io/tags/Cookie/">Cookie</a>
+    
+    <a href="https://sangzhenya.github.io/tags/Debug/">Debug</a>
+    
+    <a href="https://sangzhenya.github.io/tags/Docker/">Docker</a>
+    
+    <a href="https://sangzhenya.github.io/tags/Dubbo/">Dubbo</a>
+    
+    <a href="https://sangzhenya.github.io/tags/Git/">Git</a>
+    
+    <a href="https://sangzhenya.github.io/tags/JDK8/">JDK8</a>
+    
+    <a href="https://sangzhenya.github.io/tags/JPA/">JPA</a>
+    
+    <a href="https://sangzhenya.github.io/tags/JUC/">JUC</a>
+    
+    <a href="https://sangzhenya.github.io/tags/JVM/">JVM</a>
+    
+    <a href="https://sangzhenya.github.io/tags/java/">java</a>
+    
+    <a href="https://sangzhenya.github.io/tags/Jenkins/">Jenkins</a>
+    
+    <a href="https://sangzhenya.github.io/tags/Kafka/">Kafka</a>
+    
+    <a href="https://sangzhenya.github.io/tags/Kubernetes/">Kubernetes</a>
+    
+    <a href="https://sangzhenya.github.io/tags/Linux/">Linux</a>
+    
+    <a href="https://sangzhenya.github.io/tags/Maven/">Maven</a>
+    
+    <a href="https://sangzhenya.github.io/tags/MyBaits/">MyBaits</a>
+    
+    <a href="https://sangzhenya.github.io/tags/MySQL/">MySQL</a>
+    
+    <a href="https://sangzhenya.github.io/tags/Netty/">Netty</a>
+    
+    <a href="https://sangzhenya.github.io/tags/Nginx/">Nginx</a>
+    
+    <a href="https://sangzhenya.github.io/tags/Rabbit-MQ/">Rabbit MQ</a>
+    
+    <a href="https://sangzhenya.github.io/tags/Redis/">Redis</a>
+    
+    <a href="https://sangzhenya.github.io/tags/Rocket-MQ/">Rocket MQ</a>
+    
+    <a href="https://sangzhenya.github.io/tags/Session/">Session</a>
+    
+    <a href="https://sangzhenya.github.io/tags/Spring/">Spring</a>
+    
+    <a href="https://sangzhenya.github.io/tags/Spring-Boot/">Spring Boot</a>
+    
+    <a href="https://sangzhenya.github.io/tags/Spring-Cloud/">Spring Cloud</a>
+    
+    <a href="https://sangzhenya.github.io/tags/Spring-Data/">Spring Data</a>
+    
+    <a href="https://sangzhenya.github.io/tags/Spring-MVC/">Spring MVC</a>
+    
+    <a href="https://sangzhenya.github.io/tags/Spring-Security/">Spring Security</a>
+    
+    <a href="https://sangzhenya.github.io/tags/Spring-%E6%B3%A8%E8%A7%A3/">Spring 注解</a>
+    
+    <a href="https://sangzhenya.github.io/tags/Tmux/">Tmux</a>
+    
+    <a href="https://sangzhenya.github.io/tags/Zookeeper/">Zookeeper</a>
+    
+    <a href="https://sangzhenya.github.io/tags/java/">java</a>
+    
+    <a href="https://sangzhenya.github.io/tags/%E4%BB%A3%E7%A0%81/">代码</a>
+    
+    <a href="https://sangzhenya.github.io/tags/%E5%85%B3%E4%BA%8E/">关于</a>
+    
+    <a href="https://sangzhenya.github.io/tags/%E5%BE%AE%E6%9C%8D%E5%8A%A1/">微服务</a>
+    
+    <a href="https://sangzhenya.github.io/tags/%E6%BA%90%E7%A0%81/">源码</a>
+    
+    <a href="https://sangzhenya.github.io/tags/%E7%AE%97%E6%B3%95/">算法</a>
+    
+    <a href="https://sangzhenya.github.io/tags/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/">设计模式</a>
+    
+    <a href="https://sangzhenya.github.io/tags/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/">读书笔记</a>
+    
+    <a href="https://sangzhenya.github.io/tags/%E9%9B%86%E5%90%88/">集合</a>
+    
+</div>
+    </section>
+
+    
+
+    <section class="widget">
+        <h3 class="widget-title">其它</h3>
+        <ul class="widget-list">
+            <li><a href="https://sangzhenya.github.io/index.xml">文章 RSS</a></li>
+        </ul>
+    </section>
+</div>
+            </div>
+        </div>
+    </div>
+    <footer id="footer">
+    <div class="container">
+        &copy; 2020 <a href="https://sangzhenya.github.io/">新月的博客 By 新月</a>.
+        Powered by <a rel="nofollow noreferer noopener" href="https://gohugo.io" target="_blank">Hugo</a>.
+        Theme based on <a href="https://github.com/flysnow-org/maupassant-hugo" target="_blank">maupassant</a>.
+        
+    </div>
+</footer>
+
+
+    
+    <script type="text/javascript">
+        window.MathJax = {
+            tex2jax: {
+                inlineMath: [['$', '$']],
+                processEscapes: true
+                }
+            };
+    </script>
+    <script src='https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-MML-AM_CHTML' async></script>
+
+
+<a id="rocket" href="#top"></a>
+<script type="text/javascript" src='https://sangzhenya.github.io/js/totop.js?v=0.0.0' async=""></script>
+
+
+
+
+
+
+</body>
+
+</html>

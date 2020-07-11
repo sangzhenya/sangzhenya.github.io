@@ -67,161 +67,231 @@
     <article class="post">
         <header>
             <h1 class="post-title">
-                <a href="https://sangzhenya.github.io/post/DataBase/MyBatis/%E5%8A%A8%E6%80%81-SQL/" title=""></a>
+                <a href="https://sangzhenya.github.io/post/Java/JVM/Java-%E5%8F%8C%E4%BA%B2%E5%A7%94%E6%B4%BE%E6%A8%A1%E5%9E%8B/" title="Java 双亲委派模型">Java 双亲委派模型</a>
             </h1>
         </header>
         <date class="post-meta meta-date">
-            1年1月1日
+            2020年2月7日
         </date>
         
-        <div class="post-content">
-            MyBatis 动态 SQL 使用 MyBatis 可以很轻松的完成动态 SQL 的拼写。 一个简单的使用 if 拼接的查询方法如下： 1 2 3 4 5 6 7 8 9 &lt;!-- List&lt;User&gt; queryUser(@Param(&#34;id&#34;) Integer id, @Param(&#34;name&#34;) String name, @Param(&#34;firstName&#34;) String firstName, @Param(&#34;lastName&#34;) String lastName); --&gt; &lt;select id=&#34;queryUser&#34; resultType=&#34;User&#34; databaseId=&#34;mysql&#34;&gt; select * from user where 1 = 1 &lt;if test=&#34;id != null&#34;&gt;and id = #{id} &lt;/if&gt; &lt;if test=&#34;name != null and name.trim() != &#39;&#39;&#34;&gt;and name = #{name} &lt;/if&gt; &lt;if test=&#34;firstName != null and firstName != &#39;&#39;&#34;&gt;and first_name = #{firstName} &lt;/if&gt; &lt;if test=&#34;lastName != null and lastName != &#39;&#39;&#34;&gt;and last_name = #{lastName} &lt;/if&gt; &lt;/select&gt; 当然也可以使用 where 标签去省略掉 where 关键字：……
+        <div class="post-meta">
+            <span>|</span>
+            
+            <span class="meta-category"><a href='https://sangzhenya.github.io/categories/Java'>Java</a></span>
+            
         </div>
-        <p class="readmore"><a href="https://sangzhenya.github.io/post/DataBase/MyBatis/%E5%8A%A8%E6%80%81-SQL/">阅读全文</a></p>
+        
+        <div class="post-content">
+            类加载机制 类从被加载到虚拟机内存开始，到卸载出内存为止，整个生命周期包括：加载 -&gt; 验证 -&gt; 准备 -&gt; 解析 -&gt; 初始化 -&gt; 使用 -&gt; 卸载 7个阶段。其中 验证、准备、解析三个阶段可以统称为连接。如图所示： 以上过程中加载、验证、准备、初始化和卸载5个阶段的顺序是确定的，但是解析阶段则不一定，在一些情况下可……
+        </div>
+        <p class="readmore"><a href="https://sangzhenya.github.io/post/Java/JVM/Java-%E5%8F%8C%E4%BA%B2%E5%A7%94%E6%B4%BE%E6%A8%A1%E5%9E%8B/">阅读全文</a></p>
     </article>
     
     <article class="post">
         <header>
             <h1 class="post-title">
-                <a href="https://sangzhenya.github.io/post/DataBase/MyBatis/%E6%8F%92%E4%BB%B6/" title=""></a>
+                <a href="https://sangzhenya.github.io/post/%E5%BE%AE%E6%9C%8D%E5%8A%A1/dubbo/Dubbo-%E5%9F%BA%E6%9C%AC%E9%85%8D%E7%BD%AE/" title="Dubbo 基本配置">Dubbo 基本配置</a>
             </h1>
         </header>
         <date class="post-meta meta-date">
-            1年1月1日
+            2020年2月3日
         </date>
         
-        <div class="post-content">
-            MyBaits 插件 MyBatis 在创建四个主要对象（Executor， ParameterHandler, ResultSetHandler, StatementHandler）的过程中都会使用到插件。插件可以利用动态代理机制一层层的包装目标对象从而实现在目标对象执行目标方法之前进行拦截。 一个简单的插件编写如下： 首先编写实现 Interceptor 的主类： 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19……
+        <div class="post-meta">
+            <span>|</span>
+            
+            <span class="meta-category"><a href='https://sangzhenya.github.io/categories/%E5%BE%AE%E6%9C%8D%E5%8A%A1'>微服务</a></span>
+            
         </div>
-        <p class="readmore"><a href="https://sangzhenya.github.io/post/DataBase/MyBatis/%E6%8F%92%E4%BB%B6/">阅读全文</a></p>
+        
+        <div class="post-content">
+            参考地址：Dubbo 配置 启动时检查 Dubbo 默认情况下在启动的时候会检查依赖的服务是否可用，如果不可用的时候则抛出异常阻止 Spring 初始化的完成。如果是测试或者有循环依赖则需要关闭启动时检查，配置如下： 1 2 3 // # 关闭某个服务的启动时没有提供者的 Check @Reference(check = false) ArticleService articleService; # 关闭所有服务的启动时没有提供者的 Check dubbo.consumer.check=false dubbo.reference.check=false……
+        </div>
+        <p class="readmore"><a href="https://sangzhenya.github.io/post/%E5%BE%AE%E6%9C%8D%E5%8A%A1/dubbo/Dubbo-%E5%9F%BA%E6%9C%AC%E9%85%8D%E7%BD%AE/">阅读全文</a></p>
     </article>
     
     <article class="post">
         <header>
             <h1 class="post-title">
-                <a href="https://sangzhenya.github.io/post/DataBase/MyBatis/%E7%BC%93%E5%AD%98/" title=""></a>
+                <a href="https://sangzhenya.github.io/post/%E5%BE%AE%E6%9C%8D%E5%8A%A1/dubbo/Dubbo-%E5%9F%BA%E6%9C%AC%E6%A6%82%E5%BF%B5%E5%92%8C%E7%8E%AF%E5%A2%83%E6%90%AD%E5%BB%BA/" title="Dubbo 基本概念和环境搭建">Dubbo 基本概念和环境搭建</a>
             </h1>
         </header>
         <date class="post-meta meta-date">
-            1年1月1日
+            2020年2月1日
         </date>
         
-        <div class="post-content">
-            MyBaits 缓存 MyBatis 具有非常强大的缓存特性，可以方便的配置和定制。其默认定义了两级缓存：分布是一集缓存和二级缓存。 一级缓存：又称本地缓存。作用域为 sqlSession, 当 Session flush 或 close 之后，该 Session 中的所有 Cache 将被清空。其默认情况一级缓存开启，而且不能关闭，不过可以通过调用 clearCache 来清空本地缓存可以通过设置 localCacheScope 来修改缓存的作用域，……
+        <div class="post-meta">
+            <span>|</span>
+            
+            <span class="meta-category"><a href='https://sangzhenya.github.io/categories/%E5%BE%AE%E6%9C%8D%E5%8A%A1'>微服务</a></span>
+            
         </div>
-        <p class="readmore"><a href="https://sangzhenya.github.io/post/DataBase/MyBatis/%E7%BC%93%E5%AD%98/">阅读全文</a></p>
+        
+        <div class="post-content">
+            参考： Dubbo 快速入门 常规的垂直应用架构已无法应对网站应用规模的不断扩大，互联网应用架构大致的演进过程如下： 大致的演进历程也就是： 单一应用架构 -&gt; 垂直应用架构 -&gt; 分布式服务架构 -&gt; 流式计算架构。 在流式计算架构中有一个调度中心基于访问压力实时管理集群容量，提高集群利用率。 Dubbo 是一款高性能Java……
+        </div>
+        <p class="readmore"><a href="https://sangzhenya.github.io/post/%E5%BE%AE%E6%9C%8D%E5%8A%A1/dubbo/Dubbo-%E5%9F%BA%E6%9C%AC%E6%A6%82%E5%BF%B5%E5%92%8C%E7%8E%AF%E5%A2%83%E6%90%AD%E5%BB%BA/">阅读全文</a></p>
     </article>
     
     <article class="post">
         <header>
             <h1 class="post-title">
-                <a href="https://sangzhenya.github.io/post/DataBase/MyBatis/%E8%87%AA%E5%AE%9A%E4%B9%89-TypeHandler/" title=""></a>
+                <a href="https://sangzhenya.github.io/post/%E5%BE%AE%E6%9C%8D%E5%8A%A1/K8S/K8S/" title="Kubernetes">Kubernetes</a>
             </h1>
         </header>
         <date class="post-meta meta-date">
-            1年1月1日
+            2020年1月25日
         </date>
         
-        <div class="post-content">
-            MyBaits 自定义 TypeHandler MyBaits 支持通过自定义的 TypeHandler 的形式来设置参数或从结果中取出数据集的时候的封装策略。主要有以下几步： 实现 TypeHanlder结果或者继承 BaseTypeHandler 使用 @MappedTypes 定义处理的 Java 类型，使用 @MapJdbcTypes 定义 jdbc type 类型 在参数处理或自定义结果集处理的时候标明使用自定义的 TypeHandler 处理。也可以在全局配置 TypeHandler 要处理的 javaType 定义一个枚举……
+        <div class="post-meta">
+            <span>|</span>
+            
+            <span class="meta-category"><a href='https://sangzhenya.github.io/categories/%E5%BE%AE%E6%9C%8D%E5%8A%A1'>微服务</a></span>
+            
         </div>
-        <p class="readmore"><a href="https://sangzhenya.github.io/post/DataBase/MyBatis/%E8%87%AA%E5%AE%9A%E4%B9%89-TypeHandler/">阅读全文</a></p>
+        
+        <div class="post-content">
+            K8S 是一个工业级的容器编排平台。主要有以下一些特点：轻量级，消耗资源少；弹性伸缩；负载均衡。 K8S 是基于 Borg 开发的，Borg 的架构如如下图所示： 首先是 BorgMaster 为了防止单点故障一般情况下都是以集群的形式出现，而且通常应该设置三个以上的奇数个 BorgMaster。Scheduler 调度器，有任务的……
+        </div>
+        <p class="readmore"><a href="https://sangzhenya.github.io/post/%E5%BE%AE%E6%9C%8D%E5%8A%A1/K8S/K8S/">阅读全文</a></p>
     </article>
     
     <article class="post">
         <header>
             <h1 class="post-title">
-                <a href="https://sangzhenya.github.io/post/DataBase/MyBatis/%E8%BF%90%E8%A1%8C%E5%8E%9F%E7%90%86/" title=""></a>
+                <a href="https://sangzhenya.github.io/post/%E5%BE%AE%E6%9C%8D%E5%8A%A1/kafka/Kafka-%E4%BD%BF%E7%94%A8/" title="Kafka 使用">Kafka 使用</a>
             </h1>
         </header>
         <date class="post-meta meta-date">
-            1年1月1日
+            2020年1月21日
         </date>
         
-        <div class="post-content">
-            MyBatis 运行原理 MyBaits 分层结构图 MyBatis 过程整个过程有以下四步： 创建 SqlSessionFactory 获取 SqlSession 获取代理对象 执行方法 获取 SqlSessionFactory 1 2 3 4 5 6 public SqlSessionFactory getSqlSessionFactory() throws IOException { // 获取配置的文件流 InputStream inputStream = Resources.getResourceAsStream(&#34;mybatis-config.xml&#34;); // 根据配置使用 SqlSessionFactoryBuilder 生成 SqlSessionFactory return new SqlSessionFactoryBuilder().build(inputStream); } 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 // SqlSessionFactoryBuilder public SqlSessionFactory build(InputStream inputStream) { // 调用内部的 build 方法 return build(inputStream, null, null); } public SqlSessionFactory build(InputStream inputStream, String environment, Properties properties) { try {……
+        <div class="post-meta">
+            <span>|</span>
+            
+            <span class="meta-category"><a href='https://sangzhenya.github.io/categories/%E5%BE%AE%E6%9C%8D%E5%8A%A1'>微服务</a></span>
+            
         </div>
-        <p class="readmore"><a href="https://sangzhenya.github.io/post/DataBase/MyBatis/%E8%BF%90%E8%A1%8C%E5%8E%9F%E7%90%86/">阅读全文</a></p>
+        
+        <div class="post-content">
+            发送 Kafka 的 Producer 发送消息时采用异步发送的方式，在消息的发送过程中，涉及到了两个线程， main 线程和 sender 线程，以及一个线程共享变量 RecordAccumulator main 线程将消息发送给 RecordAccumulator Sender 线程不断从 RecordAccumulator 中拉取消息发送到 Kafka Broker 上。如下图所示： 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29 30 // 一个简单的 Producer public class MyPartitionerProducer { static Logger logger = LoggerFactory.getLogger(MyPartitionerProducer.class); public……
+        </div>
+        <p class="readmore"><a href="https://sangzhenya.github.io/post/%E5%BE%AE%E6%9C%8D%E5%8A%A1/kafka/Kafka-%E4%BD%BF%E7%94%A8/">阅读全文</a></p>
     </article>
     
     <article class="post">
         <header>
             <h1 class="post-title">
-                <a href="https://sangzhenya.github.io/post/DataBase/MyBatis/%E9%85%8D%E7%BD%AE%E6%96%87%E4%BB%B6/" title=""></a>
+                <a href="https://sangzhenya.github.io/post/%E5%BE%AE%E6%9C%8D%E5%8A%A1/kafka/Kafka/" title="Kafka">Kafka</a>
             </h1>
         </header>
         <date class="post-meta meta-date">
-            1年1月1日
+            2020年1月17日
         </date>
         
-        <div class="post-content">
-            MyBaits 配置文件 MyBaits 是一个半自动化的持久化层框架，支持定制化 SQL，存储过程以及高级映射。避免 JDBC 代码和手动设置参数以及获取结果集。其使用简单的 XML 或注解用于配置和原始映射，将接口和 Java 的对象映射成数据库记录。 一个简单的项目配置如下： pom.xml 配置如下： 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 &lt;dependencies&gt; &lt;!-- https://mvnrepository.com/artifact/org.mybatis/mybatis……
+        <div class="post-meta">
+            <span>|</span>
+            
+            <span class="meta-category"><a href='https://sangzhenya.github.io/categories/%E5%BE%AE%E6%9C%8D%E5%8A%A1'>微服务</a></span>
+            
         </div>
-        <p class="readmore"><a href="https://sangzhenya.github.io/post/DataBase/MyBatis/%E9%85%8D%E7%BD%AE%E6%96%87%E4%BB%B6/">阅读全文</a></p>
+        
+        <div class="post-content">
+            kafka 是一个分布式的记于订阅发布模式的消息队列，主要应用于大数据实时处理领域。 消息队列好处：解耦，可恢复性，缓冲，灵活性与峰值处理能力，异步通讯。 消息队列有两种模式：点对点模式即一对一，发布订阅模式即一对多。 Kafka 基础架构 如下图所示： 上图中主要组成有以下几部分： Producer： 消息生产……
+        </div>
+        <p class="readmore"><a href="https://sangzhenya.github.io/post/%E5%BE%AE%E6%9C%8D%E5%8A%A1/kafka/Kafka/">阅读全文</a></p>
     </article>
     
     <article class="post">
         <header>
             <h1 class="post-title">
-                <a href="https://sangzhenya.github.io/post/DataBase/MySQL/MySQL-%E4%BA%8B%E5%8A%A1%E8%A7%86%E5%9B%BE%E5%AD%98%E5%82%A8%E8%BF%87%E7%A8%8B%E5%8F%8A-Join-%E6%9F%A5%E8%AF%A2/" title=""></a>
+                <a href="https://sangzhenya.github.io/post/%E5%BE%AE%E6%9C%8D%E5%8A%A1/zookeeper/Zookeeper-%E4%BD%BF%E7%94%A8/" title="Zookeeper 使用">Zookeeper 使用</a>
             </h1>
         </header>
         <date class="post-meta meta-date">
-            1年1月1日
+            2020年1月14日
         </date>
         
-        <div class="post-content">
-            MySQL 事务、视图、存储过程及 Join 查询 事务 对于 MySQL 中只有使用 Innodb 数据库搜索引擎的数据卷或表才支持事务，事务是用来维护数据库的完整性，保证成批的 SQL 语句要么全部执行，要么全部不执行。用来管理 insert, update, delete 语句，一般来说事务需要满足 4 个条件 ACID，即原子性 A，一致性 C，隔离性 I，持久性 D。 原子性：一个事……
+        <div class="post-meta">
+            <span>|</span>
+            
+            <span class="meta-category"><a href='https://sangzhenya.github.io/categories/%E5%BE%AE%E6%9C%8D%E5%8A%A1'>微服务</a></span>
+            
         </div>
-        <p class="readmore"><a href="https://sangzhenya.github.io/post/DataBase/MySQL/MySQL-%E4%BA%8B%E5%8A%A1%E8%A7%86%E5%9B%BE%E5%AD%98%E5%82%A8%E8%BF%87%E7%A8%8B%E5%8F%8A-Join-%E6%9F%A5%E8%AF%A2/">阅读全文</a></p>
+        
+        <div class="post-content">
+            Java 连接使用 Zookeeper 的样例 pom 依赖如下： 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 &lt;dependency&gt; &lt;groupId&gt;org.apache.logging.log4j&lt;/groupId&gt; &lt;artifactId&gt;log4j-core&lt;/artifactId&gt; &lt;version&gt;2.12.1&lt;/version&gt; &lt;/dependency&gt; &lt;dependency&gt; &lt;groupId&gt;org.junit.jupiter&lt;/groupId&gt; &lt;artifactId&gt;junit-jupiter-api&lt;/artifactId&gt; &lt;version&gt;5.5.2&lt;/version&gt; &lt;scope&gt;test&lt;/scope&gt; &lt;/dependency&gt; &lt;dependency&gt; &lt;groupId&gt;org.apache.zookeeper&lt;/groupId&gt; &lt;artifactId&gt;zookeeper&lt;/artifactId&gt; &lt;version&gt;3.5.6&lt;/version&gt; &lt;/dependency&gt; 简单的增加节点/获取节点/判断节点是否存在的操作。 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29 30 31 32 33 34 public class MyZookeeper { private static Logger logger = LoggerFactory.getLogger(MyZookeeper.class); private static final String CONNECT_STRING = &#34;192.168.29.128:2181,192.168.29.129:2181,192.168.29.130:2181&#34;; private static final int SESSION_TIMEOUT = 2000; private static ZooKeeper zooKeeper; public static void main(String[] args) throws……
+        </div>
+        <p class="readmore"><a href="https://sangzhenya.github.io/post/%E5%BE%AE%E6%9C%8D%E5%8A%A1/zookeeper/Zookeeper-%E4%BD%BF%E7%94%A8/">阅读全文</a></p>
     </article>
     
     <article class="post">
         <header>
             <h1 class="post-title">
-                <a href="https://sangzhenya.github.io/post/DataBase/MySQL/MySQL-%E6%9F%A5%E8%AF%A2%E4%BC%98%E5%8C%96/" title=""></a>
+                <a href="https://sangzhenya.github.io/post/%E5%BE%AE%E6%9C%8D%E5%8A%A1/zookeeper/Zookeeper/" title="Zookeeper">Zookeeper</a>
             </h1>
         </header>
         <date class="post-meta meta-date">
-            1年1月1日
+            2020年1月7日
         </date>
         
-        <div class="post-content">
-            MySQL 查询优化 架构 MySQL 架构图如下： 连接层 最上层是一些客户端和连接服务，包含本地 Socket 通信和大多数基于客户端/服务端工具实现的类似 TCP/IP 的通讯。主要完成一些类似于连接处理、授权认证及相关安全的方案。在该层上引入了线程池的概念，为通过认证安全接入的客户端提供线程。同样在该层是基于 SSL 的安全连接。服务……
+        <div class="post-meta">
+            <span>|</span>
+            
+            <span class="meta-category"><a href='https://sangzhenya.github.io/categories/%E5%BE%AE%E6%9C%8D%E5%8A%A1'>微服务</a></span>
+            
         </div>
-        <p class="readmore"><a href="https://sangzhenya.github.io/post/DataBase/MySQL/MySQL-%E6%9F%A5%E8%AF%A2%E4%BC%98%E5%8C%96/">阅读全文</a></p>
+        
+        <div class="post-content">
+            Zookeeper 从设计模式角度来看是一个机遇观察者模式的设计的分布式服务管理框架，负责存储和管理需要关心的数据，接受观察者注册，一旦观察的数据状态发生变化，Zookeeper 将负责将通知已经在 Zookeeper 上注册的那些观察者做出相应的反应。Zookeeper 结构图如下： Zookeeper 特点： 一个领导者和多个跟随着组成的……
+        </div>
+        <p class="readmore"><a href="https://sangzhenya.github.io/post/%E5%BE%AE%E6%9C%8D%E5%8A%A1/zookeeper/Zookeeper/">阅读全文</a></p>
     </article>
     
     <article class="post">
         <header>
             <h1 class="post-title">
-                <a href="https://sangzhenya.github.io/post/DataBase/MySQL/MySQL-%E7%B4%A2%E5%BC%95%E5%8F%8A%E4%BC%98%E5%8C%96/" title=""></a>
+                <a href="https://sangzhenya.github.io/post/%E5%BE%AE%E6%9C%8D%E5%8A%A1/%E5%BE%AE%E6%9C%8D%E5%8A%A1%E7%AE%80%E4%BB%8B/" title="微服务简介">微服务简介</a>
             </h1>
         </header>
         <date class="post-meta meta-date">
-            1年1月1日
+            2020年1月5日
         </date>
         
-        <div class="post-content">
-            MySQL 索引及优化 索引 索引是帮助 MySQL 高效获取数据的数据结构，即本质上就是一种数据结构。数据库在存储数据之外还维护者满足特定查找算法的数据结构，这些数据结构以某种方式引用数据，这样就可以在数据结构上实现高级的查找算法，一种索引方式如下图所示： 一般来说索引文件本身也很大，所以并不会全部存储在……
+        <div class="post-meta">
+            <span>|</span>
+            
+            <span class="meta-category"><a href='https://sangzhenya.github.io/categories/%E5%BE%AE%E6%9C%8D%E5%8A%A1'>微服务</a></span>
+            
         </div>
-        <p class="readmore"><a href="https://sangzhenya.github.io/post/DataBase/MySQL/MySQL-%E7%B4%A2%E5%BC%95%E5%8F%8A%E4%BC%98%E5%8C%96/">阅读全文</a></p>
+        
+        <div class="post-content">
+            微服务，通常而言微服务架构是一种架构模式或说是一种架构风格，其倡导将单一应用程序划分成一组小的服务，每个服务运行在其独立的自己的进程中，服务之间相互协调相互配合，为用户提供最终价值。服务之间采用轻量级的通讯机制相同通讯。每个服务围绕着具体业务进行构建，并且能够被独立的部署到生产环……
+        </div>
+        <p class="readmore"><a href="https://sangzhenya.github.io/post/%E5%BE%AE%E6%9C%8D%E5%8A%A1/%E5%BE%AE%E6%9C%8D%E5%8A%A1%E7%AE%80%E4%BB%8B/">阅读全文</a></p>
     </article>
     
     <article class="post">
         <header>
             <h1 class="post-title">
-                <a href="https://sangzhenya.github.io/post/DataBase/MySQL/MySQL-%E9%94%81%E5%8F%8A%E4%B8%BB%E4%BB%8E%E5%A4%8D%E5%88%B6/" title=""></a>
+                <a href="https://sangzhenya.github.io/post/%E5%BE%AE%E6%9C%8D%E5%8A%A1/CAP-%E5%8E%9F%E5%88%99-/" title="ACID 原则 与 CAP 原则">ACID 原则 与 CAP 原则</a>
             </h1>
         </header>
         <date class="post-meta meta-date">
-            1年1月1日
+            2020年1月3日
         </date>
         
-        <div class="post-content">
-            MySQL 锁及主从复制 锁 从数据操作的类型可以分为读锁和写锁，从对数据操作的粒度分可以分为表锁和行锁。 读写锁 读锁：共享锁针对同一份数据，多个读操作可以同时进行而不会互相影响。 写锁：排它锁，当前写操作没有完成前会阻断其他写锁和读锁。 行表锁 表锁: 偏读，偏向于 MyISAM 存储引擎，开销小，加锁快；锁粒度大……
+        <div class="post-meta">
+            <span>|</span>
+            
+            <span class="meta-category"><a href='https://sangzhenya.github.io/categories/%E5%BE%AE%E6%9C%8D%E5%8A%A1'>微服务</a></span>
+            
         </div>
-        <p class="readmore"><a href="https://sangzhenya.github.io/post/DataBase/MySQL/MySQL-%E9%94%81%E5%8F%8A%E4%B8%BB%E4%BB%8E%E5%A4%8D%E5%88%B6/">阅读全文</a></p>
+        
+        <div class="post-content">
+            ACID 原则 A (Atomicity) 原子性 原子性即事务里的所有操作要么全部做完，要么都不做。事务成功的条件就是事务里所有操作都成功，任意一个事务失败，则整个事务就是失败，需要回滚。 C (Consistency) 一致性 一致性即数据库要一直处于一致状态，事务的运行不会改变数据库原本的一致性约束。 I (Isolation) 独立性 独立性即并发的事务之间不会相互……
+        </div>
+        <p class="readmore"><a href="https://sangzhenya.github.io/post/%E5%BE%AE%E6%9C%8D%E5%8A%A1/CAP-%E5%8E%9F%E5%88%99-/">阅读全文</a></p>
     </article>
     
     
@@ -280,7 +350,7 @@
         
         
         <li >
-            <a href="https://sangzhenya.github.io/page/13/">13</a>
+            <a href="https://sangzhenya.github.io/page/12/">12</a>
         </li>
         
     
@@ -316,43 +386,43 @@
 <ul class="widget-list">
     
     <li>
-        <a href="https://sangzhenya.github.io/post/Java/jdk8/Java-8-Stream/" title="Java 8 Stream">Java 8 Stream</a>
+        <a href="https://sangzhenya.github.io/post/Java/JVM/Java-JNDI/" title="Java JNDI">Java JNDI</a>
     </li>
     
     <li>
-        <a href="https://sangzhenya.github.io/post/Java/jdk8/Java-8-Lambda/" title="Java 8 Lambda">Java 8 Lambda</a>
+        <a href="https://sangzhenya.github.io/post/Java/JVM/Java-OOM/" title="Java OOM">Java OOM</a>
     </li>
     
     <li>
-        <a href="https://sangzhenya.github.io/post/Java/juc/Java-ConcurrentHashMap/" title="Java ConcurrentHashMap">Java ConcurrentHashMap</a>
+        <a href="https://sangzhenya.github.io/post/Java/JVM/Java-JVM/" title="Java JVM">Java JVM</a>
     </li>
     
     <li>
-        <a href="https://sangzhenya.github.io/post/Java/juc/Java-CAS/" title="Java CAS">Java CAS</a>
+        <a href="https://sangzhenya.github.io/post/Java/JVM/Java-HotSpot-GC-%E7%AE%97%E6%B3%95%E5%AE%9E%E7%8E%B0/" title="Java HotSpot GC 算法实现">Java HotSpot GC 算法实现</a>
     </li>
     
     <li>
-        <a href="https://sangzhenya.github.io/post/Java/juc/Java-volatile/" title="Java volatile">Java volatile</a>
+        <a href="https://sangzhenya.github.io/post/Java/JVM/Java-GC-2/" title="Java GC 2">Java GC 2</a>
     </li>
     
     <li>
-        <a href="https://sangzhenya.github.io/post/Java/juc/Java-ReentrantLock/" title="Java ReentrantLock">Java ReentrantLock</a>
+        <a href="https://sangzhenya.github.io/post/Java/JVM/Java-GC-1/" title="Java GC 1">Java GC 1</a>
     </li>
     
     <li>
-        <a href="https://sangzhenya.github.io/post/Java/juc/Java-%E5%B9%B6%E5%8F%91%E6%8E%A7%E5%88%B6/" title="Java 并发控制">Java 并发控制</a>
+        <a href="https://sangzhenya.github.io/post/Java/JVM/Java-%E8%99%9A%E6%8B%9F%E6%9C%BA%E5%86%85%E5%AD%98%E6%A8%A1%E5%9E%8B/" title="Java 虚拟机内存模型">Java 虚拟机内存模型</a>
     </li>
     
     <li>
-        <a href="https://sangzhenya.github.io/post/Java/juc/Java-AQS/" title="Java AQS">Java AQS</a>
+        <a href="https://sangzhenya.github.io/post/Java/JVM/Java-%E9%80%83%E9%80%B8%E5%88%86%E6%9E%90/" title="Java 逃逸分析">Java 逃逸分析</a>
     </li>
     
     <li>
-        <a href="https://sangzhenya.github.io/post/DataBase/MyBatis/MyBaits-%E4%B8%8E-Spring-Boot/" title=""></a>
+        <a href="https://sangzhenya.github.io/post/Java/JVM/Java-%E5%9B%9B%E7%A7%8D%E5%BC%95%E7%94%A8%E7%B1%BB%E5%9E%8B/" title="Java 四种引用类型">Java 四种引用类型</a>
     </li>
     
     <li>
-        <a href="https://sangzhenya.github.io/post/DataBase/MyBatis/SQL-%E6%98%A0%E5%B0%84/" title=""></a>
+        <a href="https://sangzhenya.github.io/post/%E5%BE%AE%E6%9C%8D%E5%8A%A1/dubbo/Dubbo-%E5%8E%9F%E7%90%86/" title="Dubbo 原理">Dubbo 原理</a>
     </li>
     
 </ul>
@@ -364,9 +434,31 @@
         <h3 class="widget-title">分类</h3>
 <ul class="widget-list">
     
-    <li><a href="https://sangzhenya.github.io/categories/Java/">Java (8)</a></li>
+    <li><a href="https://sangzhenya.github.io/categories/Java/">Java (22)</a></li>
+    
+    <li><a href="https://sangzhenya.github.io/categories/MQ/">MQ (3)</a></li>
+    
+    <li><a href="https://sangzhenya.github.io/categories/MyBaits/">MyBaits (7)</a></li>
+    
+    <li><a href="https://sangzhenya.github.io/categories/MySQL/">MySQL (4)</a></li>
+    
+    <li><a href="https://sangzhenya.github.io/categories/Netty/">Netty (10)</a></li>
+    
+    <li><a href="https://sangzhenya.github.io/categories/Nginx/">Nginx (2)</a></li>
+    
+    <li><a href="https://sangzhenya.github.io/categories/Redis/">Redis (2)</a></li>
+    
+    <li><a href="https://sangzhenya.github.io/categories/Spring/">Spring (36)</a></li>
     
     <li><a href="https://sangzhenya.github.io/categories/%E5%85%B3%E4%BA%8E/">关于 (1)</a></li>
+    
+    <li><a href="https://sangzhenya.github.io/categories/%E5%85%B6%E4%BB%96/">其他 (8)</a></li>
+    
+    <li><a href="https://sangzhenya.github.io/categories/%E5%BE%AE%E6%9C%8D%E5%8A%A1/">微服务 (11)</a></li>
+    
+    <li><a href="https://sangzhenya.github.io/categories/%E7%AE%97%E6%B3%95/">算法 (3)</a></li>
+    
+    <li><a href="https://sangzhenya.github.io/categories/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/">读书笔记 (7)</a></li>
     
 </ul>
     </section>
@@ -375,7 +467,21 @@
         <h3 class="widget-title">标签</h3>
 <div class="tagcloud">
     
+    <a href="https://sangzhenya.github.io/tags/Active-MQ/">Active MQ</a>
+    
+    <a href="https://sangzhenya.github.io/tags/Cookie/">Cookie</a>
+    
+    <a href="https://sangzhenya.github.io/tags/Debug/">Debug</a>
+    
+    <a href="https://sangzhenya.github.io/tags/Docker/">Docker</a>
+    
+    <a href="https://sangzhenya.github.io/tags/Dubbo/">Dubbo</a>
+    
+    <a href="https://sangzhenya.github.io/tags/Git/">Git</a>
+    
     <a href="https://sangzhenya.github.io/tags/JDK8/">JDK8</a>
+    
+    <a href="https://sangzhenya.github.io/tags/JPA/">JPA</a>
     
     <a href="https://sangzhenya.github.io/tags/JUC/">JUC</a>
     
@@ -383,7 +489,65 @@
     
     <a href="https://sangzhenya.github.io/tags/java/">java</a>
     
+    <a href="https://sangzhenya.github.io/tags/Jenkins/">Jenkins</a>
+    
+    <a href="https://sangzhenya.github.io/tags/Kafka/">Kafka</a>
+    
+    <a href="https://sangzhenya.github.io/tags/Kubernetes/">Kubernetes</a>
+    
+    <a href="https://sangzhenya.github.io/tags/Linux/">Linux</a>
+    
+    <a href="https://sangzhenya.github.io/tags/Maven/">Maven</a>
+    
+    <a href="https://sangzhenya.github.io/tags/MyBaits/">MyBaits</a>
+    
+    <a href="https://sangzhenya.github.io/tags/MySQL/">MySQL</a>
+    
+    <a href="https://sangzhenya.github.io/tags/Netty/">Netty</a>
+    
+    <a href="https://sangzhenya.github.io/tags/Nginx/">Nginx</a>
+    
+    <a href="https://sangzhenya.github.io/tags/Rabbit-MQ/">Rabbit MQ</a>
+    
+    <a href="https://sangzhenya.github.io/tags/Redis/">Redis</a>
+    
+    <a href="https://sangzhenya.github.io/tags/Rocket-MQ/">Rocket MQ</a>
+    
+    <a href="https://sangzhenya.github.io/tags/Session/">Session</a>
+    
+    <a href="https://sangzhenya.github.io/tags/Spring/">Spring</a>
+    
+    <a href="https://sangzhenya.github.io/tags/Spring-Boot/">Spring Boot</a>
+    
+    <a href="https://sangzhenya.github.io/tags/Spring-Cloud/">Spring Cloud</a>
+    
+    <a href="https://sangzhenya.github.io/tags/Spring-Data/">Spring Data</a>
+    
+    <a href="https://sangzhenya.github.io/tags/Spring-MVC/">Spring MVC</a>
+    
+    <a href="https://sangzhenya.github.io/tags/Spring-Security/">Spring Security</a>
+    
+    <a href="https://sangzhenya.github.io/tags/Spring-%E6%B3%A8%E8%A7%A3/">Spring 注解</a>
+    
+    <a href="https://sangzhenya.github.io/tags/Tmux/">Tmux</a>
+    
+    <a href="https://sangzhenya.github.io/tags/Zookeeper/">Zookeeper</a>
+    
+    <a href="https://sangzhenya.github.io/tags/java/">java</a>
+    
+    <a href="https://sangzhenya.github.io/tags/%E4%BB%A3%E7%A0%81/">代码</a>
+    
     <a href="https://sangzhenya.github.io/tags/%E5%85%B3%E4%BA%8E/">关于</a>
+    
+    <a href="https://sangzhenya.github.io/tags/%E5%BE%AE%E6%9C%8D%E5%8A%A1/">微服务</a>
+    
+    <a href="https://sangzhenya.github.io/tags/%E6%BA%90%E7%A0%81/">源码</a>
+    
+    <a href="https://sangzhenya.github.io/tags/%E7%AE%97%E6%B3%95/">算法</a>
+    
+    <a href="https://sangzhenya.github.io/tags/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/">设计模式</a>
+    
+    <a href="https://sangzhenya.github.io/tags/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/">读书笔记</a>
     
     <a href="https://sangzhenya.github.io/tags/%E9%9B%86%E5%90%88/">集合</a>
     

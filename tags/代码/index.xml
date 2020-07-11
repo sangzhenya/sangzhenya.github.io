@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>代码 on 新月的博客</title>
+    <link>https://sangzhenya.github.io/tags/%E4%BB%A3%E7%A0%81/</link>
+    <description>Recent content in 代码 on 新月的博客</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>zh-CN</language>
+    <lastBuildDate>Thu, 10 Jan 2019 09:00:00 +0800</lastBuildDate>
+    
+	<atom:link href="https://sangzhenya.github.io/tags/%E4%BB%A3%E7%A0%81/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>《代码整洁之道》读书笔记</title>
+      <link>https://sangzhenya.github.io/post/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/%E4%BB%A3%E7%A0%81%E6%95%B4%E6%B4%81%E4%B9%8B%E9%81%93%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/</link>
+      <pubDate>Thu, 10 Jan 2019 09:00:00 +0800</pubDate>
+      
+      <guid>https://sangzhenya.github.io/post/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/%E4%BB%A3%E7%A0%81%E6%95%B4%E6%B4%81%E4%B9%8B%E9%81%93%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/</guid>
+      <description>有意义的命名 名副其实 一个好的变量、函数或类的名字应该已经答复了所以的大问题。该告诉你为什么存在？做什么事情？应该怎样使用？ 避免误导 避免使用与本意相悖的词。例如 accountList 除非这真的是存放一组账号的 List 否则不应该使用 List 这样对程序员有特殊意义的词。 另外避免使用很长且名称相近或区别很小的名称。 做有</description>
+    </item>
+    
+    <item>
+      <title>《编写可读代码的艺术》读书笔记</title>
+      <link>https://sangzhenya.github.io/post/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/%E7%BC%96%E5%86%99%E5%8F%AF%E8%AF%BB%E4%BB%A3%E7%A0%81%E7%9A%84%E8%89%BA%E6%9C%AF%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/</link>
+      <pubDate>Sat, 05 Jan 2019 09:00:00 +0800</pubDate>
+      
+      <guid>https://sangzhenya.github.io/post/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/%E7%BC%96%E5%86%99%E5%8F%AF%E8%AF%BB%E4%BB%A3%E7%A0%81%E7%9A%84%E8%89%BA%E6%9C%AF%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/</guid>
+      <description>可读性基本定理，关键思想是代码的写法应当使别人理解它需要的时间最小化。其中的 理解 表示其他人能够改动它，找出缺陷并明白它如何与其他部分代码交互的。 审美 让源代码看上去养眼的三条原则： 使用一致的布局，让读者很快就习惯这种风格 让相似的代码看上去相思 把相关的代码分组，形成代码块 重新安排换行</description>
+    </item>
+    
+  </channel>
+</rss>

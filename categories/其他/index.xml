@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>其他 on 新月的博客</title>
+    <link>https://sangzhenya.github.io/categories/%E5%85%B6%E4%BB%96/</link>
+    <description>Recent content in 其他 on 新月的博客</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>zh-CN</language>
+    <lastBuildDate>Wed, 01 May 2019 09:00:00 +0800</lastBuildDate>
+    
+	<atom:link href="https://sangzhenya.github.io/categories/%E5%85%B6%E4%BB%96/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>Tmux</title>
+      <link>https://sangzhenya.github.io/post/Others/Tmux/</link>
+      <pubDate>Wed, 01 May 2019 09:00:00 +0800</pubDate>
+      
+      <guid>https://sangzhenya.github.io/post/Others/Tmux/</guid>
+      <description>Tmux 是一个终端复用器类自由软件，用户可以通过 tmux 在一个终端内管理多个分离的会话，窗口及面板，对于同时使用多个命令行，或多个任务时非常方便。 tmux 主要由以下几个模块组成： server 服务，tmux 运行的基础服务，以下的模块均依赖此服务 session 会话，一个服务可以包含多个会话 window 窗口，一个会话可以包含多个窗口 panel</description>
+    </item>
+    
+    <item>
+      <title>Cookie 和 Session</title>
+      <link>https://sangzhenya.github.io/post/Others/Session-%E5%92%8C-Cookie/</link>
+      <pubDate>Thu, 25 Apr 2019 09:00:00 +0800</pubDate>
+      
+      <guid>https://sangzhenya.github.io/post/Others/Session-%E5%92%8C-Cookie/</guid>
+      <description>Cookie 和 Session Cookie Cookie 的作用 Cookie的作用像是去超市购物的时候办理的购物卡，里面村上了你的个人信息，下次来到超时后的时候，超市可以识别你的会员卡，直接购物。 由于 HTTP 是一种无状态协议，当用户的一次访问请求结束后，后端服务器无法知道下一次来访问的是否还是上次访问的用户。Cookie 的作用就是用</description>
+    </item>
+    
+    <item>
+      <title>Maven 入门</title>
+      <link>https://sangzhenya.github.io/post/Others/Maven/</link>
+      <pubDate>Tue, 23 Apr 2019 09:00:00 +0800</pubDate>
+      
+      <guid>https://sangzhenya.github.io/post/Others/Maven/</guid>
+      <description>构建的各个环节 清理：将以前编译得到的旧的 class 字节码文件删除，为下一次编译做准备 编译：将 Java 源程序编译成 class 字节码文件 测试：自动测试，自动调用 junit 程序 报告：测试程序执行的结果 打包：动态 Web工程打 war 包，Java 工程打 jar 包 安装：将打包得到的文件复制到 ”仓库“ 中指定的位置 部署：将打包后的文件部</description>
+    </item>
+    
+    <item>
+      <title>Linux 命令</title>
+      <link>https://sangzhenya.github.io/post/Others/Linux-%E5%91%BD%E4%BB%A4/</link>
+      <pubDate>Sun, 21 Apr 2019 09:00:00 +0800</pubDate>
+      
+      <guid>https://sangzhenya.github.io/post/Others/Linux-%E5%91%BD%E4%BB%A4/</guid>
+      <description>强制卸载软件： 1 2 3 4 sudo mv /var/lib/dpkg/info/{packagename}.* /tmp/ sudo dpkg --remove --force-remove-reinstreq {packagename} sudo apt-get remove {packagename} sudo apt-get autoremove &amp;amp;&amp;amp; sudo apt-get autoclean 常用命令： top 命令： load average: 三个值分别是系统 1分钟，5分钟，15分钟系统的负载平均值。如果三个值相加，除以3，乘以 100%的结果大于 60%，则表明系统压力过大。 uptime 命令精简版，显示系统负载情况。 vmstat 命令； vmstat -n 2 3 每 2 秒查询一次，</description>
+    </item>
+    
+    <item>
+      <title>Jenkins 自动部署</title>
+      <link>https://sangzhenya.github.io/post/Others/Jenkins-%E8%87%AA%E5%8A%A8%E9%83%A8%E7%BD%B2/</link>
+      <pubDate>Fri, 19 Apr 2019 09:00:00 +0800</pubDate>
+      
+      <guid>https://sangzhenya.github.io/post/Others/Jenkins-%E8%87%AA%E5%8A%A8%E9%83%A8%E7%BD%B2/</guid>
+      <description>博客后台每次 build 之后都需手动放到服务器上，然后停掉原本的服务，重新启动服务。为了简化流程所以使用 Jenkins 进行自动化部署。 首先项目是基于 Docker 的（至于 Jenkins 和 Docker 的安装非常流程化，这边不赘述）。 将项目打包成 Docker 镜像 首先编写 Dockerfile 简单如下， 1 2 3 4 5 6 FROMopenjdk:11.0-jre-slimMAINTAINERxinyue&amp;lt;xinyue@xinyue.com&amp;gt;EXPOSE8081VOLUME/tmpADD /target/blog-0.0.1-SNAPSHOT.jar app.jarENTRYPOINT [ &amp;#34;java&amp;#34;, &amp;#34;-jar&amp;#34;, &amp;#34;/app.jar&amp;#34;, &amp;#34;--spring.profiles.active=prd&amp;#34;] 对于我的项目非常的简单，就是基于 openjdk 11 的镜</description>
+    </item>
+    
+    <item>
+      <title>Debug Java 程序 对象后面的数字是什么</title>
+      <link>https://sangzhenya.github.io/post/Others/Java-%E7%A8%8B%E5%BA%8F-Debug-%E5%90%8E%E9%9D%A2%E7%9A%84%E6%95%B0%E5%AD%97/</link>
+      <pubDate>Wed, 17 Apr 2019 09:00:00 +0800</pubDate>
+      
+      <guid>https://sangzhenya.github.io/post/Others/Java-%E7%A8%8B%E5%BA%8F-Debug-%E5%90%8E%E9%9D%A2%E7%9A%84%E6%95%B0%E5%AD%97/</guid>
+      <description>在 Debug Java 程序的时候，在 IDEA 的 Variables 窗口中经常可以看到类似下图形式的变量： {ConcurrentHashMap$Segment@873} 中的 873 是 JVM 在调试的时候提供的唯一的 ObjectId，在程序内部是无法访问的。可以参考 Stack Overflow上的一个问答： Deciphering variable information while debugging Java 后半部分：java.util.concurrent.ConcurrentHashMap</description>
+    </item>
+    
+    <item>
+      <title>Git Action 自动部署</title>
+      <link>https://sangzhenya.github.io/post/Others/Github-Action-%E8%87%AA%E5%8A%A8%E9%83%A8%E7%BD%B2/</link>
+      <pubDate>Mon, 15 Apr 2019 09:00:00 +0800</pubDate>
+      
+      <guid>https://sangzhenya.github.io/post/Others/Github-Action-%E8%87%AA%E5%8A%A8%E9%83%A8%E7%BD%B2/</guid>
+      <description>博客的前端项目同样需要在每次修改之后自动部署到服务器上，但是由于服务器内存太小导致，运行 npm run build 命令的时候内存不足导致其他程序异常退出，所以没有使用 Jenkins 进行自动化部署。然后发现 Github 提供了 Action 可以进行自动化 build 部署。所以对于前端项目使用 GitHub Action 进行部署。 本文仅记录自己前端项目的自动构建配置流程，</description>
+    </item>
+    
+    <item>
+      <title>Git 基础</title>
+      <link>https://sangzhenya.github.io/post/Others/Git-%E5%9F%BA%E7%A1%80/</link>
+      <pubDate>Sat, 13 Apr 2019 09:00:00 +0800</pubDate>
+      
+      <guid>https://sangzhenya.github.io/post/Others/Git-%E5%9F%BA%E7%A1%80/</guid>
+      <description>Git 是一个开源的分布式版本控制系统，Git 主要分为三个区域：工作区，暂存区和版本库 上图中左侧为工作区域，右侧为版本库。在版本库中标记为 index 的区域是暂存区，标记 master 的是代表 master 分支锁代表的目录树。 Git 常用命令 Git 配置命令 1 2 3 git config --list 列出所有的配置信息 git config --global user.name &amp;#34;User Name&amp;#34; git config --global user.email &amp;#34;User Email&amp;#34; Git 基本命令 1 2 3 4 5</description>
+    </item>
+    
+  </channel>
+</rss>

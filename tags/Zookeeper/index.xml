@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Zookeeper on 新月的博客</title>
+    <link>https://sangzhenya.github.io/tags/Zookeeper/</link>
+    <description>Recent content in Zookeeper on 新月的博客</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>zh-CN</language>
+    <lastBuildDate>Tue, 14 Jan 2020 09:00:00 +0800</lastBuildDate>
+    
+	<atom:link href="https://sangzhenya.github.io/tags/Zookeeper/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>Zookeeper 使用</title>
+      <link>https://sangzhenya.github.io/post/%E5%BE%AE%E6%9C%8D%E5%8A%A1/zookeeper/Zookeeper-%E4%BD%BF%E7%94%A8/</link>
+      <pubDate>Tue, 14 Jan 2020 09:00:00 +0800</pubDate>
+      
+      <guid>https://sangzhenya.github.io/post/%E5%BE%AE%E6%9C%8D%E5%8A%A1/zookeeper/Zookeeper-%E4%BD%BF%E7%94%A8/</guid>
+      <description>Java 连接使用 Zookeeper 的样例 pom 依赖如下： 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 &amp;lt;dependency&amp;gt; &amp;lt;groupId&amp;gt;org.apache.logging.log4j&amp;lt;/groupId&amp;gt; &amp;lt;artifactId&amp;gt;log4j-core&amp;lt;/artifactId&amp;gt; &amp;lt;version&amp;gt;2.12.1&amp;lt;/version&amp;gt; &amp;lt;/dependency&amp;gt; &amp;lt;dependency&amp;gt; &amp;lt;groupId&amp;gt;org.junit.jupiter&amp;lt;/groupId&amp;gt; &amp;lt;artifactId&amp;gt;junit-jupiter-api&amp;lt;/artifactId&amp;gt; &amp;lt;version&amp;gt;5.5.2&amp;lt;/version&amp;gt; &amp;lt;scope&amp;gt;test&amp;lt;/scope&amp;gt; &amp;lt;/dependency&amp;gt; &amp;lt;dependency&amp;gt; &amp;lt;groupId&amp;gt;org.apache.zookeeper&amp;lt;/groupId&amp;gt; &amp;lt;artifactId&amp;gt;zookeeper&amp;lt;/artifactId&amp;gt; &amp;lt;version&amp;gt;3.5.6&amp;lt;/version&amp;gt; &amp;lt;/dependency&amp;gt; 简单的增加节点/获取节点/判断节点是否存在的操作。 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29 30 31 32 33 34 public class MyZookeeper { private static Logger logger = LoggerFactory.getLogger(MyZookeeper.class); private static final String CONNECT_STRING = &amp;#34;192.168.29.128:2181,192.168.29.129:2181,192.168.29.130:2181&amp;#34;; private static final int SESSION_TIMEOUT = 2000; private static ZooKeeper zooKeeper; public static void main(String[] args) throws</description>
+    </item>
+    
+    <item>
+      <title>Zookeeper</title>
+      <link>https://sangzhenya.github.io/post/%E5%BE%AE%E6%9C%8D%E5%8A%A1/zookeeper/Zookeeper/</link>
+      <pubDate>Tue, 07 Jan 2020 09:00:00 +0800</pubDate>
+      
+      <guid>https://sangzhenya.github.io/post/%E5%BE%AE%E6%9C%8D%E5%8A%A1/zookeeper/Zookeeper/</guid>
+      <description>Zookeeper 从设计模式角度来看是一个机遇观察者模式的设计的分布式服务管理框架，负责存储和管理需要关心的数据，接受观察者注册，一旦观察的数据状态发生变化，Zookeeper 将负责将通知已经在 Zookeeper 上注册的那些观察者做出相应的反应。Zookeeper 结构图如下： Zookeeper 特点： 一个领导者和多个跟随着组成的</description>
+    </item>
+    
+  </channel>
+</rss>

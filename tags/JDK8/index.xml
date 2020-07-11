@@ -13,19 +13,19 @@
     
     <item>
       <title>Java 8 Stream</title>
-      <link>https://sangzhenya.github.io/post/Java/jdk8/Java-8-Stream/</link>
+      <link>https://sangzhenya.github.io/post/Java/JDK8/Java-8-Stream/</link>
       <pubDate>Thu, 03 Jan 2019 09:00:00 +0800</pubDate>
       
-      <guid>https://sangzhenya.github.io/post/Java/jdk8/Java-8-Stream/</guid>
+      <guid>https://sangzhenya.github.io/post/Java/JDK8/Java-8-Stream/</guid>
       <description>流与集合 流 流是 Java 的新 API，允许以声明的方式处理集合。简单来说你可以把流看作是遍历数据集的高级迭代器。此外流还可以透明的并行处理。Java 8的集合支持一个新的 stream 方法，这个方法会返回一个流。 流与集合 粗略的来说流与集合的差异在于什么时候进行计算。集合是一个内存数据结构，包含数据结构中</description>
     </item>
     
     <item>
       <title>Java 8 Lambda</title>
-      <link>https://sangzhenya.github.io/post/Java/jdk8/Java-8-Lambda/</link>
+      <link>https://sangzhenya.github.io/post/Java/JDK8/Java-8-Lambda/</link>
       <pubDate>Thu, 03 Jan 2019 08:00:00 +0800</pubDate>
       
-      <guid>https://sangzhenya.github.io/post/Java/jdk8/Java-8-Lambda/</guid>
+      <guid>https://sangzhenya.github.io/post/Java/JDK8/Java-8-Lambda/</guid>
       <description>在编程中可以利用行为参数化来传递代码有助于应对不断变化的需求，即定义一个代码块来表示一个行为，然后传递这个行为。你可以决定在某一个事件发生的时候或者算法中的某个特定的时刻运行该代码，进而编写更为灵活且可重复的代码。而 Lambda 表达式可以让你简洁的表示一个行为或传递代码。Lambda 表达式</description>
     </item>
     

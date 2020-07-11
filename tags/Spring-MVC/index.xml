@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Spring MVC on 新月的博客</title>
+    <link>https://sangzhenya.github.io/tags/Spring-MVC/</link>
+    <description>Recent content in Spring MVC on 新月的博客</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>zh-CN</language>
+    <lastBuildDate>Wed, 13 Feb 2019 09:00:00 +0800</lastBuildDate>
+    
+	<atom:link href="https://sangzhenya.github.io/tags/Spring-MVC/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>Spring MVC Web 组件</title>
+      <link>https://sangzhenya.github.io/post/Spring/Spring-MVC/Spring-MVC-Web-%E7%BB%84%E4%BB%B6/</link>
+      <pubDate>Wed, 13 Feb 2019 09:00:00 +0800</pubDate>
+      
+      <guid>https://sangzhenya.github.io/post/Spring/Spring-MVC/Spring-MVC-Web-%E7%BB%84%E4%BB%B6/</guid>
+      <description>Web 主要有三个组件，分别是 servlet, filter, listener. Servlet 其主要作用是处理客户端请求的动态资源。Servlet 通常需要接受请求，处理请求，完成响应。其生命周期分为四个阶段，1 调用构造方法实例化，2 调用 init 方法初始化，3 处理请求调用 Service 方法，4 服务终止 调用 destory 方法。在 web.xml 配置一个简单的 Servlet 如下： 1 2 3 4 5 6 7 8 9 10 11</description>
+    </item>
+    
+    <item>
+      <title>Spring MVC Model And View</title>
+      <link>https://sangzhenya.github.io/post/Spring/Spring-MVC/Spring-MVC-Model-And-View/</link>
+      <pubDate>Mon, 11 Feb 2019 09:00:00 +0800</pubDate>
+      
+      <guid>https://sangzhenya.github.io/post/Spring/Spring-MVC/Spring-MVC-Model-And-View/</guid>
+      <description>Spring MVC 在 ModelAndView 上添加数据主要以下三个方法： 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29 30 31 32 33 34 35 36 37 public ModelAndView addObject(Object attributeValue) { // 调用添加数据的方法 getModelMap().addAttribute(attributeValue); return this; } public ModelMap addAttribute(Object attributeValue) { Assert.notNull(attributeValue, &amp;#34;Model object must not be null&amp;#34;); // 如果为空则直接返回 if (attributeValue instanceof Collection &amp;amp;&amp;amp; ((Collection&amp;lt;?&amp;gt;) attributeValue).isEmpty()) { return this; } // 根据数据类型获取类名作为参数名称 return addAttribute(Conventions.getVariableName(attributeValue), attributeValue); } public ModelMap addAttribute(String attributeName, @Nullable Object attributeValue) { Assert.notNull(attributeName, &amp;#34;Model attribute name</description>
+    </item>
+    
+    <item>
+      <title>Spring MVC 自定义拦截器</title>
+      <link>https://sangzhenya.github.io/post/Spring/Spring-MVC/Spring-MVC-%E8%87%AA%E5%AE%9A%E4%B9%89%E6%8B%A6%E6%88%AA%E5%99%A8/</link>
+      <pubDate>Sat, 09 Feb 2019 09:00:00 +0800</pubDate>
+      
+      <guid>https://sangzhenya.github.io/post/Spring/Spring-MVC/Spring-MVC-%E8%87%AA%E5%AE%9A%E4%B9%89%E6%8B%A6%E6%88%AA%E5%99%A8/</guid>
+      <description>Spring MVC 也可以使用拦截器对请求进行拦截处理，用户可以自定义拦截器来实现特定的功能，自定义的拦截器必须实现 HandlerInterceptor 接口，其主要有三个方法： preHandle() 这个方法再业务处理请求之前被调用，在该方法中对用户请求 request 进行处理，如果需要该拦截器对请求进行拦截处理后还要调用其他拦截器或者业务方法进行处理则返回 tru</description>
+    </item>
+    
+    <item>
+      <title>Spring MVC @RequestMapping 注解</title>
+      <link>https://sangzhenya.github.io/post/Spring/Spring-MVC/Spring-MVC-%E6%B3%A8%E8%A7%A3/</link>
+      <pubDate>Thu, 07 Feb 2019 09:00:00 +0800</pubDate>
+      
+      <guid>https://sangzhenya.github.io/post/Spring/Spring-MVC/Spring-MVC-%E6%B3%A8%E8%A7%A3/</guid>
+      <description>SpringMVC 使用 @RequestMapping 注解为控制器指定可以处理哪些 URL 请求，在 Controller 的类和方法上都可以使用该注解，标记在类上提供初步的请求映射信息，相对于 Web 应用的根目录。标记在方法上提供进一步细分映射信息，对于标记在类上的 URL，如果方法所在的类未标注则 URL 是相对于 Web 应用的根目录。在 DispatcherServlet 截获请求后，就通过 @RequestMapping 提供的映射信</description>
+    </item>
+    
+    <item>
+      <title>Spring MVC 运行流程</title>
+      <link>https://sangzhenya.github.io/post/Spring/Spring-MVC/Spring-MVC-%E8%BF%90%E8%A1%8C%E6%B5%81%E7%A8%8B%E5%88%86%E6%9E%90/</link>
+      <pubDate>Tue, 05 Feb 2019 09:00:00 +0800</pubDate>
+      
+      <guid>https://sangzhenya.github.io/post/Spring/Spring-MVC/Spring-MVC-%E8%BF%90%E8%A1%8C%E6%B5%81%E7%A8%8B%E5%88%86%E6%9E%90/</guid>
+      <description>调用的起点是 org.springframework.web.servlet.DispatcherServlet#doService 方法 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29 30 31 32 33 34 35 36 37 38 39 40 41 42 43 44 45 46 47 // DispatcherServlet protected void doService(HttpServletRequest request, HttpServletResponse response) throws Exception { logRequest(request); // Keep a snapshot of the request attributes in case of an include, // to be able to restore the original attributes after the include. Map&amp;lt;String, Object&amp;gt; attributesSnapshot = null; if (WebUtils.isIncludeRequest(request)) { attributesSnapshot = new HashMap&amp;lt;&amp;gt;(); Enumeration&amp;lt;?&amp;gt; attrNames = request.getAttributeNames(); while (attrNames.hasMoreElements()) { String attrName = (String) attrNames.nextElement(); if (this.cleanupAfterInclude || attrName.startsWith(DEFAULT_STRATEGIES_PREFIX)) { attributesSnapshot.put(attrName, request.getAttribute(attrName)); } } } // Make framework objects available to handlers and view objects. // 在 request</description>
+    </item>
+    
+    <item>
+      <title>Spring MVC 异步处理</title>
+      <link>https://sangzhenya.github.io/post/Spring/Spring-MVC/Spring-MVC-%E5%BC%82%E6%AD%A5%E5%A4%84%E7%90%86/</link>
+      <pubDate>Sun, 03 Feb 2019 09:00:00 +0800</pubDate>
+      
+      <guid>https://sangzhenya.github.io/post/Spring/Spring-MVC/Spring-MVC-%E5%BC%82%E6%AD%A5%E5%A4%84%E7%90%86/</guid>
+      <description>在 Servlet 3.0 的时候增加了对异步的支持，在此之前 Servlet 采用 Thread Per Request 的方式处理请求。即如果一个请求如果进行耗时的操作例如 IO，数据库或者调用第三方的接口等等，其所对应的的线程将同步的等待响应操作的完成，所以此时线程并不能即使的释放线程放回线程池以供后续使用，在并发量大的情况下，这会带来性能问题。</description>
+    </item>
+    
+    <item>
+      <title>Spring 和 Spring MVC 整合</title>
+      <link>https://sangzhenya.github.io/post/Spring/Spring-MVC/Spring-%E5%92%8C-Spring-MVC%E6%95%B4%E5%90%88/</link>
+      <pubDate>Fri, 01 Feb 2019 09:00:00 +0800</pubDate>
+      
+      <guid>https://sangzhenya.github.io/post/Spring/Spring-MVC/Spring-%E5%92%8C-Spring-MVC%E6%95%B4%E5%90%88/</guid>
+      <description>Web 容器启动的时候会扫描每个 jar 包下的 META-INF\services\javax.servlet.ServletContainerInitializer 文件中的内容，根据文件中的定义全类名找到 ServletContainerInitializer 的子类，然后调用其 onStartup 方法。在引入的 spring-web 下就有这样的一个文件，其内容是 org.springframework.web.SpringServletContainerInitializer， 即定义了一个 Spri</description>
+    </item>
+    
+  </channel>
+</rss>

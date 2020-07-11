@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Docker on 新月的博客</title>
+    <link>https://sangzhenya.github.io/tags/Docker/</link>
+    <description>Recent content in Docker on 新月的博客</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>zh-CN</language>
+    <lastBuildDate>Wed, 01 Jan 2020 09:00:00 +0800</lastBuildDate>
+    
+	<atom:link href="https://sangzhenya.github.io/tags/Docker/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>Docker 入门</title>
+      <link>https://sangzhenya.github.io/post/%E5%BE%AE%E6%9C%8D%E5%8A%A1/Docker/</link>
+      <pubDate>Wed, 01 Jan 2020 09:00:00 +0800</pubDate>
+      
+      <guid>https://sangzhenya.github.io/post/%E5%BE%AE%E6%9C%8D%E5%8A%A1/Docker/</guid>
+      <description>基本概念 Docker 镜像是一个只读的模板。镜像可以用来创建 Docker 容器，一个镜像可以创建多个容器。仓库是存放镜像文件的地方，仓库注册服务器上存放着多个仓库。 镜像可以类比为 Java 的类，而容器可以类比为对象。 Docker 工作原理 Docker 是一个 Client-Server 结构的系统，Docker 守护进程运行在主机上，然后通过 Socket 连接客户端访问，守护</description>
+    </item>
+    
+  </channel>
+</rss>

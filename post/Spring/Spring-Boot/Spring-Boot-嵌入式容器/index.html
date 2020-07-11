@@ -1,0 +1,1260 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <title>Spring Boot 嵌入式容器 | 新月的博客</title>
+    <meta property="og:title" content="Spring Boot 嵌入式容器 - 新月的博客">
+    <meta property="og:type" content="article">
+        
+    <meta property="article:published_time" content='2019-02-23T09:00:00&#43;08:00'>
+        
+        
+    <meta property="article:modified_time" content='2019-02-23T09:00:00&#43;08:00'>
+        
+    <meta name="Keywords" content="">
+    <meta name="description" content="Spring Boot 嵌入式容器">
+        
+    <meta name="author" content="新月">
+    <meta property="og:url" content="https://sangzhenya.github.io/post/Spring/Spring-Boot/Spring-Boot-%E5%B5%8C%E5%85%A5%E5%BC%8F%E5%AE%B9%E5%99%A8/">
+    <link rel="shortcut icon" href="https://sangzhenya.github.io/favicon.ico" type="image/x-icon">
+
+    <link rel="stylesheet" href='https://sangzhenya.github.io/css/normalize.css'>
+    <link rel="stylesheet" href='https://sangzhenya.github.io/css/style.css'>
+    <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+
+    
+
+
+    
+    
+</head>
+
+
+<body>
+    <header id="header" class="clearfix">
+    <div class="container">
+        <div class="col-group">
+            <div class="site-name ">
+                
+                    <a id="logo" href="https://sangzhenya.github.io/">
+                        新月的博客
+                    </a>
+                
+                <p class="description">晚来天欲雪，能饮一杯无？</p>
+            </div>
+            <div>
+                <nav id="nav-menu" class="clearfix">
+                    <a class="current" href="https://sangzhenya.github.io/">首页</a>
+                    
+                    <a  href="https://sangzhenya.github.io/archives/" title="归档">归档</a>
+                    
+                    <a  href="https://sangzhenya.github.io/about/" title="关于">关于</a>
+                    
+                </nav>
+            </div>
+        </div>
+    </div>
+</header>
+
+    <div id="body">
+        <div class="container">
+            <div class="col-group">
+
+                <div class="col-8" id="main">
+                    
+<div class="res-cons">
+    
+    <article class="post">
+        <header>
+            <h1 class="post-title">Spring Boot 嵌入式容器</h1>
+        </header>
+        <date class="post-meta meta-date">
+            2019年2月23日
+        </date>
+        
+        <div class="post-meta">
+            <span>|</span>
+            
+            <span class="meta-category"><a href='https://sangzhenya.github.io/categories/Spring'>Spring</a></span>
+            
+        </div>
+        
+        
+        
+        <div class="post-content">
+            <h3 id="对于嵌入式容器的配置">对于嵌入式容器的配置</h3>
+<p>Spring 的基本的 Server 的配置都可以在 <code>application.yaml</code> 中通过 <code>server</code> 相关的属性进行配置。</p>
+<p><img src="http://img.programya.com/Snipaste_2019-12-16_23-11-06.png" alt="Server 相关的配置"></p>
+<p>其对应的配置类是</p>
+<div class="highlight"><div style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4">
+<table style="border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 1
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 2
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 3
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 4
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 5
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 6
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 7
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 8
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 9
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">10
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">11
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#3c5d5d;font-weight:bold">@ConfigurationProperties</span><span style="color:#000;font-weight:bold">(</span>prefix <span style="color:#000;font-weight:bold">=</span> <span style="color:#d14">&#34;server&#34;</span><span style="color:#000;font-weight:bold">,</span> ignoreUnknownFields <span style="color:#000;font-weight:bold">=</span> <span style="color:#000;font-weight:bold">true</span><span style="color:#000;font-weight:bold">)</span>
+<span style="color:#000;font-weight:bold">public</span> <span style="color:#000;font-weight:bold">class</span> <span style="color:#458;font-weight:bold">ServerProperties</span> <span style="color:#000;font-weight:bold">{</span>
+  <span style="color:#000;font-weight:bold">private</span> <span style="color:#000;font-weight:bold">final</span> Tomcat tomcat <span style="color:#000;font-weight:bold">=</span> <span style="color:#000;font-weight:bold">new</span> Tomcat<span style="color:#000;font-weight:bold">();</span>
+  
+  <span style="color:#000;font-weight:bold">public</span> <span style="color:#000;font-weight:bold">static</span> <span style="color:#000;font-weight:bold">class</span> <span style="color:#458;font-weight:bold">Tomcat</span> <span style="color:#000;font-weight:bold">{</span>
+		<span style="color:#000;font-weight:bold">private</span> <span style="color:#000;font-weight:bold">final</span> Accesslog accesslog <span style="color:#000;font-weight:bold">=</span> <span style="color:#000;font-weight:bold">new</span> Accesslog<span style="color:#000;font-weight:bold">();</span>
+		<span style="color:#000;font-weight:bold">private</span> String protocolHeader<span style="color:#000;font-weight:bold">;</span>
+		<span style="color:#000;font-weight:bold">private</span> String protocolHeaderHttpsValue <span style="color:#000;font-weight:bold">=</span> <span style="color:#d14">&#34;https&#34;</span><span style="color:#000;font-weight:bold">;</span>
+		<span style="color:#000;font-weight:bold">private</span> String portHeader <span style="color:#000;font-weight:bold">=</span> <span style="color:#d14">&#34;X-Forwarded-Port&#34;</span><span style="color:#000;font-weight:bold">;</span>
+  <span style="color:#000;font-weight:bold">}</span>
+<span style="color:#000;font-weight:bold">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>其内部类 <code>Tomcat</code> 用户配置 <code>Tomcat</code> 相关的信息。在 <code>ServletWebServerFactoryCustomizer</code> 会使用 其中的配置对 嵌入式容器进行配置， 同样也可以通过使用 <code>WebServerFactoryCustomizer</code> 去配置嵌入式容器，例如如下：</p>
+<div class="highlight"><div style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4">
+<table style="border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">1
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">2
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">3
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">4
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">5
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">6
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">7
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#3c5d5d;font-weight:bold">@Configuration</span>
+<span style="color:#000;font-weight:bold">public</span> <span style="color:#000;font-weight:bold">class</span> <span style="color:#458;font-weight:bold">MvcConfig</span> <span style="color:#000;font-weight:bold">implements</span> WebMvcConfigurer <span style="color:#000;font-weight:bold">{</span>
+    <span style="color:#3c5d5d;font-weight:bold">@Bean</span>
+    <span style="color:#000;font-weight:bold">public</span> WebServerFactoryCustomizer<span style="color:#000;font-weight:bold">&lt;</span>ConfigurableWebServerFactory<span style="color:#000;font-weight:bold">&gt;</span> <span style="color:#900;font-weight:bold">customizer</span><span style="color:#000;font-weight:bold">()</span> <span style="color:#000;font-weight:bold">{</span>
+        <span style="color:#000;font-weight:bold">return</span> factory <span style="color:#000;font-weight:bold">-&gt;</span> factory<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">setPort</span><span style="color:#000;font-weight:bold">(</span>8081<span style="color:#000;font-weight:bold">);</span>
+    <span style="color:#000;font-weight:bold">}</span>
+<span style="color:#000;font-weight:bold">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><h3 id="在嵌入式容器中使用-web-三大组件">在嵌入式容器中使用 Web 三大组件</h3>
+<h4 id="servlet">Servlet</h4>
+<p>可以使用 <code>ServletRegistrationBean</code> 进行注册。</p>
+<div class="highlight"><div style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4">
+<table style="border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 1
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 2
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 3
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 4
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 5
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 6
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 7
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 8
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 9
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">10
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">11
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">12
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">13
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#000;font-weight:bold">public</span> <span style="color:#000;font-weight:bold">class</span> <span style="color:#458;font-weight:bold">MyServlet</span> <span style="color:#000;font-weight:bold">extends</span> HttpServlet <span style="color:#000;font-weight:bold">{</span>
+    <span style="color:#3c5d5d;font-weight:bold">@Override</span>
+    <span style="color:#000;font-weight:bold">protected</span> <span style="color:#458;font-weight:bold">void</span> <span style="color:#900;font-weight:bold">doGet</span><span style="color:#000;font-weight:bold">(</span>HttpServletRequest req<span style="color:#000;font-weight:bold">,</span> HttpServletResponse resp<span style="color:#000;font-weight:bold">)</span> <span style="color:#000;font-weight:bold">throws</span> IOException <span style="color:#000;font-weight:bold">{</span>
+        resp<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">getWriter</span><span style="color:#000;font-weight:bold">().</span><span style="color:#008080">write</span><span style="color:#000;font-weight:bold">(</span><span style="color:#d14">&#34;Hello World&#34;</span><span style="color:#000;font-weight:bold">);</span>
+    <span style="color:#000;font-weight:bold">}</span>
+<span style="color:#000;font-weight:bold">}</span>
+
+<span style="color:#3c5d5d;font-weight:bold">@Bean</span>
+<span style="color:#000;font-weight:bold">public</span> ServletRegistrationBean<span style="color:#000;font-weight:bold">&lt;</span>MyServlet<span style="color:#000;font-weight:bold">&gt;</span> <span style="color:#900;font-weight:bold">myServlet</span><span style="color:#000;font-weight:bold">()</span> <span style="color:#000;font-weight:bold">{</span>
+  ServletRegistrationBean<span style="color:#000;font-weight:bold">&lt;</span>MyServlet<span style="color:#000;font-weight:bold">&gt;</span> servletRegistrationBean <span style="color:#000;font-weight:bold">=</span> <span style="color:#000;font-weight:bold">new</span> ServletRegistrationBean<span style="color:#000;font-weight:bold">&lt;&gt;(</span><span style="color:#000;font-weight:bold">new</span> MyServlet<span style="color:#000;font-weight:bold">(),</span> <span style="color:#d14">&#34;/servlet&#34;</span><span style="color:#000;font-weight:bold">);</span>
+  servletRegistrationBean<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">setLoadOnStartup</span><span style="color:#000;font-weight:bold">(</span>1<span style="color:#000;font-weight:bold">);</span>
+  <span style="color:#000;font-weight:bold">return</span> servletRegistrationBean<span style="color:#000;font-weight:bold">;</span>
+<span style="color:#000;font-weight:bold">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><h4 id="filter">Filter</h4>
+<p>可以使用 <code>FilterRegistrationBean</code> 进行注册。</p>
+<div class="highlight"><div style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4">
+<table style="border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 1
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 2
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 3
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 4
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 5
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 6
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 7
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 8
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 9
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">10
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">11
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">12
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">13
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">14
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">15
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">16
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#000;font-weight:bold">public</span> <span style="color:#000;font-weight:bold">class</span> <span style="color:#458;font-weight:bold">MyFilter</span> <span style="color:#000;font-weight:bold">extends</span> HttpFilter <span style="color:#000;font-weight:bold">{</span>
+    <span style="color:#000;font-weight:bold">private</span> Log log <span style="color:#000;font-weight:bold">=</span> LogFactory<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">getLog</span><span style="color:#000;font-weight:bold">(</span>MyFilter<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">class</span><span style="color:#000;font-weight:bold">);</span>
+    <span style="color:#3c5d5d;font-weight:bold">@Override</span>
+    <span style="color:#000;font-weight:bold">public</span> <span style="color:#458;font-weight:bold">void</span> <span style="color:#900;font-weight:bold">doFilter</span><span style="color:#000;font-weight:bold">(</span>ServletRequest request<span style="color:#000;font-weight:bold">,</span> ServletResponse response<span style="color:#000;font-weight:bold">,</span> FilterChain chain<span style="color:#000;font-weight:bold">)</span> <span style="color:#000;font-weight:bold">throws</span> IOException<span style="color:#000;font-weight:bold">,</span> ServletException <span style="color:#000;font-weight:bold">{</span>
+        log<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">info</span><span style="color:#000;font-weight:bold">(</span><span style="color:#d14">&#34;My Filter Processed...&#34;</span><span style="color:#000;font-weight:bold">);</span>
+        chain<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">doFilter</span><span style="color:#000;font-weight:bold">(</span>request<span style="color:#000;font-weight:bold">,</span> response<span style="color:#000;font-weight:bold">);</span>
+    <span style="color:#000;font-weight:bold">}</span>
+<span style="color:#000;font-weight:bold">}</span>
+
+<span style="color:#3c5d5d;font-weight:bold">@Bean</span>
+<span style="color:#000;font-weight:bold">public</span> FilterRegistrationBean<span style="color:#000;font-weight:bold">&lt;</span>MyFilter<span style="color:#000;font-weight:bold">&gt;</span> <span style="color:#900;font-weight:bold">myFilter</span><span style="color:#000;font-weight:bold">()</span> <span style="color:#000;font-weight:bold">{</span>
+  FilterRegistrationBean<span style="color:#000;font-weight:bold">&lt;</span>MyFilter<span style="color:#000;font-weight:bold">&gt;</span> filterFilterRegistrationBean <span style="color:#000;font-weight:bold">=</span> <span style="color:#000;font-weight:bold">new</span> FilterRegistrationBean<span style="color:#000;font-weight:bold">&lt;&gt;();</span>
+  filterFilterRegistrationBean<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">setFilter</span><span style="color:#000;font-weight:bold">(</span><span style="color:#000;font-weight:bold">new</span> MyFilter<span style="color:#000;font-weight:bold">());</span>
+  filterFilterRegistrationBean<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">setUrlPatterns</span><span style="color:#000;font-weight:bold">(</span>Collections<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">singletonList</span><span style="color:#000;font-weight:bold">(</span><span style="color:#d14">&#34;/servlet&#34;</span><span style="color:#000;font-weight:bold">));</span>
+  <span style="color:#000;font-weight:bold">return</span> filterFilterRegistrationBean<span style="color:#000;font-weight:bold">;</span>
+<span style="color:#000;font-weight:bold">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><h4 id="listener">Listener</h4>
+<p>可以使用 <code>ServletListenerRegistrationBean</code> 注册。</p>
+<div class="highlight"><div style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4">
+<table style="border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 1
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 2
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 3
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 4
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 5
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 6
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 7
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 8
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 9
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">10
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">11
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">12
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">13
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">14
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">15
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">16
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#000;font-weight:bold">public</span> <span style="color:#000;font-weight:bold">class</span> <span style="color:#458;font-weight:bold">MyListener</span> <span style="color:#000;font-weight:bold">implements</span> ServletContextListener <span style="color:#000;font-weight:bold">{</span>
+    <span style="color:#000;font-weight:bold">private</span> Log log <span style="color:#000;font-weight:bold">=</span> LogFactory<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">getLog</span><span style="color:#000;font-weight:bold">(</span>MyListener<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">class</span><span style="color:#000;font-weight:bold">);</span>
+    <span style="color:#3c5d5d;font-weight:bold">@Override</span>
+    <span style="color:#000;font-weight:bold">public</span> <span style="color:#458;font-weight:bold">void</span> <span style="color:#900;font-weight:bold">contextInitialized</span><span style="color:#000;font-weight:bold">(</span>ServletContextEvent sce<span style="color:#000;font-weight:bold">)</span> <span style="color:#000;font-weight:bold">{</span>
+        log<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">info</span><span style="color:#000;font-weight:bold">(</span><span style="color:#d14">&#34;Servlet Context Inited&#34;</span><span style="color:#000;font-weight:bold">);</span>
+    <span style="color:#000;font-weight:bold">}</span>
+    <span style="color:#3c5d5d;font-weight:bold">@Override</span>
+    <span style="color:#000;font-weight:bold">public</span> <span style="color:#458;font-weight:bold">void</span> <span style="color:#900;font-weight:bold">contextDestroyed</span><span style="color:#000;font-weight:bold">(</span>ServletContextEvent sce<span style="color:#000;font-weight:bold">)</span> <span style="color:#000;font-weight:bold">{</span>
+        log<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">info</span><span style="color:#000;font-weight:bold">(</span><span style="color:#d14">&#34;Servlet Context Destroyed&#34;</span><span style="color:#000;font-weight:bold">);</span>
+    <span style="color:#000;font-weight:bold">}</span>
+<span style="color:#000;font-weight:bold">}</span>
+
+<span style="color:#3c5d5d;font-weight:bold">@Bean</span>
+<span style="color:#000;font-weight:bold">public</span> ServletListenerRegistrationBean<span style="color:#000;font-weight:bold">&lt;</span>MyListener<span style="color:#000;font-weight:bold">&gt;</span> <span style="color:#900;font-weight:bold">myListener</span><span style="color:#000;font-weight:bold">()</span> <span style="color:#000;font-weight:bold">{</span>
+  <span style="color:#000;font-weight:bold">return</span> <span style="color:#000;font-weight:bold">new</span> ServletListenerRegistrationBean<span style="color:#000;font-weight:bold">&lt;&gt;(</span><span style="color:#000;font-weight:bold">new</span> MyListener<span style="color:#000;font-weight:bold">());</span>
+<span style="color:#000;font-weight:bold">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>SpringBoot 在自动注册 Spring MVC 的时候会自动注册 <code>DispatcherServlet</code>。使用 <code>DispatcherServletAutoConfiguration</code> 进行注册。</p>
+<div class="highlight"><div style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4">
+<table style="border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 1
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 2
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 3
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 4
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 5
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 6
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 7
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 8
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 9
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">10
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">11
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">12
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">13
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">14
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">15
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">16
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">17
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">18
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">19
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">20
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">21
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">22
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#000;font-weight:bold">public</span> <span style="color:#000;font-weight:bold">static</span> <span style="color:#000;font-weight:bold">final</span> String DEFAULT_DISPATCHER_SERVLET_BEAN_NAME <span style="color:#000;font-weight:bold">=</span> <span style="color:#d14">&#34;dispatcherServlet&#34;</span><span style="color:#000;font-weight:bold">;</span>
+
+<span style="color:#3c5d5d;font-weight:bold">@Configuration</span><span style="color:#000;font-weight:bold">(</span>proxyBeanMethods <span style="color:#000;font-weight:bold">=</span> <span style="color:#000;font-weight:bold">false</span><span style="color:#000;font-weight:bold">)</span>
+<span style="color:#3c5d5d;font-weight:bold">@Conditional</span><span style="color:#000;font-weight:bold">(</span>DispatcherServletRegistrationCondition<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">class</span><span style="color:#000;font-weight:bold">)</span>
+<span style="color:#3c5d5d;font-weight:bold">@ConditionalOnClass</span><span style="color:#000;font-weight:bold">(</span>ServletRegistration<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">class</span><span style="color:#000;font-weight:bold">)</span>
+<span style="color:#3c5d5d;font-weight:bold">@EnableConfigurationProperties</span><span style="color:#000;font-weight:bold">(</span>WebMvcProperties<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">class</span><span style="color:#000;font-weight:bold">)</span>
+<span style="color:#3c5d5d;font-weight:bold">@Import</span><span style="color:#000;font-weight:bold">(</span>DispatcherServletConfiguration<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">class</span><span style="color:#000;font-weight:bold">)</span>
+<span style="color:#000;font-weight:bold">protected</span> <span style="color:#000;font-weight:bold">static</span> <span style="color:#000;font-weight:bold">class</span> <span style="color:#458;font-weight:bold">DispatcherServletRegistrationConfiguration</span> <span style="color:#000;font-weight:bold">{</span>
+
+  <span style="color:#3c5d5d;font-weight:bold">@Bean</span><span style="color:#000;font-weight:bold">(</span>name <span style="color:#000;font-weight:bold">=</span> DEFAULT_DISPATCHER_SERVLET_REGISTRATION_BEAN_NAME<span style="color:#000;font-weight:bold">)</span>
+  <span style="color:#3c5d5d;font-weight:bold">@ConditionalOnBean</span><span style="color:#000;font-weight:bold">(</span>value <span style="color:#000;font-weight:bold">=</span> DispatcherServlet<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">class</span><span style="color:#000;font-weight:bold">,</span> name <span style="color:#000;font-weight:bold">=</span> DEFAULT_DISPATCHER_SERVLET_BEAN_NAME<span style="color:#000;font-weight:bold">)</span>
+  <span style="color:#000;font-weight:bold">public</span> DispatcherServletRegistrationBean <span style="color:#900;font-weight:bold">dispatcherServletRegistration</span><span style="color:#000;font-weight:bold">(</span>DispatcherServlet dispatcherServlet<span style="color:#000;font-weight:bold">,</span>
+                                                                         WebMvcProperties webMvcProperties<span style="color:#000;font-weight:bold">,</span> ObjectProvider<span style="color:#000;font-weight:bold">&lt;</span>MultipartConfigElement<span style="color:#000;font-weight:bold">&gt;</span> multipartConfig<span style="color:#000;font-weight:bold">)</span> <span style="color:#000;font-weight:bold">{</span>
+    DispatcherServletRegistrationBean registration <span style="color:#000;font-weight:bold">=</span> <span style="color:#000;font-weight:bold">new</span> DispatcherServletRegistrationBean<span style="color:#000;font-weight:bold">(</span>dispatcherServlet<span style="color:#000;font-weight:bold">,</span>
+                                                                                           webMvcProperties<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">getServlet</span><span style="color:#000;font-weight:bold">().</span><span style="color:#008080">getPath</span><span style="color:#000;font-weight:bold">());</span>
+    registration<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">setName</span><span style="color:#000;font-weight:bold">(</span>DEFAULT_DISPATCHER_SERVLET_BEAN_NAME<span style="color:#000;font-weight:bold">);</span>
+    registration<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">setLoadOnStartup</span><span style="color:#000;font-weight:bold">(</span>webMvcProperties<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">getServlet</span><span style="color:#000;font-weight:bold">().</span><span style="color:#008080">getLoadOnStartup</span><span style="color:#000;font-weight:bold">());</span>
+    multipartConfig<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">ifAvailable</span><span style="color:#000;font-weight:bold">(</span>registration<span style="color:#000;font-weight:bold">::</span>setMultipartConfig<span style="color:#000;font-weight:bold">);</span>
+    <span style="color:#000;font-weight:bold">return</span> registration<span style="color:#000;font-weight:bold">;</span>
+  <span style="color:#000;font-weight:bold">}</span>
+
+<span style="color:#000;font-weight:bold">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><h3 id="切换嵌入式容器">切换嵌入式容器</h3>
+<p>在 Spring Boot 中除了支持 Tomcat 之外也支持 Jetty 和 Undertow 等另外两种 Servlet 容器。其中 Jetty 更适合于长链接的应用，而 Undertow 更适合于高并发的应用。</p>
+<p>例如必须想要使用 Undertow 代替默认的 Tomcat 容器，首先在 pom 文件中去除 Tomcat 的依赖，然后加入 Undertow 的依赖即可。</p>
+<div class="highlight"><div style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4">
+<table style="border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 1
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 2
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 3
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 4
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 5
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 6
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 7
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 8
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 9
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">10
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">11
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">12
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">13
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">14
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">15
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-xml" data-lang="xml"><span style="color:#000080">&lt;dependency&gt;</span>
+  <span style="color:#000080">&lt;groupId&gt;</span>org.springframework.boot<span style="color:#000080">&lt;/groupId&gt;</span>
+  <span style="color:#000080">&lt;artifactId&gt;</span>spring-boot-starter-web<span style="color:#000080">&lt;/artifactId&gt;</span>
+  <span style="color:#000080">&lt;exclusions&gt;</span>
+    <span style="color:#000080">&lt;exclusion&gt;</span>
+      <span style="color:#000080">&lt;artifactId&gt;</span>spring-boot-starter-tomcat<span style="color:#000080">&lt;/artifactId&gt;</span>
+      <span style="color:#000080">&lt;groupId&gt;</span>org.springframework.boot<span style="color:#000080">&lt;/groupId&gt;</span>
+    <span style="color:#000080">&lt;/exclusion&gt;</span>
+  <span style="color:#000080">&lt;/exclusions&gt;</span>
+<span style="color:#000080">&lt;/dependency&gt;</span>
+
+<span style="color:#000080">&lt;dependency&gt;</span>
+  <span style="color:#000080">&lt;artifactId&gt;</span>spring-boot-starter-undertow<span style="color:#000080">&lt;/artifactId&gt;</span>
+  <span style="color:#000080">&lt;groupId&gt;</span>org.springframework.boot<span style="color:#000080">&lt;/groupId&gt;</span>
+<span style="color:#000080">&lt;/dependency&gt;</span>
+</code></pre></td></tr></table>
+</div>
+</div><h3 id="嵌入式-servlet-容器自动配置原理">嵌入式 Servlet 容器自动配置原理</h3>
+<p>SpringBoot 主要依赖于<code>ServletWebServerFactoryAutoConfiguration</code> 引入不同的嵌入式 Servlet。</p>
+<p>其会引入各个 Servlet 容器的 Config 类，如下所示：</p>
+<div class="highlight"><div style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4">
+<table style="border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 1
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 2
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 3
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 4
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 5
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 6
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 7
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 8
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 9
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">10
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#3c5d5d;font-weight:bold">@Configuration</span><span style="color:#000;font-weight:bold">(</span>proxyBeanMethods <span style="color:#000;font-weight:bold">=</span> <span style="color:#000;font-weight:bold">false</span><span style="color:#000;font-weight:bold">)</span>
+<span style="color:#3c5d5d;font-weight:bold">@AutoConfigureOrder</span><span style="color:#000;font-weight:bold">(</span>Ordered<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">HIGHEST_PRECEDENCE</span><span style="color:#000;font-weight:bold">)</span>
+<span style="color:#3c5d5d;font-weight:bold">@ConditionalOnClass</span><span style="color:#000;font-weight:bold">(</span>ServletRequest<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">class</span><span style="color:#000;font-weight:bold">)</span>
+<span style="color:#3c5d5d;font-weight:bold">@ConditionalOnWebApplication</span><span style="color:#000;font-weight:bold">(</span>type <span style="color:#000;font-weight:bold">=</span> Type<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">SERVLET</span><span style="color:#000;font-weight:bold">)</span>
+<span style="color:#3c5d5d;font-weight:bold">@EnableConfigurationProperties</span><span style="color:#000;font-weight:bold">(</span>ServerProperties<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">class</span><span style="color:#000;font-weight:bold">)</span>
+<span style="color:#3c5d5d;font-weight:bold">@Import</span><span style="color:#000;font-weight:bold">({</span> ServletWebServerFactoryAutoConfiguration<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">BeanPostProcessorsRegistrar</span><span style="color:#000;font-weight:bold">.</span><span style="color:#008080">class</span><span style="color:#000;font-weight:bold">,</span>
+		ServletWebServerFactoryConfiguration<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">EmbeddedTomcat</span><span style="color:#000;font-weight:bold">.</span><span style="color:#008080">class</span><span style="color:#000;font-weight:bold">,</span>
+		ServletWebServerFactoryConfiguration<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">EmbeddedJetty</span><span style="color:#000;font-weight:bold">.</span><span style="color:#008080">class</span><span style="color:#000;font-weight:bold">,</span>
+		ServletWebServerFactoryConfiguration<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">EmbeddedUndertow</span><span style="color:#000;font-weight:bold">.</span><span style="color:#008080">class</span> <span style="color:#000;font-weight:bold">})</span>
+<span style="color:#000;font-weight:bold">public</span> <span style="color:#000;font-weight:bold">class</span> <span style="color:#458;font-weight:bold">ServletWebServerFactoryAutoConfiguration</span> <span style="color:#000;font-weight:bold">{</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>其中 Undertow 而配置如下：</p>
+<div class="highlight"><div style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4">
+<table style="border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 1
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 2
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 3
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 4
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 5
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 6
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 7
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 8
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 9
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">10
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">11
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">12
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">13
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">14
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">15
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">16
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">17
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">18
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">19
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">20
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">21
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">22
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#3c5d5d;font-weight:bold">@Configuration</span><span style="color:#000;font-weight:bold">(</span>proxyBeanMethods <span style="color:#000;font-weight:bold">=</span> <span style="color:#000;font-weight:bold">false</span><span style="color:#000;font-weight:bold">)</span>
+<span style="color:#000;font-weight:bold">class</span> <span style="color:#458;font-weight:bold">ServletWebServerFactoryConfiguration</span> <span style="color:#000;font-weight:bold">{</span>
+	<span style="color:#3c5d5d;font-weight:bold">@Configuration</span><span style="color:#000;font-weight:bold">(</span>proxyBeanMethods <span style="color:#000;font-weight:bold">=</span> <span style="color:#000;font-weight:bold">false</span><span style="color:#000;font-weight:bold">)</span>
+	<span style="color:#3c5d5d;font-weight:bold">@ConditionalOnClass</span><span style="color:#000;font-weight:bold">({</span> Servlet<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">class</span><span style="color:#000;font-weight:bold">,</span> Undertow<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">class</span><span style="color:#000;font-weight:bold">,</span> SslClientAuthMode<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">class</span> <span style="color:#000;font-weight:bold">})</span>
+	<span style="color:#3c5d5d;font-weight:bold">@ConditionalOnMissingBean</span><span style="color:#000;font-weight:bold">(</span>value <span style="color:#000;font-weight:bold">=</span> ServletWebServerFactory<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">class</span><span style="color:#000;font-weight:bold">,</span> search <span style="color:#000;font-weight:bold">=</span> SearchStrategy<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">CURRENT</span><span style="color:#000;font-weight:bold">)</span>
+	<span style="color:#000;font-weight:bold">public</span> <span style="color:#000;font-weight:bold">static</span> <span style="color:#000;font-weight:bold">class</span> <span style="color:#458;font-weight:bold">EmbeddedUndertow</span> <span style="color:#000;font-weight:bold">{</span>
+		<span style="color:#998;font-style:italic">// 讲 Undertow 的 Factory （UndertowServletWebServerFactory）添加到容器中，通过其 getWebServer 方法即可获取到对应的 WebServer
+</span><span style="color:#998;font-style:italic"></span>		<span style="color:#3c5d5d;font-weight:bold">@Bean</span>
+		<span style="color:#000;font-weight:bold">public</span> UndertowServletWebServerFactory <span style="color:#900;font-weight:bold">undertowServletWebServerFactory</span><span style="color:#000;font-weight:bold">(</span>
+				ObjectProvider<span style="color:#000;font-weight:bold">&lt;</span>UndertowDeploymentInfoCustomizer<span style="color:#000;font-weight:bold">&gt;</span> deploymentInfoCustomizers<span style="color:#000;font-weight:bold">,</span>
+				ObjectProvider<span style="color:#000;font-weight:bold">&lt;</span>UndertowBuilderCustomizer<span style="color:#000;font-weight:bold">&gt;</span> builderCustomizers<span style="color:#000;font-weight:bold">)</span> <span style="color:#000;font-weight:bold">{</span>
+			UndertowServletWebServerFactory factory <span style="color:#000;font-weight:bold">=</span> <span style="color:#000;font-weight:bold">new</span> UndertowServletWebServerFactory<span style="color:#000;font-weight:bold">();</span>
+			factory<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">getDeploymentInfoCustomizers</span><span style="color:#000;font-weight:bold">()</span>
+					<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">addAll</span><span style="color:#000;font-weight:bold">(</span>deploymentInfoCustomizers<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">orderedStream</span><span style="color:#000;font-weight:bold">().</span><span style="color:#008080">collect</span><span style="color:#000;font-weight:bold">(</span>Collectors<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">toList</span><span style="color:#000;font-weight:bold">()));</span>
+			factory<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">getBuilderCustomizers</span><span style="color:#000;font-weight:bold">().</span><span style="color:#008080">addAll</span><span style="color:#000;font-weight:bold">(</span>builderCustomizers<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">orderedStream</span><span style="color:#000;font-weight:bold">().</span><span style="color:#008080">collect</span><span style="color:#000;font-weight:bold">(</span>Collectors<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">toList</span><span style="color:#000;font-weight:bold">()));</span>
+			<span style="color:#000;font-weight:bold">return</span> factory<span style="color:#000;font-weight:bold">;</span>
+		<span style="color:#000;font-weight:bold">}</span>
+
+	<span style="color:#000;font-weight:bold">}</span>
+
+<span style="color:#000;font-weight:bold">}</span>
+
+</code></pre></td></tr></table>
+</div>
+</div><p>同时其为容器导入了一个 <code>ServletWebServerFactoryAutoConfiguration.BeanPostProcessorsRegistrar.class</code> 后置处理器对容器进行处理。</p>
+<div class="highlight"><div style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4">
+<table style="border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 1
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 2
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 3
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 4
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 5
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 6
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 7
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 8
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 9
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">10
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">11
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">12
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#3c5d5d;font-weight:bold">@Override</span>
+<span style="color:#000;font-weight:bold">public</span> <span style="color:#458;font-weight:bold">void</span> <span style="color:#900;font-weight:bold">registerBeanDefinitions</span><span style="color:#000;font-weight:bold">(</span>AnnotationMetadata importingClassMetadata<span style="color:#000;font-weight:bold">,</span>
+                                    BeanDefinitionRegistry registry<span style="color:#000;font-weight:bold">)</span> <span style="color:#000;font-weight:bold">{</span>
+  <span style="color:#000;font-weight:bold">if</span> <span style="color:#000;font-weight:bold">(</span><span style="color:#000;font-weight:bold">this</span><span style="color:#000;font-weight:bold">.</span><span style="color:#008080">beanFactory</span> <span style="color:#000;font-weight:bold">==</span> <span style="color:#000;font-weight:bold">null</span><span style="color:#000;font-weight:bold">)</span> <span style="color:#000;font-weight:bold">{</span>
+    <span style="color:#000;font-weight:bold">return</span><span style="color:#000;font-weight:bold">;</span>
+  <span style="color:#000;font-weight:bold">}</span>
+  <span style="color:#998;font-style:italic">// 为容器导入了 WebServerFactoryCustomizerBeanPostProcessor 组件
+</span><span style="color:#998;font-style:italic"></span>  registerSyntheticBeanIfMissing<span style="color:#000;font-weight:bold">(</span>registry<span style="color:#000;font-weight:bold">,</span> <span style="color:#d14">&#34;webServerFactoryCustomizerBeanPostProcessor&#34;</span><span style="color:#000;font-weight:bold">,</span>
+                                 WebServerFactoryCustomizerBeanPostProcessor<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">class</span><span style="color:#000;font-weight:bold">);</span>
+  registerSyntheticBeanIfMissing<span style="color:#000;font-weight:bold">(</span>registry<span style="color:#000;font-weight:bold">,</span> <span style="color:#d14">&#34;errorPageRegistrarBeanPostProcessor&#34;</span><span style="color:#000;font-weight:bold">,</span>
+                                 ErrorPageRegistrarBeanPostProcessor<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">class</span><span style="color:#000;font-weight:bold">);</span>
+<span style="color:#000;font-weight:bold">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>在 <code>WebServerFactoryCustomizerBeanPostProcessor</code> 中会调用 WebServer 容器的自定义配置。</p>
+<div class="highlight"><div style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4">
+<table style="border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">1
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">2
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">3
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">4
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">5
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">6
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#000;font-weight:bold">private</span> <span style="color:#458;font-weight:bold">void</span> <span style="color:#900;font-weight:bold">postProcessBeforeInitialization</span><span style="color:#000;font-weight:bold">(</span>WebServerFactory webServerFactory<span style="color:#000;font-weight:bold">)</span> <span style="color:#000;font-weight:bold">{</span>
+  <span style="color:#998;font-style:italic">// 拿到所有的 Customzer 逐个调用 customize 方法对容器进行定制。
+</span><span style="color:#998;font-style:italic"></span>  LambdaSafe<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">callbacks</span><span style="color:#000;font-weight:bold">(</span>WebServerFactoryCustomizer<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">class</span><span style="color:#000;font-weight:bold">,</span> getCustomizers<span style="color:#000;font-weight:bold">(),</span> webServerFactory<span style="color:#000;font-weight:bold">)</span>
+    <span style="color:#000;font-weight:bold">.</span><span style="color:#008080">withLogger</span><span style="color:#000;font-weight:bold">(</span>WebServerFactoryCustomizerBeanPostProcessor<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">class</span><span style="color:#000;font-weight:bold">)</span>
+    <span style="color:#000;font-weight:bold">.</span><span style="color:#008080">invoke</span><span style="color:#000;font-weight:bold">((</span>customizer<span style="color:#000;font-weight:bold">)</span> <span style="color:#000;font-weight:bold">-&gt;</span> customizer<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">customize</span><span style="color:#000;font-weight:bold">(</span>webServerFactory<span style="color:#000;font-weight:bold">));</span>
+<span style="color:#000;font-weight:bold">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>SpringBoot 主要依赖 <code>EmbeddedWebServerFactoryCustomizerAutoConfiguration</code> 对嵌入式容器进行自动配置。</p>
+<div class="highlight"><div style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4">
+<table style="border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 1
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 2
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 3
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 4
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 5
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 6
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 7
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 8
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 9
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">10
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">11
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">12
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">13
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">14
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">15
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">16
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#3c5d5d;font-weight:bold">@Configuration</span><span style="color:#000;font-weight:bold">(</span>proxyBeanMethods <span style="color:#000;font-weight:bold">=</span> <span style="color:#000;font-weight:bold">false</span><span style="color:#000;font-weight:bold">)</span>
+<span style="color:#3c5d5d;font-weight:bold">@ConditionalOnWebApplication</span>
+<span style="color:#3c5d5d;font-weight:bold">@EnableConfigurationProperties</span><span style="color:#000;font-weight:bold">(</span>ServerProperties<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">class</span><span style="color:#000;font-weight:bold">)</span>
+<span style="color:#000;font-weight:bold">public</span> <span style="color:#000;font-weight:bold">class</span> <span style="color:#458;font-weight:bold">EmbeddedWebServerFactoryCustomizerAutoConfiguration</span> <span style="color:#000;font-weight:bold">{</span>
+  <span style="color:#998;font-style:italic">// 例如对于 Undertow 的配置
+</span><span style="color:#998;font-style:italic"></span>  <span style="color:#3c5d5d;font-weight:bold">@Configuration</span><span style="color:#000;font-weight:bold">(</span>proxyBeanMethods <span style="color:#000;font-weight:bold">=</span> <span style="color:#000;font-weight:bold">false</span><span style="color:#000;font-weight:bold">)</span>
+  <span style="color:#998;font-style:italic">// 在存在 Undertow 和 SslClientAuthMode 才会添加到容器中
+</span><span style="color:#998;font-style:italic"></span>	<span style="color:#3c5d5d;font-weight:bold">@ConditionalOnClass</span><span style="color:#000;font-weight:bold">({</span> Undertow<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">class</span><span style="color:#000;font-weight:bold">,</span> SslClientAuthMode<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">class</span> <span style="color:#000;font-weight:bold">})</span>
+	<span style="color:#000;font-weight:bold">public</span> <span style="color:#000;font-weight:bold">static</span> <span style="color:#000;font-weight:bold">class</span> <span style="color:#458;font-weight:bold">UndertowWebServerFactoryCustomizerConfiguration</span> <span style="color:#000;font-weight:bold">{</span>
+		<span style="color:#3c5d5d;font-weight:bold">@Bean</span>
+		<span style="color:#000;font-weight:bold">public</span> UndertowWebServerFactoryCustomizer <span style="color:#900;font-weight:bold">undertowWebServerFactoryCustomizer</span><span style="color:#000;font-weight:bold">(</span>Environment environment<span style="color:#000;font-weight:bold">,</span>
+				ServerProperties serverProperties<span style="color:#000;font-weight:bold">)</span> <span style="color:#000;font-weight:bold">{</span>
+			<span style="color:#000;font-weight:bold">return</span> <span style="color:#000;font-weight:bold">new</span> UndertowWebServerFactoryCustomizer<span style="color:#000;font-weight:bold">(</span>environment<span style="color:#000;font-weight:bold">,</span> serverProperties<span style="color:#000;font-weight:bold">);</span>
+		<span style="color:#000;font-weight:bold">}</span>
+	<span style="color:#000;font-weight:bold">}</span>
+<span style="color:#000;font-weight:bold">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>可以看出在 autoConfig 中为容器中加入了一个 WebServerFactoryCustomizer，对 Servlet 容器的配置。SpringBoot 中默认有四个这样的 Customizer，其类结构图如下所示：</p>
+<p><img src="http://img.programya.com/Snipaste_2019-12-17_23-22-31.png" alt="WebServerFactoryCustomizer"></p>
+<p>主要是从配置文件中读取相关的配置设置到 WebServer 上。</p>
+<div class="highlight"><div style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4">
+<table style="border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 1
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 2
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 3
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 4
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 5
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 6
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 7
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 8
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 9
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">10
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">11
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">12
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">13
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">14
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">15
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">16
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">17
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">18
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">19
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">20
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">21
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">22
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">23
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">24
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">25
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">26
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">27
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">28
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">29
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">30
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">31
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">32
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#000;font-weight:bold">public</span> <span style="color:#000;font-weight:bold">class</span> <span style="color:#458;font-weight:bold">UndertowWebServerFactoryCustomizer</span>
+		<span style="color:#000;font-weight:bold">implements</span> WebServerFactoryCustomizer<span style="color:#000;font-weight:bold">&lt;</span>ConfigurableUndertowWebServerFactory<span style="color:#000;font-weight:bold">&gt;,</span> Ordered <span style="color:#000;font-weight:bold">{</span>
+
+	<span style="color:#000;font-weight:bold">private</span> <span style="color:#000;font-weight:bold">final</span> Environment environment<span style="color:#000;font-weight:bold">;</span>
+
+	<span style="color:#000;font-weight:bold">private</span> <span style="color:#000;font-weight:bold">final</span> ServerProperties serverProperties<span style="color:#000;font-weight:bold">;</span>
+
+	<span style="color:#000;font-weight:bold">public</span> <span style="color:#900;font-weight:bold">UndertowWebServerFactoryCustomizer</span><span style="color:#000;font-weight:bold">(</span>Environment environment<span style="color:#000;font-weight:bold">,</span> ServerProperties serverProperties<span style="color:#000;font-weight:bold">)</span> <span style="color:#000;font-weight:bold">{</span>
+		<span style="color:#000;font-weight:bold">this</span><span style="color:#000;font-weight:bold">.</span><span style="color:#008080">environment</span> <span style="color:#000;font-weight:bold">=</span> environment<span style="color:#000;font-weight:bold">;</span>
+		<span style="color:#000;font-weight:bold">this</span><span style="color:#000;font-weight:bold">.</span><span style="color:#008080">serverProperties</span> <span style="color:#000;font-weight:bold">=</span> serverProperties<span style="color:#000;font-weight:bold">;</span>
+	<span style="color:#000;font-weight:bold">}</span>
+
+	<span style="color:#3c5d5d;font-weight:bold">@Override</span>
+	<span style="color:#000;font-weight:bold">public</span> <span style="color:#458;font-weight:bold">int</span> <span style="color:#900;font-weight:bold">getOrder</span><span style="color:#000;font-weight:bold">()</span> <span style="color:#000;font-weight:bold">{</span>
+		<span style="color:#000;font-weight:bold">return</span> 0<span style="color:#000;font-weight:bold">;</span>
+	<span style="color:#000;font-weight:bold">}</span>
+
+	<span style="color:#3c5d5d;font-weight:bold">@Override</span>
+	<span style="color:#000;font-weight:bold">public</span> <span style="color:#458;font-weight:bold">void</span> <span style="color:#900;font-weight:bold">customize</span><span style="color:#000;font-weight:bold">(</span>ConfigurableUndertowWebServerFactory factory<span style="color:#000;font-weight:bold">)</span> <span style="color:#000;font-weight:bold">{</span>
+    <span style="color:#998;font-style:italic">// 从配置文件中配置并设置到容器上
+</span><span style="color:#998;font-style:italic"></span>		PropertyMapper map <span style="color:#000;font-weight:bold">=</span> PropertyMapper<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">get</span><span style="color:#000;font-weight:bold">().</span><span style="color:#008080">alwaysApplyingWhenNonNull</span><span style="color:#000;font-weight:bold">();</span>
+		FactoryOptions options <span style="color:#000;font-weight:bold">=</span> <span style="color:#000;font-weight:bold">new</span> FactoryOptions<span style="color:#000;font-weight:bold">(</span>factory<span style="color:#000;font-weight:bold">);</span>
+		ServerProperties properties <span style="color:#000;font-weight:bold">=</span> <span style="color:#000;font-weight:bold">this</span><span style="color:#000;font-weight:bold">.</span><span style="color:#008080">serverProperties</span><span style="color:#000;font-weight:bold">;</span>
+		map<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">from</span><span style="color:#000;font-weight:bold">(</span>properties<span style="color:#000;font-weight:bold">::</span>getMaxHttpHeaderSize<span style="color:#000;font-weight:bold">).</span><span style="color:#008080">asInt</span><span style="color:#000;font-weight:bold">(</span>DataSize<span style="color:#000;font-weight:bold">::</span>toBytes<span style="color:#000;font-weight:bold">).</span><span style="color:#008080">when</span><span style="color:#000;font-weight:bold">(</span><span style="color:#000;font-weight:bold">this</span><span style="color:#000;font-weight:bold">::</span>isPositive<span style="color:#000;font-weight:bold">)</span>
+				<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">to</span><span style="color:#000;font-weight:bold">(</span>options<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">server</span><span style="color:#000;font-weight:bold">(</span>UndertowOptions<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">MAX_HEADER_SIZE</span><span style="color:#000;font-weight:bold">));</span>
+		map<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">from</span><span style="color:#000;font-weight:bold">(</span>properties<span style="color:#000;font-weight:bold">::</span>getConnectionTimeout<span style="color:#000;font-weight:bold">).</span><span style="color:#008080">asInt</span><span style="color:#000;font-weight:bold">(</span>Duration<span style="color:#000;font-weight:bold">::</span>toMillis<span style="color:#000;font-weight:bold">)</span>
+				<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">to</span><span style="color:#000;font-weight:bold">(</span>options<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">server</span><span style="color:#000;font-weight:bold">(</span>UndertowOptions<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">NO_REQUEST_TIMEOUT</span><span style="color:#000;font-weight:bold">));</span>
+		mapUndertowProperties<span style="color:#000;font-weight:bold">(</span>factory<span style="color:#000;font-weight:bold">,</span> options<span style="color:#000;font-weight:bold">);</span>
+		mapAccessLogProperties<span style="color:#000;font-weight:bold">(</span>factory<span style="color:#000;font-weight:bold">);</span>
+		map<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">from</span><span style="color:#000;font-weight:bold">(</span><span style="color:#000;font-weight:bold">this</span><span style="color:#000;font-weight:bold">::</span>getOrDeduceUseForwardHeaders<span style="color:#000;font-weight:bold">).</span><span style="color:#008080">to</span><span style="color:#000;font-weight:bold">(</span>factory<span style="color:#000;font-weight:bold">::</span>setUseForwardHeaders<span style="color:#000;font-weight:bold">);</span>
+	<span style="color:#000;font-weight:bold">}</span>
+<span style="color:#000;font-weight:bold">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><h3 id="嵌入式-servlet-容器启动原理">嵌入式 Servlet 容器启动原理</h3>
+<p>首先在主类中调用 <code>SpringApplication.run</code> 方法并将当前的类传入作为参数传入，然后经过几次调用会调用 <code>public ConfigurableApplicationContext run(String... args)</code> 方法，其中会调用容器的 <code>refreshContext</code> 去刷新容器，其中会调用 <code>refresh</code> 方法去刷新容器，然后会调用到 <code>AbstractApplicationContext</code> 的 <code>refresh</code> 方法，也就是 Spring 容器的刷新容器的方法。在其子类 <code>ServletWebServerApplicationContext</code> 实现了 <code>onRefresh</code> 之后会调用 <code>createWebServer</code> 方法去创建 WebServer。</p>
+<div class="highlight"><div style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4">
+<table style="border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 1
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 2
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 3
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 4
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 5
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 6
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 7
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 8
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 9
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">10
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">11
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">12
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">13
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">14
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">15
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">16
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">17
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">18
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">19
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">20
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">21
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">22
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">23
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">24
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">25
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">26
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">27
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">28
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">29
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">30
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">31
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">32
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">33
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">34
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">35
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">36
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">37
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">38
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">39
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">40
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#998;font-style:italic">// ServletWebServerApplicationContext
+</span><span style="color:#998;font-style:italic"></span><span style="color:#000;font-weight:bold">private</span> <span style="color:#458;font-weight:bold">void</span> <span style="color:#900;font-weight:bold">createWebServer</span><span style="color:#000;font-weight:bold">()</span> <span style="color:#000;font-weight:bold">{</span>
+  <span style="color:#998;font-style:italic">// 获取当前的 webServer
+</span><span style="color:#998;font-style:italic"></span>  WebServer webServer <span style="color:#000;font-weight:bold">=</span> <span style="color:#000;font-weight:bold">this</span><span style="color:#000;font-weight:bold">.</span><span style="color:#008080">webServer</span><span style="color:#000;font-weight:bold">;</span>
+  <span style="color:#998;font-style:italic">// 获取当前的 ServletContext
+</span><span style="color:#998;font-style:italic"></span>  ServletContext servletContext <span style="color:#000;font-weight:bold">=</span> getServletContext<span style="color:#000;font-weight:bold">();</span>
+  <span style="color:#998;font-style:italic">// 如果均为空则尝去获取 WebServerFactory 然后通过 WebServerFactory 获取 WebServer
+</span><span style="color:#998;font-style:italic"></span>  <span style="color:#000;font-weight:bold">if</span> <span style="color:#000;font-weight:bold">(</span>webServer <span style="color:#000;font-weight:bold">==</span> <span style="color:#000;font-weight:bold">null</span> <span style="color:#000;font-weight:bold">&amp;&amp;</span> servletContext <span style="color:#000;font-weight:bold">==</span> <span style="color:#000;font-weight:bold">null</span><span style="color:#000;font-weight:bold">)</span> <span style="color:#000;font-weight:bold">{</span>
+    ServletWebServerFactory factory <span style="color:#000;font-weight:bold">=</span> getWebServerFactory<span style="color:#000;font-weight:bold">();</span>
+    <span style="color:#998;font-style:italic">// 在获取到 WebServerFactory 之后调用 getWebServer 去获取 WebServer
+</span><span style="color:#998;font-style:italic"></span>    <span style="color:#000;font-weight:bold">this</span><span style="color:#000;font-weight:bold">.</span><span style="color:#008080">webServer</span> <span style="color:#000;font-weight:bold">=</span> factory<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">getWebServer</span><span style="color:#000;font-weight:bold">(</span>getSelfInitializer<span style="color:#000;font-weight:bold">());</span>
+  <span style="color:#000;font-weight:bold">}</span>
+  <span style="color:#000;font-weight:bold">else</span> <span style="color:#000;font-weight:bold">if</span> <span style="color:#000;font-weight:bold">(</span>servletContext <span style="color:#000;font-weight:bold">!=</span> <span style="color:#000;font-weight:bold">null</span><span style="color:#000;font-weight:bold">)</span> <span style="color:#000;font-weight:bold">{</span>
+    <span style="color:#000;font-weight:bold">try</span> <span style="color:#000;font-weight:bold">{</span>
+      <span style="color:#998;font-style:italic">// 如果 Servlet 不为空则尝试去启动 ServletContext
+</span><span style="color:#998;font-style:italic"></span>      getSelfInitializer<span style="color:#000;font-weight:bold">().</span><span style="color:#008080">onStartup</span><span style="color:#000;font-weight:bold">(</span>servletContext<span style="color:#000;font-weight:bold">);</span>
+    <span style="color:#000;font-weight:bold">}</span>
+    <span style="color:#000;font-weight:bold">catch</span> <span style="color:#000;font-weight:bold">(</span>ServletException ex<span style="color:#000;font-weight:bold">)</span> <span style="color:#000;font-weight:bold">{</span>
+      <span style="color:#000;font-weight:bold">throw</span> <span style="color:#000;font-weight:bold">new</span> ApplicationContextException<span style="color:#000;font-weight:bold">(</span><span style="color:#d14">&#34;Cannot initialize servlet context&#34;</span><span style="color:#000;font-weight:bold">,</span> ex<span style="color:#000;font-weight:bold">);</span>
+    <span style="color:#000;font-weight:bold">}</span>
+  <span style="color:#000;font-weight:bold">}</span>
+  initPropertySources<span style="color:#000;font-weight:bold">();</span>
+<span style="color:#000;font-weight:bold">}</span>
+
+<span style="color:#000;font-weight:bold">protected</span> ServletWebServerFactory <span style="color:#900;font-weight:bold">getWebServerFactory</span><span style="color:#000;font-weight:bold">()</span> <span style="color:#000;font-weight:bold">{</span>
+  <span style="color:#998;font-style:italic">// Use bean names so that we don&#39;t consider the hierarchy
+</span><span style="color:#998;font-style:italic"></span>  <span style="color:#998;font-style:italic">// 获取 WebServerFactory 的 Bean Name
+</span><span style="color:#998;font-style:italic"></span>  String<span style="color:#000;font-weight:bold">[]</span> beanNames <span style="color:#000;font-weight:bold">=</span> getBeanFactory<span style="color:#000;font-weight:bold">().</span><span style="color:#008080">getBeanNamesForType</span><span style="color:#000;font-weight:bold">(</span>ServletWebServerFactory<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">class</span><span style="color:#000;font-weight:bold">);</span>
+  <span style="color:#000;font-weight:bold">if</span> <span style="color:#000;font-weight:bold">(</span>beanNames<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">length</span> <span style="color:#000;font-weight:bold">==</span> 0<span style="color:#000;font-weight:bold">)</span> <span style="color:#000;font-weight:bold">{</span>
+    <span style="color:#000;font-weight:bold">throw</span> <span style="color:#000;font-weight:bold">new</span> ApplicationContextException<span style="color:#000;font-weight:bold">(</span><span style="color:#d14">&#34;Unable to start ServletWebServerApplicationContext due to missing &#34;</span>
+                                          <span style="color:#000;font-weight:bold">+</span> <span style="color:#d14">&#34;ServletWebServerFactory bean.&#34;</span><span style="color:#000;font-weight:bold">);</span>
+  <span style="color:#000;font-weight:bold">}</span>
+  <span style="color:#000;font-weight:bold">if</span> <span style="color:#000;font-weight:bold">(</span>beanNames<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">length</span> <span style="color:#000;font-weight:bold">&gt;</span> 1<span style="color:#000;font-weight:bold">)</span> <span style="color:#000;font-weight:bold">{</span>
+    <span style="color:#000;font-weight:bold">throw</span> <span style="color:#000;font-weight:bold">new</span> ApplicationContextException<span style="color:#000;font-weight:bold">(</span><span style="color:#d14">&#34;Unable to start ServletWebServerApplicationContext due to multiple &#34;</span>
+                                          <span style="color:#000;font-weight:bold">+</span> <span style="color:#d14">&#34;ServletWebServerFactory beans : &#34;</span> <span style="color:#000;font-weight:bold">+</span> StringUtils<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">arrayToCommaDelimitedString</span><span style="color:#000;font-weight:bold">(</span>beanNames<span style="color:#000;font-weight:bold">));</span>
+  <span style="color:#000;font-weight:bold">}</span>
+  <span style="color:#998;font-style:italic">// 根据 Bean Name 获取继承自 ServletWebServerFactory 的 ServletWebServerFactory
+</span><span style="color:#998;font-style:italic"></span>  <span style="color:#998;font-style:italic">// 这里也可以看出其实调用 Spring getBean 的流程
+</span><span style="color:#998;font-style:italic"></span>  <span style="color:#000;font-weight:bold">return</span> getBeanFactory<span style="color:#000;font-weight:bold">().</span><span style="color:#008080">getBean</span><span style="color:#000;font-weight:bold">(</span>beanNames<span style="color:#000;font-weight:bold">[</span>0<span style="color:#000;font-weight:bold">],</span> ServletWebServerFactory<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">class</span><span style="color:#000;font-weight:bold">);</span>
+<span style="color:#000;font-weight:bold">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>所以其实就是 <code>getBean</code>， <code>doGetBean</code>，单实例的情况使用 <code>getSingleton</code> 方法获取，找不到的情况调用 <code>createBean</code> 去创建 Bean 实例，调用 <code>doCreateBean</code> 去真正执行创建，其中调用 <code>createBeanInstance</code> 去创建 Bean 实例。在其中根据 Bean 的定义判断有相应的创建方法，则可以直接调用相应的方法创建 Bean 实例。</p>
+<div class="highlight"><div style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4">
+<table style="border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">1
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">2
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">3
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">4
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">5
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#998;font-style:italic">// 方法名称是 undertowServletWebServerFactory
+</span><span style="color:#998;font-style:italic"></span><span style="color:#000;font-weight:bold">if</span> <span style="color:#000;font-weight:bold">(</span>mbd<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">getFactoryMethodName</span><span style="color:#000;font-weight:bold">()</span> <span style="color:#000;font-weight:bold">!=</span> <span style="color:#000;font-weight:bold">null</span><span style="color:#000;font-weight:bold">)</span> <span style="color:#000;font-weight:bold">{</span>
+  <span style="color:#998;font-style:italic">// 这里的 BeanName 也是 undertowServletWebServerFactory
+</span><span style="color:#998;font-style:italic"></span>  <span style="color:#000;font-weight:bold">return</span> instantiateUsingFactoryMethod<span style="color:#000;font-weight:bold">(</span>beanName<span style="color:#000;font-weight:bold">,</span> mbd<span style="color:#000;font-weight:bold">,</span> args<span style="color:#000;font-weight:bold">);</span>
+<span style="color:#000;font-weight:bold">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>最终会调用到 <code>ServletWebServerFactoryConfiguration</code> 中的创建 WebServerFactory 的方法。</p>
+<div class="highlight"><div style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4">
+<table style="border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 1
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 2
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 3
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 4
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 5
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 6
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 7
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 8
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 9
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">10
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#3c5d5d;font-weight:bold">@Bean</span>
+<span style="color:#000;font-weight:bold">public</span> UndertowServletWebServerFactory <span style="color:#900;font-weight:bold">undertowServletWebServerFactory</span><span style="color:#000;font-weight:bold">(</span>
+  ObjectProvider<span style="color:#000;font-weight:bold">&lt;</span>UndertowDeploymentInfoCustomizer<span style="color:#000;font-weight:bold">&gt;</span> deploymentInfoCustomizers<span style="color:#000;font-weight:bold">,</span>
+  ObjectProvider<span style="color:#000;font-weight:bold">&lt;</span>UndertowBuilderCustomizer<span style="color:#000;font-weight:bold">&gt;</span> builderCustomizers<span style="color:#000;font-weight:bold">)</span> <span style="color:#000;font-weight:bold">{</span>
+  UndertowServletWebServerFactory factory <span style="color:#000;font-weight:bold">=</span> <span style="color:#000;font-weight:bold">new</span> UndertowServletWebServerFactory<span style="color:#000;font-weight:bold">();</span>
+  factory<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">getDeploymentInfoCustomizers</span><span style="color:#000;font-weight:bold">()</span>
+    <span style="color:#000;font-weight:bold">.</span><span style="color:#008080">addAll</span><span style="color:#000;font-weight:bold">(</span>deploymentInfoCustomizers<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">orderedStream</span><span style="color:#000;font-weight:bold">().</span><span style="color:#008080">collect</span><span style="color:#000;font-weight:bold">(</span>Collectors<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">toList</span><span style="color:#000;font-weight:bold">()));</span>
+  factory<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">getBuilderCustomizers</span><span style="color:#000;font-weight:bold">().</span><span style="color:#008080">addAll</span><span style="color:#000;font-weight:bold">(</span>builderCustomizers<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">orderedStream</span><span style="color:#000;font-weight:bold">().</span><span style="color:#008080">collect</span><span style="color:#000;font-weight:bold">(</span>Collectors<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">toList</span><span style="color:#000;font-weight:bold">()));</span>
+  <span style="color:#000;font-weight:bold">return</span> factory<span style="color:#000;font-weight:bold">;</span>
+<span style="color:#000;font-weight:bold">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>在上面创建 Bean 之后会调用 <code>initializeBean</code> 去初始化 Bean 对象。在真正初始化之前会逐个调用调用 Bean 后置处理器的 <code>applyBeanPostProcessorsBeforeInitialization</code>  方法去执行相应的处理方法，其中就会调用到 <code>WebServerFactoryCustomizerBeanPostProcessor</code> 的 <code>postProcessBeforeInitialization</code> 方法，对 Servlet 容器进行定制。</p>
+<div class="highlight"><div style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4">
+<table style="border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 1
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 2
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 3
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 4
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 5
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 6
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 7
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 8
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 9
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">10
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">11
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">12
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">13
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">14
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">15
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">16
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">17
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#000;font-weight:bold">private</span> <span style="color:#458;font-weight:bold">void</span> <span style="color:#900;font-weight:bold">postProcessBeforeInitialization</span><span style="color:#000;font-weight:bold">(</span>WebServerFactory webServerFactory<span style="color:#000;font-weight:bold">)</span> <span style="color:#000;font-weight:bold">{</span>
+  <span style="color:#998;font-style:italic">// 获取到所有的 WebServerFactoryCustomizer 逐个调用其 customize 对容器工厂进行定制
+</span><span style="color:#998;font-style:italic"></span>  LambdaSafe<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">callbacks</span><span style="color:#000;font-weight:bold">(</span>WebServerFactoryCustomizer<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">class</span><span style="color:#000;font-weight:bold">,</span> getCustomizers<span style="color:#000;font-weight:bold">(),</span> webServerFactory<span style="color:#000;font-weight:bold">)</span>
+    <span style="color:#000;font-weight:bold">.</span><span style="color:#008080">withLogger</span><span style="color:#000;font-weight:bold">(</span>WebServerFactoryCustomizerBeanPostProcessor<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">class</span><span style="color:#000;font-weight:bold">)</span>
+    <span style="color:#000;font-weight:bold">.</span><span style="color:#008080">invoke</span><span style="color:#000;font-weight:bold">((</span>customizer<span style="color:#000;font-weight:bold">)</span> <span style="color:#000;font-weight:bold">-&gt;</span> customizer<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">customize</span><span style="color:#000;font-weight:bold">(</span>webServerFactory<span style="color:#000;font-weight:bold">));</span>
+<span style="color:#000;font-weight:bold">}</span>
+
+<span style="color:#998;font-style:italic">// 获取到所有的 Customers
+</span><span style="color:#998;font-style:italic"></span><span style="color:#000;font-weight:bold">private</span> Collection<span style="color:#000;font-weight:bold">&lt;</span>WebServerFactoryCustomizer<span style="color:#000;font-weight:bold">&lt;?&gt;&gt;</span> getCustomizers<span style="color:#000;font-weight:bold">()</span> <span style="color:#000;font-weight:bold">{</span>
+  <span style="color:#000;font-weight:bold">if</span> <span style="color:#000;font-weight:bold">(</span><span style="color:#000;font-weight:bold">this</span><span style="color:#000;font-weight:bold">.</span><span style="color:#008080">customizers</span> <span style="color:#000;font-weight:bold">==</span> <span style="color:#000;font-weight:bold">null</span><span style="color:#000;font-weight:bold">)</span> <span style="color:#000;font-weight:bold">{</span>
+    <span style="color:#998;font-style:italic">// Look up does not include the parent context
+</span><span style="color:#998;font-style:italic"></span>    <span style="color:#000;font-weight:bold">this</span><span style="color:#000;font-weight:bold">.</span><span style="color:#008080">customizers</span> <span style="color:#000;font-weight:bold">=</span> <span style="color:#000;font-weight:bold">new</span> ArrayList<span style="color:#000;font-weight:bold">&lt;&gt;(</span>getWebServerFactoryCustomizerBeans<span style="color:#000;font-weight:bold">());</span>
+    <span style="color:#000;font-weight:bold">this</span><span style="color:#000;font-weight:bold">.</span><span style="color:#008080">customizers</span><span style="color:#000;font-weight:bold">.</span><span style="color:#008080">sort</span><span style="color:#000;font-weight:bold">(</span>AnnotationAwareOrderComparator<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">INSTANCE</span><span style="color:#000;font-weight:bold">);</span>
+    <span style="color:#000;font-weight:bold">this</span><span style="color:#000;font-weight:bold">.</span><span style="color:#008080">customizers</span> <span style="color:#000;font-weight:bold">=</span> Collections<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">unmodifiableList</span><span style="color:#000;font-weight:bold">(</span><span style="color:#000;font-weight:bold">this</span><span style="color:#000;font-weight:bold">.</span><span style="color:#008080">customizers</span><span style="color:#000;font-weight:bold">);</span>
+  <span style="color:#000;font-weight:bold">}</span>
+  <span style="color:#000;font-weight:bold">return</span> <span style="color:#000;font-weight:bold">this</span><span style="color:#000;font-weight:bold">.</span><span style="color:#008080">customizers</span><span style="color:#000;font-weight:bold">;</span>
+<span style="color:#000;font-weight:bold">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>这里就会调用到 <code>UndertowWebServerFactoryCustomizer</code> 的 <code>customize</code> 方法了。</p>
+<p>在得到 WebServerFactory 之后会调用 <code>getWebServer</code> 方法去获取 WebServer。</p>
+<div class="highlight"><div style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4">
+<table style="border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 1
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 2
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 3
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 4
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 5
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 6
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 7
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 8
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 9
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">10
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">11
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">12
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">13
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">14
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">15
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">16
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">17
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">18
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">19
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">20
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">21
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">22
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">23
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">24
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">25
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">26
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">27
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">28
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">29
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">30
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">31
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">32
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">33
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">34
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">35
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">36
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">37
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">38
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">39
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">40
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">41
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">42
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">43
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">44
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">45
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">46
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">47
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">48
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">49
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">50
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">51
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">52
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">53
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">54
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">55
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">56
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">57
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">58
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">59
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">60
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">61
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">62
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">63
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">64
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">65
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">66
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">67
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">68
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">69
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">70
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">71
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">72
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">73
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">74
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">75
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">76
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">77
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">78
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">79
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">80
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">81
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">82
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">83
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">84
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">85
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">86
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">87
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">88
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">89
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">90
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">91
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">92
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">93
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">94
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#000;font-weight:bold">public</span> WebServer <span style="color:#900;font-weight:bold">getWebServer</span><span style="color:#000;font-weight:bold">(</span>ServletContextInitializer<span style="color:#000;font-weight:bold">...</span> initializers<span style="color:#000;font-weight:bold">)</span> <span style="color:#000;font-weight:bold">{</span>
+  <span style="color:#998;font-style:italic">// 首先去创建一个 DeploymentManager
+</span><span style="color:#998;font-style:italic"></span>  DeploymentManager manager <span style="color:#000;font-weight:bold">=</span> createDeploymentManager<span style="color:#000;font-weight:bold">(</span>initializers<span style="color:#000;font-weight:bold">);</span>
+  <span style="color:#998;font-style:italic">// 获取配置的 端口号
+</span><span style="color:#998;font-style:italic"></span>  <span style="color:#458;font-weight:bold">int</span> port <span style="color:#000;font-weight:bold">=</span> getPort<span style="color:#000;font-weight:bold">();</span>
+  <span style="color:#998;font-style:italic">// 创建 Builder
+</span><span style="color:#998;font-style:italic"></span>  Builder builder <span style="color:#000;font-weight:bold">=</span> createBuilder<span style="color:#000;font-weight:bold">(</span>port<span style="color:#000;font-weight:bold">);</span>
+  <span style="color:#000;font-weight:bold">return</span> getUndertowWebServer<span style="color:#000;font-weight:bold">(</span>builder<span style="color:#000;font-weight:bold">,</span> manager<span style="color:#000;font-weight:bold">,</span> port<span style="color:#000;font-weight:bold">);</span>
+<span style="color:#000;font-weight:bold">}</span>
+
+<span style="color:#000;font-weight:bold">private</span> DeploymentManager <span style="color:#900;font-weight:bold">createDeploymentManager</span><span style="color:#000;font-weight:bold">(</span>ServletContextInitializer<span style="color:#000;font-weight:bold">...</span> initializers<span style="color:#000;font-weight:bold">)</span> <span style="color:#000;font-weight:bold">{</span>
+  <span style="color:#998;font-style:italic">// 获取 DeploymentInfo
+</span><span style="color:#998;font-style:italic"></span>  DeploymentInfo deployment <span style="color:#000;font-weight:bold">=</span> Servlets<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">deployment</span><span style="color:#000;font-weight:bold">();</span>
+  <span style="color:#998;font-style:italic">// 注册 ServletContextInitializer
+</span><span style="color:#998;font-style:italic"></span>  registerServletContainerInitializerToDriveServletContextInitializers<span style="color:#000;font-weight:bold">(</span>deployment<span style="color:#000;font-weight:bold">,</span> initializers<span style="color:#000;font-weight:bold">);</span>
+  <span style="color:#998;font-style:italic">// 设置 ClassLoader
+</span><span style="color:#998;font-style:italic"></span>  deployment<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">setClassLoader</span><span style="color:#000;font-weight:bold">(</span>getServletClassLoader<span style="color:#000;font-weight:bold">());</span>
+  <span style="color:#998;font-style:italic">// 设置 ContextPath
+</span><span style="color:#998;font-style:italic"></span>  deployment<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">setContextPath</span><span style="color:#000;font-weight:bold">(</span>getContextPath<span style="color:#000;font-weight:bold">());</span>
+  deployment<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">setDisplayName</span><span style="color:#000;font-weight:bold">(</span>getDisplayName<span style="color:#000;font-weight:bold">());</span>
+  deployment<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">setDeploymentName</span><span style="color:#000;font-weight:bold">(</span><span style="color:#d14">&#34;spring-boot&#34;</span><span style="color:#000;font-weight:bold">);</span>
+  <span style="color:#000;font-weight:bold">if</span> <span style="color:#000;font-weight:bold">(</span>isRegisterDefaultServlet<span style="color:#000;font-weight:bold">())</span> <span style="color:#000;font-weight:bold">{</span>
+    deployment<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">addServlet</span><span style="color:#000;font-weight:bold">(</span>Servlets<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">servlet</span><span style="color:#000;font-weight:bold">(</span><span style="color:#d14">&#34;default&#34;</span><span style="color:#000;font-weight:bold">,</span> DefaultServlet<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">class</span><span style="color:#000;font-weight:bold">));</span>
+  <span style="color:#000;font-weight:bold">}</span>
+  <span style="color:#998;font-style:italic">// 继续设置一些其他的信息
+</span><span style="color:#998;font-style:italic"></span>  configureErrorPages<span style="color:#000;font-weight:bold">(</span>deployment<span style="color:#000;font-weight:bold">);</span>
+  deployment<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">setServletStackTraces</span><span style="color:#000;font-weight:bold">(</span>ServletStackTraces<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">NONE</span><span style="color:#000;font-weight:bold">);</span>
+  deployment<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">setResourceManager</span><span style="color:#000;font-weight:bold">(</span>getDocumentRootResourceManager<span style="color:#000;font-weight:bold">());</span>
+  deployment<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">setTempDir</span><span style="color:#000;font-weight:bold">(</span>createTempDir<span style="color:#000;font-weight:bold">(</span><span style="color:#d14">&#34;undertow&#34;</span><span style="color:#000;font-weight:bold">));</span>
+  deployment<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">setEagerFilterInit</span><span style="color:#000;font-weight:bold">(</span><span style="color:#000;font-weight:bold">this</span><span style="color:#000;font-weight:bold">.</span><span style="color:#008080">eagerInitFilters</span><span style="color:#000;font-weight:bold">);</span>
+  configureMimeMappings<span style="color:#000;font-weight:bold">(</span>deployment<span style="color:#000;font-weight:bold">);</span>
+  <span style="color:#998;font-style:italic">// 对 deployment 进行定制
+</span><span style="color:#998;font-style:italic"></span>  <span style="color:#000;font-weight:bold">for</span> <span style="color:#000;font-weight:bold">(</span>UndertowDeploymentInfoCustomizer customizer <span style="color:#000;font-weight:bold">:</span> <span style="color:#000;font-weight:bold">this</span><span style="color:#000;font-weight:bold">.</span><span style="color:#008080">deploymentInfoCustomizers</span><span style="color:#000;font-weight:bold">)</span> <span style="color:#000;font-weight:bold">{</span>
+    customizer<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">customize</span><span style="color:#000;font-weight:bold">(</span>deployment<span style="color:#000;font-weight:bold">);</span>
+  <span style="color:#000;font-weight:bold">}</span>
+  <span style="color:#000;font-weight:bold">if</span> <span style="color:#000;font-weight:bold">(</span>isAccessLogEnabled<span style="color:#000;font-weight:bold">())</span> <span style="color:#000;font-weight:bold">{</span>
+    configureAccessLog<span style="color:#000;font-weight:bold">(</span>deployment<span style="color:#000;font-weight:bold">);</span>
+  <span style="color:#000;font-weight:bold">}</span>
+  <span style="color:#000;font-weight:bold">if</span> <span style="color:#000;font-weight:bold">(</span>getSession<span style="color:#000;font-weight:bold">().</span><span style="color:#008080">isPersistent</span><span style="color:#000;font-weight:bold">())</span> <span style="color:#000;font-weight:bold">{</span>
+    File dir <span style="color:#000;font-weight:bold">=</span> getValidSessionStoreDir<span style="color:#000;font-weight:bold">();</span>
+    deployment<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">setSessionPersistenceManager</span><span style="color:#000;font-weight:bold">(</span><span style="color:#000;font-weight:bold">new</span> FileSessionPersistence<span style="color:#000;font-weight:bold">(</span>dir<span style="color:#000;font-weight:bold">));</span>
+  <span style="color:#000;font-weight:bold">}</span>
+  addLocaleMappings<span style="color:#000;font-weight:bold">(</span>deployment<span style="color:#000;font-weight:bold">);</span>
+  DeploymentManager manager <span style="color:#000;font-weight:bold">=</span> Servlets<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">newContainer</span><span style="color:#000;font-weight:bold">().</span><span style="color:#008080">addDeployment</span><span style="color:#000;font-weight:bold">(</span>deployment<span style="color:#000;font-weight:bold">);</span>
+  manager<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">deploy</span><span style="color:#000;font-weight:bold">();</span>
+  <span style="color:#000;font-weight:bold">if</span> <span style="color:#000;font-weight:bold">(</span>manager<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">getDeployment</span><span style="color:#000;font-weight:bold">()</span> <span style="color:#000;font-weight:bold">instanceof</span> DeploymentImpl<span style="color:#000;font-weight:bold">)</span> <span style="color:#000;font-weight:bold">{</span>
+    removeSuperfluousMimeMappings<span style="color:#000;font-weight:bold">((</span>DeploymentImpl<span style="color:#000;font-weight:bold">)</span> manager<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">getDeployment</span><span style="color:#000;font-weight:bold">(),</span> deployment<span style="color:#000;font-weight:bold">);</span>
+  <span style="color:#000;font-weight:bold">}</span>
+  <span style="color:#998;font-style:italic">// 设置 Session 超时时间
+</span><span style="color:#998;font-style:italic"></span>  SessionManager sessionManager <span style="color:#000;font-weight:bold">=</span> manager<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">getDeployment</span><span style="color:#000;font-weight:bold">().</span><span style="color:#008080">getSessionManager</span><span style="color:#000;font-weight:bold">();</span>
+  Duration timeoutDuration <span style="color:#000;font-weight:bold">=</span> getSession<span style="color:#000;font-weight:bold">().</span><span style="color:#008080">getTimeout</span><span style="color:#000;font-weight:bold">();</span>
+  <span style="color:#458;font-weight:bold">int</span> sessionTimeout <span style="color:#000;font-weight:bold">=</span> <span style="color:#000;font-weight:bold">(</span>isZeroOrLess<span style="color:#000;font-weight:bold">(</span>timeoutDuration<span style="color:#000;font-weight:bold">)</span> <span style="color:#000;font-weight:bold">?</span> <span style="color:#000;font-weight:bold">-</span>1 <span style="color:#000;font-weight:bold">:</span> <span style="color:#000;font-weight:bold">(</span><span style="color:#458;font-weight:bold">int</span><span style="color:#000;font-weight:bold">)</span> timeoutDuration<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">getSeconds</span><span style="color:#000;font-weight:bold">());</span>
+  sessionManager<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">setDefaultSessionTimeout</span><span style="color:#000;font-weight:bold">(</span>sessionTimeout<span style="color:#000;font-weight:bold">);</span>
+  <span style="color:#000;font-weight:bold">return</span> manager<span style="color:#000;font-weight:bold">;</span>
+<span style="color:#000;font-weight:bold">}</span>
+
+<span style="color:#000;font-weight:bold">private</span> Builder <span style="color:#900;font-weight:bold">createBuilder</span><span style="color:#000;font-weight:bold">(</span><span style="color:#458;font-weight:bold">int</span> port<span style="color:#000;font-weight:bold">)</span> <span style="color:#000;font-weight:bold">{</span>
+  <span style="color:#998;font-style:italic">// 获取 Undertow 的 Builder
+</span><span style="color:#998;font-style:italic"></span>  Builder builder <span style="color:#000;font-weight:bold">=</span> Undertow<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">builder</span><span style="color:#000;font-weight:bold">();</span>
+  <span style="color:#998;font-style:italic">// 设置缓冲区大小
+</span><span style="color:#998;font-style:italic"></span>  <span style="color:#000;font-weight:bold">if</span> <span style="color:#000;font-weight:bold">(</span><span style="color:#000;font-weight:bold">this</span><span style="color:#000;font-weight:bold">.</span><span style="color:#008080">bufferSize</span> <span style="color:#000;font-weight:bold">!=</span> <span style="color:#000;font-weight:bold">null</span><span style="color:#000;font-weight:bold">)</span> <span style="color:#000;font-weight:bold">{</span>
+    builder<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">setBufferSize</span><span style="color:#000;font-weight:bold">(</span><span style="color:#000;font-weight:bold">this</span><span style="color:#000;font-weight:bold">.</span><span style="color:#008080">bufferSize</span><span style="color:#000;font-weight:bold">);</span>
+  <span style="color:#000;font-weight:bold">}</span>
+  <span style="color:#998;font-style:italic">// 设置 IO 线程数
+</span><span style="color:#998;font-style:italic"></span>  <span style="color:#000;font-weight:bold">if</span> <span style="color:#000;font-weight:bold">(</span><span style="color:#000;font-weight:bold">this</span><span style="color:#000;font-weight:bold">.</span><span style="color:#008080">ioThreads</span> <span style="color:#000;font-weight:bold">!=</span> <span style="color:#000;font-weight:bold">null</span><span style="color:#000;font-weight:bold">)</span> <span style="color:#000;font-weight:bold">{</span>
+    builder<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">setIoThreads</span><span style="color:#000;font-weight:bold">(</span><span style="color:#000;font-weight:bold">this</span><span style="color:#000;font-weight:bold">.</span><span style="color:#008080">ioThreads</span><span style="color:#000;font-weight:bold">);</span>
+  <span style="color:#000;font-weight:bold">}</span>
+  <span style="color:#998;font-style:italic">// 设置 work 线程数
+</span><span style="color:#998;font-style:italic"></span>  <span style="color:#000;font-weight:bold">if</span> <span style="color:#000;font-weight:bold">(</span><span style="color:#000;font-weight:bold">this</span><span style="color:#000;font-weight:bold">.</span><span style="color:#008080">workerThreads</span> <span style="color:#000;font-weight:bold">!=</span> <span style="color:#000;font-weight:bold">null</span><span style="color:#000;font-weight:bold">)</span> <span style="color:#000;font-weight:bold">{</span>
+    builder<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">setWorkerThreads</span><span style="color:#000;font-weight:bold">(</span><span style="color:#000;font-weight:bold">this</span><span style="color:#000;font-weight:bold">.</span><span style="color:#008080">workerThreads</span><span style="color:#000;font-weight:bold">);</span>
+  <span style="color:#000;font-weight:bold">}</span>
+  <span style="color:#998;font-style:italic">// 设置直接 buffer
+</span><span style="color:#998;font-style:italic"></span>  <span style="color:#000;font-weight:bold">if</span> <span style="color:#000;font-weight:bold">(</span><span style="color:#000;font-weight:bold">this</span><span style="color:#000;font-weight:bold">.</span><span style="color:#008080">directBuffers</span> <span style="color:#000;font-weight:bold">!=</span> <span style="color:#000;font-weight:bold">null</span><span style="color:#000;font-weight:bold">)</span> <span style="color:#000;font-weight:bold">{</span>
+    builder<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">setDirectBuffers</span><span style="color:#000;font-weight:bold">(</span><span style="color:#000;font-weight:bold">this</span><span style="color:#000;font-weight:bold">.</span><span style="color:#008080">directBuffers</span><span style="color:#000;font-weight:bold">);</span>
+  <span style="color:#000;font-weight:bold">}</span>
+  <span style="color:#998;font-style:italic">// ssl 配置
+</span><span style="color:#998;font-style:italic"></span>  <span style="color:#000;font-weight:bold">if</span> <span style="color:#000;font-weight:bold">(</span>getSsl<span style="color:#000;font-weight:bold">()</span> <span style="color:#000;font-weight:bold">!=</span> <span style="color:#000;font-weight:bold">null</span> <span style="color:#000;font-weight:bold">&amp;&amp;</span> getSsl<span style="color:#000;font-weight:bold">().</span><span style="color:#008080">isEnabled</span><span style="color:#000;font-weight:bold">())</span> <span style="color:#000;font-weight:bold">{</span>
+    customizeSsl<span style="color:#000;font-weight:bold">(</span>builder<span style="color:#000;font-weight:bold">);</span>
+  <span style="color:#000;font-weight:bold">}</span>
+  <span style="color:#000;font-weight:bold">else</span> <span style="color:#000;font-weight:bold">{</span>
+    builder<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">addHttpListener</span><span style="color:#000;font-weight:bold">(</span>port<span style="color:#000;font-weight:bold">,</span> getListenAddress<span style="color:#000;font-weight:bold">());</span>
+  <span style="color:#000;font-weight:bold">}</span>
+  <span style="color:#998;font-style:italic">// 逐个调用 Customizer 去对 Build 定制
+</span><span style="color:#998;font-style:italic"></span>  <span style="color:#000;font-weight:bold">for</span> <span style="color:#000;font-weight:bold">(</span>UndertowBuilderCustomizer customizer <span style="color:#000;font-weight:bold">:</span> <span style="color:#000;font-weight:bold">this</span><span style="color:#000;font-weight:bold">.</span><span style="color:#008080">builderCustomizers</span><span style="color:#000;font-weight:bold">)</span> <span style="color:#000;font-weight:bold">{</span>
+    customizer<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">customize</span><span style="color:#000;font-weight:bold">(</span>builder<span style="color:#000;font-weight:bold">);</span>
+  <span style="color:#000;font-weight:bold">}</span>
+  <span style="color:#000;font-weight:bold">return</span> builder<span style="color:#000;font-weight:bold">;</span>
+<span style="color:#000;font-weight:bold">}</span>
+
+<span style="color:#000;font-weight:bold">protected</span> UndertowServletWebServer <span style="color:#900;font-weight:bold">getUndertowWebServer</span><span style="color:#000;font-weight:bold">(</span>Builder builder<span style="color:#000;font-weight:bold">,</span> DeploymentManager manager<span style="color:#000;font-weight:bold">,</span> <span style="color:#458;font-weight:bold">int</span> port<span style="color:#000;font-weight:bold">)</span> <span style="color:#000;font-weight:bold">{</span>
+  <span style="color:#998;font-style:italic">// 调用构造方法创建 UndertowServletWebServer 
+</span><span style="color:#998;font-style:italic"></span>  <span style="color:#000;font-weight:bold">return</span> <span style="color:#000;font-weight:bold">new</span> UndertowServletWebServer<span style="color:#000;font-weight:bold">(</span>builder<span style="color:#000;font-weight:bold">,</span> manager<span style="color:#000;font-weight:bold">,</span> getContextPath<span style="color:#000;font-weight:bold">(),</span> isUseForwardHeaders<span style="color:#000;font-weight:bold">(),</span> port <span style="color:#000;font-weight:bold">&gt;=</span> 0<span style="color:#000;font-weight:bold">,</span>
+                                      getCompression<span style="color:#000;font-weight:bold">(),</span> getServerHeader<span style="color:#000;font-weight:bold">());</span>
+<span style="color:#000;font-weight:bold">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><div class="highlight"><div style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4">
+<table style="border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 1
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 2
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 3
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 4
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 5
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 6
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 7
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 8
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 9
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">10
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">11
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#998;font-style:italic">// UndertowServletWebServer
+</span><span style="color:#998;font-style:italic"></span><span style="color:#000;font-weight:bold">public</span> <span style="color:#900;font-weight:bold">UndertowServletWebServer</span><span style="color:#000;font-weight:bold">(</span>Builder builder<span style="color:#000;font-weight:bold">,</span> DeploymentManager manager<span style="color:#000;font-weight:bold">,</span> String contextPath<span style="color:#000;font-weight:bold">,</span>
+                                <span style="color:#458;font-weight:bold">boolean</span> useForwardHeaders<span style="color:#000;font-weight:bold">,</span> <span style="color:#458;font-weight:bold">boolean</span> autoStart<span style="color:#000;font-weight:bold">,</span> Compression compression<span style="color:#000;font-weight:bold">,</span> String serverHeader<span style="color:#000;font-weight:bold">)</span> <span style="color:#000;font-weight:bold">{</span>
+  <span style="color:#000;font-weight:bold">this</span><span style="color:#000;font-weight:bold">.</span><span style="color:#008080">builder</span> <span style="color:#000;font-weight:bold">=</span> builder<span style="color:#000;font-weight:bold">;</span>
+  <span style="color:#000;font-weight:bold">this</span><span style="color:#000;font-weight:bold">.</span><span style="color:#008080">manager</span> <span style="color:#000;font-weight:bold">=</span> manager<span style="color:#000;font-weight:bold">;</span>
+  <span style="color:#000;font-weight:bold">this</span><span style="color:#000;font-weight:bold">.</span><span style="color:#008080">contextPath</span> <span style="color:#000;font-weight:bold">=</span> contextPath<span style="color:#000;font-weight:bold">;</span>
+  <span style="color:#000;font-weight:bold">this</span><span style="color:#000;font-weight:bold">.</span><span style="color:#008080">useForwardHeaders</span> <span style="color:#000;font-weight:bold">=</span> useForwardHeaders<span style="color:#000;font-weight:bold">;</span>
+  <span style="color:#000;font-weight:bold">this</span><span style="color:#000;font-weight:bold">.</span><span style="color:#008080">autoStart</span> <span style="color:#000;font-weight:bold">=</span> autoStart<span style="color:#000;font-weight:bold">;</span>
+  <span style="color:#000;font-weight:bold">this</span><span style="color:#000;font-weight:bold">.</span><span style="color:#008080">compression</span> <span style="color:#000;font-weight:bold">=</span> compression<span style="color:#000;font-weight:bold">;</span>
+  <span style="color:#000;font-weight:bold">this</span><span style="color:#000;font-weight:bold">.</span><span style="color:#008080">serverHeader</span> <span style="color:#000;font-weight:bold">=</span> serverHeader<span style="color:#000;font-weight:bold">;</span>
+<span style="color:#000;font-weight:bold">}</span>
+</code></pre></td></tr></table>
+</div>
+</div>
+        </div>
+
+        
+
+
+        
+
+<div class="post-archive">
+    <h2>See Also</h2>
+    <ul class="listing">
+        
+        <li><a href="https://sangzhenya.github.io/post/Spring/Spring-Boot/Spring-Boot-%E7%BC%93%E5%AD%98/">Spring Boot 缓存</a></li>
+        
+        <li><a href="https://sangzhenya.github.io/post/Spring/Spring-Boot/Spring-Boot-%E9%85%8D%E7%BD%AE%E6%96%87%E4%BB%B6/">Spring Boot 配置文件</a></li>
+        
+        <li><a href="https://sangzhenya.github.io/post/Spring/Spring-Boot/Spring-Boot-%E9%94%99%E8%AF%AF%E5%A4%84%E7%90%86%E6%9C%BA%E5%88%B6/">Spring Boot 错误处理机制</a></li>
+        
+        <li><a href="https://sangzhenya.github.io/post/Spring/Spring-Security/Spring-Securit-%E5%85%A5%E9%97%A8/">Spring Security 入门</a></li>
+        
+        <li><a href="https://sangzhenya.github.io/post/Spring/Spring-MVC/Spring-MVC-Web-%E7%BB%84%E4%BB%B6/">Spring MVC Web 组件</a></li>
+        
+    </ul>
+</div>
+
+
+        <div class="post-meta meta-tags">
+            
+            <ul class="clearfix">
+                
+                <li><a href='https://sangzhenya.github.io/tags/Spring'>Spring</a></li>
+                
+                <li><a href='https://sangzhenya.github.io/tags/Spring-Boot'>Spring Boot</a></li>
+                
+            </ul>
+            
+        </div>
+    </article>
+    
+    
+
+    
+    
+</div>
+
+                </div>
+
+                <div id="secondary">
+    <section class="widget">
+        <form id="search" action='//www.google.com/search' method="get" accept-charset="utf-8" target="_blank" _lpchecked="1">
+      
+      <input type="text" name="q" maxlength="20" placeholder="Search">
+      <input type="hidden" name="sitesearch" value="https://sangzhenya.github.io/">
+      <button type="submit" class="submit icon-search"></button>
+</form>
+    </section>
+    
+    <section class="widget">
+        <h3 class="widget-title">最近文章</h3>
+<ul class="widget-list">
+    
+    <li>
+        <a href="https://sangzhenya.github.io/post/Java/JVM/Java-JNDI/" title="Java JNDI">Java JNDI</a>
+    </li>
+    
+    <li>
+        <a href="https://sangzhenya.github.io/post/Java/JVM/Java-OOM/" title="Java OOM">Java OOM</a>
+    </li>
+    
+    <li>
+        <a href="https://sangzhenya.github.io/post/Java/JVM/Java-JVM/" title="Java JVM">Java JVM</a>
+    </li>
+    
+    <li>
+        <a href="https://sangzhenya.github.io/post/Java/JVM/Java-HotSpot-GC-%E7%AE%97%E6%B3%95%E5%AE%9E%E7%8E%B0/" title="Java HotSpot GC 算法实现">Java HotSpot GC 算法实现</a>
+    </li>
+    
+    <li>
+        <a href="https://sangzhenya.github.io/post/Java/JVM/Java-GC-2/" title="Java GC 2">Java GC 2</a>
+    </li>
+    
+    <li>
+        <a href="https://sangzhenya.github.io/post/Java/JVM/Java-GC-1/" title="Java GC 1">Java GC 1</a>
+    </li>
+    
+    <li>
+        <a href="https://sangzhenya.github.io/post/Java/JVM/Java-%E8%99%9A%E6%8B%9F%E6%9C%BA%E5%86%85%E5%AD%98%E6%A8%A1%E5%9E%8B/" title="Java 虚拟机内存模型">Java 虚拟机内存模型</a>
+    </li>
+    
+    <li>
+        <a href="https://sangzhenya.github.io/post/Java/JVM/Java-%E9%80%83%E9%80%B8%E5%88%86%E6%9E%90/" title="Java 逃逸分析">Java 逃逸分析</a>
+    </li>
+    
+    <li>
+        <a href="https://sangzhenya.github.io/post/Java/JVM/Java-%E5%9B%9B%E7%A7%8D%E5%BC%95%E7%94%A8%E7%B1%BB%E5%9E%8B/" title="Java 四种引用类型">Java 四种引用类型</a>
+    </li>
+    
+    <li>
+        <a href="https://sangzhenya.github.io/post/%E5%BE%AE%E6%9C%8D%E5%8A%A1/dubbo/Dubbo-%E5%8E%9F%E7%90%86/" title="Dubbo 原理">Dubbo 原理</a>
+    </li>
+    
+</ul>
+    </section>
+
+    
+
+    <section class="widget">
+        <h3 class="widget-title">分类</h3>
+<ul class="widget-list">
+    
+    <li><a href="https://sangzhenya.github.io/categories/Java/">Java (22)</a></li>
+    
+    <li><a href="https://sangzhenya.github.io/categories/MQ/">MQ (3)</a></li>
+    
+    <li><a href="https://sangzhenya.github.io/categories/MyBaits/">MyBaits (7)</a></li>
+    
+    <li><a href="https://sangzhenya.github.io/categories/MySQL/">MySQL (4)</a></li>
+    
+    <li><a href="https://sangzhenya.github.io/categories/Netty/">Netty (10)</a></li>
+    
+    <li><a href="https://sangzhenya.github.io/categories/Nginx/">Nginx (2)</a></li>
+    
+    <li><a href="https://sangzhenya.github.io/categories/Redis/">Redis (2)</a></li>
+    
+    <li><a href="https://sangzhenya.github.io/categories/Spring/">Spring (36)</a></li>
+    
+    <li><a href="https://sangzhenya.github.io/categories/%E5%85%B3%E4%BA%8E/">关于 (1)</a></li>
+    
+    <li><a href="https://sangzhenya.github.io/categories/%E5%85%B6%E4%BB%96/">其他 (8)</a></li>
+    
+    <li><a href="https://sangzhenya.github.io/categories/%E5%BE%AE%E6%9C%8D%E5%8A%A1/">微服务 (11)</a></li>
+    
+    <li><a href="https://sangzhenya.github.io/categories/%E7%AE%97%E6%B3%95/">算法 (3)</a></li>
+    
+    <li><a href="https://sangzhenya.github.io/categories/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/">读书笔记 (7)</a></li>
+    
+</ul>
+    </section>
+
+    <section class="widget">
+        <h3 class="widget-title">标签</h3>
+<div class="tagcloud">
+    
+    <a href="https://sangzhenya.github.io/tags/Active-MQ/">Active MQ</a>
+    
+    <a href="https://sangzhenya.github.io/tags/Cookie/">Cookie</a>
+    
+    <a href="https://sangzhenya.github.io/tags/Debug/">Debug</a>
+    
+    <a href="https://sangzhenya.github.io/tags/Docker/">Docker</a>
+    
+    <a href="https://sangzhenya.github.io/tags/Dubbo/">Dubbo</a>
+    
+    <a href="https://sangzhenya.github.io/tags/Git/">Git</a>
+    
+    <a href="https://sangzhenya.github.io/tags/JDK8/">JDK8</a>
+    
+    <a href="https://sangzhenya.github.io/tags/JPA/">JPA</a>
+    
+    <a href="https://sangzhenya.github.io/tags/JUC/">JUC</a>
+    
+    <a href="https://sangzhenya.github.io/tags/JVM/">JVM</a>
+    
+    <a href="https://sangzhenya.github.io/tags/java/">java</a>
+    
+    <a href="https://sangzhenya.github.io/tags/Jenkins/">Jenkins</a>
+    
+    <a href="https://sangzhenya.github.io/tags/Kafka/">Kafka</a>
+    
+    <a href="https://sangzhenya.github.io/tags/Kubernetes/">Kubernetes</a>
+    
+    <a href="https://sangzhenya.github.io/tags/Linux/">Linux</a>
+    
+    <a href="https://sangzhenya.github.io/tags/Maven/">Maven</a>
+    
+    <a href="https://sangzhenya.github.io/tags/MyBaits/">MyBaits</a>
+    
+    <a href="https://sangzhenya.github.io/tags/MySQL/">MySQL</a>
+    
+    <a href="https://sangzhenya.github.io/tags/Netty/">Netty</a>
+    
+    <a href="https://sangzhenya.github.io/tags/Nginx/">Nginx</a>
+    
+    <a href="https://sangzhenya.github.io/tags/Rabbit-MQ/">Rabbit MQ</a>
+    
+    <a href="https://sangzhenya.github.io/tags/Redis/">Redis</a>
+    
+    <a href="https://sangzhenya.github.io/tags/Rocket-MQ/">Rocket MQ</a>
+    
+    <a href="https://sangzhenya.github.io/tags/Session/">Session</a>
+    
+    <a href="https://sangzhenya.github.io/tags/Spring/">Spring</a>
+    
+    <a href="https://sangzhenya.github.io/tags/Spring-Boot/">Spring Boot</a>
+    
+    <a href="https://sangzhenya.github.io/tags/Spring-Cloud/">Spring Cloud</a>
+    
+    <a href="https://sangzhenya.github.io/tags/Spring-Data/">Spring Data</a>
+    
+    <a href="https://sangzhenya.github.io/tags/Spring-MVC/">Spring MVC</a>
+    
+    <a href="https://sangzhenya.github.io/tags/Spring-Security/">Spring Security</a>
+    
+    <a href="https://sangzhenya.github.io/tags/Spring-%E6%B3%A8%E8%A7%A3/">Spring 注解</a>
+    
+    <a href="https://sangzhenya.github.io/tags/Tmux/">Tmux</a>
+    
+    <a href="https://sangzhenya.github.io/tags/Zookeeper/">Zookeeper</a>
+    
+    <a href="https://sangzhenya.github.io/tags/java/">java</a>
+    
+    <a href="https://sangzhenya.github.io/tags/%E4%BB%A3%E7%A0%81/">代码</a>
+    
+    <a href="https://sangzhenya.github.io/tags/%E5%85%B3%E4%BA%8E/">关于</a>
+    
+    <a href="https://sangzhenya.github.io/tags/%E5%BE%AE%E6%9C%8D%E5%8A%A1/">微服务</a>
+    
+    <a href="https://sangzhenya.github.io/tags/%E6%BA%90%E7%A0%81/">源码</a>
+    
+    <a href="https://sangzhenya.github.io/tags/%E7%AE%97%E6%B3%95/">算法</a>
+    
+    <a href="https://sangzhenya.github.io/tags/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/">设计模式</a>
+    
+    <a href="https://sangzhenya.github.io/tags/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/">读书笔记</a>
+    
+    <a href="https://sangzhenya.github.io/tags/%E9%9B%86%E5%90%88/">集合</a>
+    
+</div>
+    </section>
+
+    
+
+    <section class="widget">
+        <h3 class="widget-title">其它</h3>
+        <ul class="widget-list">
+            <li><a href="https://sangzhenya.github.io/index.xml">文章 RSS</a></li>
+        </ul>
+    </section>
+</div>
+            </div>
+        </div>
+    </div>
+    <footer id="footer">
+    <div class="container">
+        &copy; 2020 <a href="https://sangzhenya.github.io/">新月的博客 By 新月</a>.
+        Powered by <a rel="nofollow noreferer noopener" href="https://gohugo.io" target="_blank">Hugo</a>.
+        Theme based on <a href="https://github.com/flysnow-org/maupassant-hugo" target="_blank">maupassant</a>.
+        
+    </div>
+</footer>
+
+
+    
+    <script type="text/javascript">
+        window.MathJax = {
+            tex2jax: {
+                inlineMath: [['$', '$']],
+                processEscapes: true
+                }
+            };
+    </script>
+    <script src='https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-MML-AM_CHTML' async></script>
+
+
+<a id="rocket" href="#top"></a>
+<script type="text/javascript" src='https://sangzhenya.github.io/js/totop.js?v=0.0.0' async=""></script>
+
+
+
+
+
+
+</body>
+
+</html>

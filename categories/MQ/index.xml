@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>MQ on 新月的博客</title>
+    <link>https://sangzhenya.github.io/categories/MQ/</link>
+    <description>Recent content in MQ on 新月的博客</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>zh-CN</language>
+    <lastBuildDate>Wed, 05 Jun 2019 09:00:00 +0800</lastBuildDate>
+    
+	<atom:link href="https://sangzhenya.github.io/categories/MQ/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>Rocket MQ</title>
+      <link>https://sangzhenya.github.io/post/MQ/RocketMQ/</link>
+      <pubDate>Wed, 05 Jun 2019 09:00:00 +0800</pubDate>
+      
+      <guid>https://sangzhenya.github.io/post/MQ/RocketMQ/</guid>
+      <description>RocketMQ 原始文档地址 基本概念 首先 RocketMQ 是由 Producer、Broker、Consumer 三部分组成。其中 Producer 负责生产消息，Consumer 负责消费消息，Broker 负责存储消息。Broker 在实际部署中对应一台服务器，每个 Broker 可以存储多个 Topic 的消息，每个 Topic 的消息也可以分片存储在不同的 Broker 上。Me</description>
+    </item>
+    
+    <item>
+      <title>Rabbit MQ</title>
+      <link>https://sangzhenya.github.io/post/MQ/RabbitMQ/</link>
+      <pubDate>Mon, 03 Jun 2019 09:00:00 +0800</pubDate>
+      
+      <guid>https://sangzhenya.github.io/post/MQ/RabbitMQ/</guid>
+      <description>概述 多数应用中可以通过消息服务中间件来提升系统异步通信、扩展解耦的能力。其有两个重要的概念：消息代理和目的地。当消息发送者发送消息后，将由消息代理接管，消息代理保证消息传递到指定的目的地。 主要有两种形式： 队列 Queue，点对点通讯。消息发送者发送消息，消息代理将其放入到一个队列中</description>
+    </item>
+    
+    <item>
+      <title>Active MQ</title>
+      <link>https://sangzhenya.github.io/post/MQ/ActiveMQ/</link>
+      <pubDate>Sat, 01 Jun 2019 09:00:00 +0800</pubDate>
+      
+      <guid>https://sangzhenya.github.io/post/MQ/ActiveMQ/</guid>
+      <description>面向消息的中间件 是指利用高效可靠的消息机制进行平台的数据交流，并给予数据通信进行分布式系统的集成。通过提供消息传递和消息排列模型在分布式环境下提供应用解耦、弹性伸缩、冗余存储、流量削风、异步通信、数据同步等功能。简单来说就是解耦，削峰，异步。通用的流程如下： 生产者将消息发送到消息</description>
+    </item>
+    
+  </channel>
+</rss>

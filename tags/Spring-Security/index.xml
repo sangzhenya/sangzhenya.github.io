@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Spring Security on 新月的博客</title>
+    <link>https://sangzhenya.github.io/tags/Spring-Security/</link>
+    <description>Recent content in Spring Security on 新月的博客</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>zh-CN</language>
+    <lastBuildDate>Fri, 15 Feb 2019 09:00:00 +0800</lastBuildDate>
+    
+	<atom:link href="https://sangzhenya.github.io/tags/Spring-Security/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>Spring Security 入门</title>
+      <link>https://sangzhenya.github.io/post/Spring/Spring-Security/Spring-Securit-%E5%85%A5%E9%97%A8/</link>
+      <pubDate>Fri, 15 Feb 2019 09:00:00 +0800</pubDate>
+      
+      <guid>https://sangzhenya.github.io/post/Spring/Spring-Security/Spring-Securit-%E5%85%A5%E9%97%A8/</guid>
+      <description>Spring Security 就是通过一条过滤器链使用认证和授权的工作。如下图所示： 其中 FilterSecurityInterceptor 中会根据 config 配置的内容，判断是否可以访问对应的资源，如果不可以则会抛出异常。然后在 ExceptionTranslationFilter 中会捕获异常并作出响应的处理。 Spring Security 几个重要的概念如下： SecurityContextHolder Spring Security 提供的 SecurityContextHolder 类让程序可以方便访问 SecurityContext。其采用的是 ThreadLocal 方</description>
+    </item>
+    
+  </channel>
+</rss>

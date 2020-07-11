@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Spring Boot on 新月的博客</title>
+    <link>https://sangzhenya.github.io/tags/Spring-Boot/</link>
+    <description>Recent content in Spring Boot on 新月的博客</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>zh-CN</language>
+    <lastBuildDate>Sat, 09 Mar 2019 09:00:00 +0800</lastBuildDate>
+    
+	<atom:link href="https://sangzhenya.github.io/tags/Spring-Boot/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>Spring Boot MyBatis 多数据源配置</title>
+      <link>https://sangzhenya.github.io/post/Spring/Spring-Boot/Spring-Boot-MyBatis-%E5%A4%9A%E6%95%B0%E6%8D%AE%E6%BA%90%E9%85%8D%E7%BD%AE/</link>
+      <pubDate>Sat, 09 Mar 2019 09:00:00 +0800</pubDate>
+      
+      <guid>https://sangzhenya.github.io/post/Spring/Spring-Boot/Spring-Boot-MyBatis-%E5%A4%9A%E6%95%B0%E6%8D%AE%E6%BA%90%E9%85%8D%E7%BD%AE/</guid>
+      <description>主要有两种配置方式：第一种是自定义配置 SqlSessionFactory ，第二种是使用 AbstractRoutingDataSource + AOP 的方式实现 自定义 SqlSessionFactory 首先关闭 Spring Boot 对于 DataSourceAutoConfiguration: 1 2 3 @SpringBootApplication(exclude = { DataSourceAutoConfiguration.class }) 然后配置 DataSourceConfig，例如这边有两个数据库连接： 1 2 3 4 5 6 7 8 9 10 11 12 13 14 @Configuration public class DataSourceConfig { @Bean(name = &amp;#34;db1&amp;#34;) @ConfigurationProperties(prefix = &amp;#34;spring.datasource.db1&amp;#34;) public DataSource db1Source() { return DataSourceBuilder.create().build(); } @Bean(name = &amp;#34;db2&amp;#34;) @ConfigurationProperties(prefix = &amp;#34;spring.datasource.db2&amp;#34;) public DataSource db2Source() { return DataSourceBuilder.create().build(); } } 然后在配</description>
+    </item>
+    
+    <item>
+      <title>Spring Boot Actuator</title>
+      <link>https://sangzhenya.github.io/post/Spring/Spring-Boot/Spring-Boot-Actuator/</link>
+      <pubDate>Thu, 07 Mar 2019 09:00:00 +0800</pubDate>
+      
+      <guid>https://sangzhenya.github.io/post/Spring/Spring-Boot/Spring-Boot-Actuator/</guid>
+      <description>通过引入 spring-boot-starter-actuator 可以使用 Spring Boot 为我们提供的应用的监控和管理功能。可以通过 HTTP，JMX，SSH 协议进行操作，自动得到审计、健康及指标信息。pom 文件中设置如下： 1 2 3 4 &amp;lt;dependency&amp;gt; &amp;lt;groupId&amp;gt;org.springframework.boot&amp;lt;/groupId&amp;gt; &amp;lt;artifactId&amp;gt;spring-boot-starter-actuator&amp;lt;/artifactId&amp;gt; &amp;lt;/dependency&amp;gt; 主要有以下一些内容： /actuator 启用了哪些 actuator /actuator/beans 容器中每个组件的定义信息 /actuator/caches 容器中的 Cache 信息 /actuator/caches/{cache} 容器中具体 Cache 的缓存条目 /actuator/health/{*path} 和 /actuator/health 应用</description>
+    </item>
+    
+    <item>
+      <title>Spring Boot 自动配置</title>
+      <link>https://sangzhenya.github.io/post/Spring/Spring-Boot/Spring-Boot-%E8%87%AA%E5%8A%A8%E9%85%8D%E7%BD%AE/</link>
+      <pubDate>Tue, 05 Mar 2019 09:00:00 +0800</pubDate>
+      
+      <guid>https://sangzhenya.github.io/post/Spring/Spring-Boot/Spring-Boot-%E8%87%AA%E5%8A%A8%E9%85%8D%E7%BD%AE/</guid>
+      <description>众所周知 Spring Boot 极大的减少了 Spring 繁琐的配置，采用约定大于配置的策略。也是基于此 Spring Boot 有很多自动配置的逻辑，下面简单理一下相关的代码。 首先对于 Spring Boot 应用主启动类上要标注 @SpringBootApplication 如下所示，那么这个注解为会 Spring Boot 添加哪些配置的呢？下面可以看一下相关的源码。 1 2 3 4 5 6 @SpringBootApplication public class MyMainApplication { public static void main(String[] args) { SpringApplication.run(MyMainApplication.class); } } 引入如下</description>
+    </item>
+    
+    <item>
+      <title>Spring Boot 自定义 Starter</title>
+      <link>https://sangzhenya.github.io/post/Spring/Spring-Boot/Spring-Boot-%E8%87%AA%E5%AE%9A%E4%B9%89-Starter/</link>
+      <pubDate>Sun, 03 Mar 2019 09:00:00 +0800</pubDate>
+      
+      <guid>https://sangzhenya.github.io/post/Spring/Spring-Boot/Spring-Boot-%E8%87%AA%E5%AE%9A%E4%B9%89-Starter/</guid>
+      <description>Starter 只是用来引入自动配置模块，Starter 依赖自动配置，其他人使用的时候只需要引入 Starter 即可。另外对于我们自己实现的 Starter 推荐命名是 xxx-spring-boot-starter。 首先创建一个空项目例如 mystarter, 打开项目创建两个 Module，一个是普通的 Maven 项目，一个是 Spring Boot 项目。如下图所示： 对于 Starter</description>
+    </item>
+    
+    <item>
+      <title>Spring Boot 使用外部容器</title>
+      <link>https://sangzhenya.github.io/post/Spring/Spring-Boot/Spring-Boot-%E4%BD%BF%E7%94%A8%E5%A4%96%E9%83%A8-Servlet-%E5%AE%B9%E5%99%A8/</link>
+      <pubDate>Fri, 01 Mar 2019 09:00:00 +0800</pubDate>
+      
+      <guid>https://sangzhenya.github.io/post/Spring/Spring-Boot/Spring-Boot-%E4%BD%BF%E7%94%A8%E5%A4%96%E9%83%A8-Servlet-%E5%AE%B9%E5%99%A8/</guid>
+      <description>基本项目创建 在创建项目的时候使用 war 的方式打包： 其实主要的 pom 文件的配置如下： 1 2 3 4 5 6 7 8 9 10 11 12 &amp;lt;groupId&amp;gt;com.example&amp;lt;/groupId&amp;gt; &amp;lt;artifactId&amp;gt;webwar&amp;lt;/artifactId&amp;gt; &amp;lt;version&amp;gt;0.0.1-SNAPSHOT&amp;lt;/version&amp;gt; &amp;lt;!--打包方式设置为 war--&amp;gt; &amp;lt;packaging&amp;gt;war&amp;lt;/packaging&amp;gt; &amp;lt;!--将内置的 Tomcat 设置为 provided --&amp;gt; &amp;lt;dependency&amp;gt; &amp;lt;groupId&amp;gt;org.springframework.boot&amp;lt;/groupId&amp;gt; &amp;lt;artifactId&amp;gt;spring-boot-starter-tomcat&amp;lt;/artifactId&amp;gt; &amp;lt;scope&amp;gt;provided&amp;lt;/scope&amp;gt; &amp;lt;/dependency&amp;gt; 在主目录下编写 SpringBootServletInitializer 的子类并实现其 configure 方法，样例如下： 1 2 3 4 5 6 7 public class ServletInitializer extends SpringBootServletInitializer { @Override protected SpringApplicationBuilder configure(SpringApplicationBuilder application) { // 将 主类作为参</description>
+    </item>
+    
+    <item>
+      <title>Spring Boot 日志</title>
+      <link>https://sangzhenya.github.io/post/Spring/Spring-Boot/Spring-Boot-%E6%97%A5%E5%BF%97%E7%B3%BB%E7%BB%9F/</link>
+      <pubDate>Mon, 25 Feb 2019 09:00:00 +0800</pubDate>
+      
+      <guid>https://sangzhenya.github.io/post/Spring/Spring-Boot/Spring-Boot-%E6%97%A5%E5%BF%97%E7%B3%BB%E7%BB%9F/</guid>
+      <description>开发用到的框架大概有：JUL、JCL、Jboss-logging、logback、log4j、log4j2、slf4j&amp;hellip;.。其中 JCL， SLF4J， Jboss-logging 是日志门面，log4j, jul, log4j, Logback 是日志的实现. Spring Boot 选用的是 SLF4J 和 Logback 的实现。依赖如下： 在自己的系统中使用 slf4j 的话首先要导入 slf4j</description>
+    </item>
+    
+    <item>
+      <title>Spring Boot 嵌入式容器</title>
+      <link>https://sangzhenya.github.io/post/Spring/Spring-Boot/Spring-Boot-%E5%B5%8C%E5%85%A5%E5%BC%8F%E5%AE%B9%E5%99%A8/</link>
+      <pubDate>Sat, 23 Feb 2019 09:00:00 +0800</pubDate>
+      
+      <guid>https://sangzhenya.github.io/post/Spring/Spring-Boot/Spring-Boot-%E5%B5%8C%E5%85%A5%E5%BC%8F%E5%AE%B9%E5%99%A8/</guid>
+      <description>对于嵌入式容器的配置 Spring 的基本的 Server 的配置都可以在 application.yaml 中通过 server 相关的属性进行配置。 其对应的配置类是 1 2 3 4 5 6 7 8 9 10 11 @ConfigurationProperties(prefix = &amp;#34;server&amp;#34;, ignoreUnknownFields = true) public class ServerProperties { private final Tomcat tomcat = new Tomcat(); public static class Tomcat { private final Accesslog accesslog = new Accesslog(); private String protocolHeader; private String protocolHeaderHttpsValue = &amp;#34;https&amp;#34;; private String portHeader = &amp;#34;X-Forwarded-Port&amp;#34;; } } 其内部类 Tomcat 用户配置 Tomcat 相关的信息。在 ServletWebServerFactoryCustomizer 会使用 其中的配置对 嵌入式容器进行配置， 同样</description>
+    </item>
+    
+    <item>
+      <title>Spring Boot 缓存</title>
+      <link>https://sangzhenya.github.io/post/Spring/Spring-Boot/Spring-Boot-%E7%BC%93%E5%AD%98/</link>
+      <pubDate>Thu, 21 Feb 2019 09:00:00 +0800</pubDate>
+      
+      <guid>https://sangzhenya.github.io/post/Spring/Spring-Boot/Spring-Boot-%E7%BC%93%E5%AD%98/</guid>
+      <description>JSR 107 首先 JSR 107 即 JCache API的首个早期草案，在 Java JCache 中定义了 5 个核心内容，即 CachingProvider，CacheMaager，Cache，Entry 和 Expiry。 CachingProvider 中定义了创建、配置、获取、管理和控制多个 CacheManager, 一个应用可以在运行期间访问多个 CahingProvider。 CacheManger 定义了创建、</description>
+    </item>
+    
+    <item>
+      <title>Spring Boot 配置文件</title>
+      <link>https://sangzhenya.github.io/post/Spring/Spring-Boot/Spring-Boot-%E9%85%8D%E7%BD%AE%E6%96%87%E4%BB%B6/</link>
+      <pubDate>Tue, 19 Feb 2019 09:00:00 +0800</pubDate>
+      
+      <guid>https://sangzhenya.github.io/post/Spring/Spring-Boot/Spring-Boot-%E9%85%8D%E7%BD%AE%E6%96%87%E4%BB%B6/</guid>
+      <description>Spring Boot 默认使用 properties 文件来配置属性，也可以使用 YAML 文件进行配置。YAML 以数据为中心，比 json 和 xml 等更适合做配置文件。 基本语法 K:[空格]V 表示一对键值对。以空格的缩进控制层级关系, 属性和值均是大小写敏感的，只要是左对齐的一列数据，都是同一个层级的。 1 2 server:port:8080 普通值 数字 字符串 布尔 字符串默认不用加</description>
+    </item>
+    
+    <item>
+      <title>Spring Boot 错误处理机制</title>
+      <link>https://sangzhenya.github.io/post/Spring/Spring-Boot/Spring-Boot-%E9%94%99%E8%AF%AF%E5%A4%84%E7%90%86%E6%9C%BA%E5%88%B6/</link>
+      <pubDate>Sun, 17 Feb 2019 09:00:00 +0800</pubDate>
+      
+      <guid>https://sangzhenya.github.io/post/Spring/Spring-Boot/Spring-Boot-%E9%94%99%E8%AF%AF%E5%A4%84%E7%90%86%E6%9C%BA%E5%88%B6/</guid>
+      <description>Spring 针对于浏览器访问和客户端访问使用不同的处理逻辑。如果是浏览器则返回一个出错的网页，而如果是客户端则返回 JSON 格式的错误数据。其处理的原理如下： 在 ErrorMvcAutoConfiguration 有对于出错处理的自动配置。其为容器中添加了 DefaultErrorAttributes Bean 在页面中共享信息。 1 2 3 4 5 @Bean @ConditionalOnMissingBean(value = ErrorAttributes.class, search = SearchStrategy.CURRENT) public DefaultErrorAttributes errorAttributes() { return new DefaultErrorAttributes(this.serverProperties.getError().isIncludeException()); } 此外为容器中添加了 BasicErrorController Bean，处</description>
+    </item>
+    
+  </channel>
+</rss>

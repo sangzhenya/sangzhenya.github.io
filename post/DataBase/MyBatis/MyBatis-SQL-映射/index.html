@@ -1,0 +1,986 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <title>MyBatis SQL 映射 | 新月的博客</title>
+    <meta property="og:title" content="MyBatis SQL 映射 - 新月的博客">
+    <meta property="og:type" content="article">
+        
+    <meta property="article:published_time" content='2019-05-15T09:00:00&#43;08:00'>
+        
+        
+    <meta property="article:modified_time" content='2019-05-15T09:00:00&#43;08:00'>
+        
+    <meta name="Keywords" content="">
+    <meta name="description" content="MyBatis SQL 映射">
+        
+    <meta name="author" content="新月">
+    <meta property="og:url" content="https://sangzhenya.github.io/post/DataBase/MyBatis/MyBatis-SQL-%E6%98%A0%E5%B0%84/">
+    <link rel="shortcut icon" href="https://sangzhenya.github.io/favicon.ico" type="image/x-icon">
+
+    <link rel="stylesheet" href='https://sangzhenya.github.io/css/normalize.css'>
+    <link rel="stylesheet" href='https://sangzhenya.github.io/css/style.css'>
+    <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+
+    
+
+
+    
+    
+</head>
+
+
+<body>
+    <header id="header" class="clearfix">
+    <div class="container">
+        <div class="col-group">
+            <div class="site-name ">
+                
+                    <a id="logo" href="https://sangzhenya.github.io/">
+                        新月的博客
+                    </a>
+                
+                <p class="description">晚来天欲雪，能饮一杯无？</p>
+            </div>
+            <div>
+                <nav id="nav-menu" class="clearfix">
+                    <a class="current" href="https://sangzhenya.github.io/">首页</a>
+                    
+                    <a  href="https://sangzhenya.github.io/archives/" title="归档">归档</a>
+                    
+                    <a  href="https://sangzhenya.github.io/about/" title="关于">关于</a>
+                    
+                </nav>
+            </div>
+        </div>
+    </div>
+</header>
+
+    <div id="body">
+        <div class="container">
+            <div class="col-group">
+
+                <div class="col-8" id="main">
+                    
+<div class="res-cons">
+    
+    <article class="post">
+        <header>
+            <h1 class="post-title">MyBatis SQL 映射</h1>
+        </header>
+        <date class="post-meta meta-date">
+            2019年5月15日
+        </date>
+        
+        <div class="post-meta">
+            <span>|</span>
+            
+            <span class="meta-category"><a href='https://sangzhenya.github.io/categories/MyBaits'>MyBaits</a></span>
+            
+        </div>
+        
+        
+        
+        <div class="post-content">
+            <p>一个包含增删改查的 MyBatis Mapper 文件如下：</p>
+<div class="highlight"><div style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4">
+<table style="border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 1
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 2
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 3
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 4
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 5
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 6
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 7
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 8
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 9
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">10
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">11
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">12
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">13
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">14
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">15
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">16
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-xml" data-lang="xml"><span style="color:#999;font-weight:bold;font-style:italic">&lt;?xml version=&#34;1.0&#34; encoding=&#34;UTF-8&#34; ?&gt;</span>
+<span style="color:#999;font-weight:bold;font-style:italic">&lt;!DOCTYPE mapper PUBLIC &#34;-//mybatis.org//DTD Mapper 3.0//EN&#34; &#34;http://mybatis.org/dtd/mybatis-3-mapper.dtd&#34;&gt;</span>
+<span style="color:#000080">&lt;mapper</span> <span style="color:#008080">namespace=</span><span style="color:#d14">&#34;com.xinyue.imybatis.mapper.UserMapper&#34;</span><span style="color:#000080">&gt;</span>
+    <span style="color:#000080">&lt;select</span> <span style="color:#008080">id=</span><span style="color:#d14">&#34;getUserById&#34;</span> <span style="color:#008080">resultType=</span><span style="color:#d14">&#34;User&#34;</span> <span style="color:#008080">databaseId=</span><span style="color:#d14">&#34;mysql&#34;</span><span style="color:#000080">&gt;</span>
+		select id, name, password, first_name firstName, last_name lastName from user where id = #{id}
+	<span style="color:#000080">&lt;/select&gt;</span>
+    <span style="color:#000080">&lt;insert</span> <span style="color:#008080">id=</span><span style="color:#d14">&#34;createUser&#34;</span> <span style="color:#008080">parameterType=</span><span style="color:#d14">&#34;User&#34;</span><span style="color:#000080">&gt;</span>
+        insert  into user (name, password, first_name, last_name) values (#{name}, #{password}, #{firstName}, #{lastName})
+    <span style="color:#000080">&lt;/insert&gt;</span>
+    <span style="color:#000080">&lt;update</span> <span style="color:#008080">id=</span><span style="color:#d14">&#34;updateUser&#34;</span><span style="color:#000080">&gt;</span>
+        update user set name = #{name}, password=#{password}, first_name=#{firstName} where id=#{id}
+    <span style="color:#000080">&lt;/update&gt;</span>
+    <span style="color:#000080">&lt;delete</span> <span style="color:#008080">id=</span><span style="color:#d14">&#34;deleteUser&#34;</span><span style="color:#000080">&gt;</span>
+        delete from user where id = #{id}
+    <span style="color:#000080">&lt;/delete&gt;</span>
+<span style="color:#000080">&lt;/mapper&gt;</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>一个简单的测试样例如下：</p>
+<div class="highlight"><div style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4">
+<table style="border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 1
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 2
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 3
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 4
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 5
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 6
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 7
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 8
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 9
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">10
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">11
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">12
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">13
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">14
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">15
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">16
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">17
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#3c5d5d;font-weight:bold">@Test</span>
+<span style="color:#000;font-weight:bold">public</span> <span style="color:#458;font-weight:bold">void</span> <span style="color:#900;font-weight:bold">testCreate</span><span style="color:#000;font-weight:bold">()</span> <span style="color:#000;font-weight:bold">{</span>
+  <span style="color:#000;font-weight:bold">try</span> <span style="color:#000;font-weight:bold">{</span>
+    SqlSessionFactory sqlSessionFactory <span style="color:#000;font-weight:bold">=</span> getSqlSessionFactory<span style="color:#000;font-weight:bold">();</span>
+    <span style="color:#000;font-weight:bold">try</span> <span style="color:#000;font-weight:bold">(</span>SqlSession openSession <span style="color:#000;font-weight:bold">=</span> sqlSessionFactory<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">openSession</span><span style="color:#000;font-weight:bold">())</span> <span style="color:#000;font-weight:bold">{</span>
+      UserMapper mapper <span style="color:#000;font-weight:bold">=</span> openSession<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">getMapper</span><span style="color:#000;font-weight:bold">(</span>UserMapper<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">class</span><span style="color:#000;font-weight:bold">);</span>
+      User user <span style="color:#000;font-weight:bold">=</span> <span style="color:#000;font-weight:bold">new</span> User<span style="color:#000;font-weight:bold">();</span>
+      user<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">setName</span><span style="color:#000;font-weight:bold">(</span><span style="color:#d14">&#34;xinyue3&#34;</span><span style="color:#000;font-weight:bold">);</span>
+      user<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">setPassword</span><span style="color:#000;font-weight:bold">(</span><span style="color:#d14">&#34;password3&#34;</span><span style="color:#000;font-weight:bold">);</span>
+      mapper<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">createUser</span><span style="color:#000;font-weight:bold">(</span>user<span style="color:#000;font-weight:bold">);</span>
+      System<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">out</span><span style="color:#000;font-weight:bold">.</span><span style="color:#008080">println</span><span style="color:#000;font-weight:bold">(</span>user<span style="color:#000;font-weight:bold">);</span>
+      openSession<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">commit</span><span style="color:#000;font-weight:bold">();</span>
+    <span style="color:#000;font-weight:bold">}</span>
+  <span style="color:#000;font-weight:bold">}</span> <span style="color:#000;font-weight:bold">catch</span> <span style="color:#000;font-weight:bold">(</span>IOException e<span style="color:#000;font-weight:bold">)</span> <span style="color:#000;font-weight:bold">{</span>
+    e<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">printStackTrace</span><span style="color:#000;font-weight:bold">();</span>
+  <span style="color:#000;font-weight:bold">}</span>
+<span style="color:#000;font-weight:bold">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>MyBaits 允许增删改直接定义以下类型的返回值：<code>Integer，Long，Boolean, void</code>。另外如果使用<code>sqlSessionFactory.openSession()</code>的方式获取 session 则需要手动 commit；如果使用 <code>sqlSessionFactory.openSession(true)</code> 则会自动提交。</p>
+<h3 id="主键">主键</h3>
+<p>对于能自增主键的可以使用下面的方法获取主键：</p>
+<div class="highlight"><div style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4">
+<table style="border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">1
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">2
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">3
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">4
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-xml" data-lang="xml"><span style="color:#998;font-style:italic">&lt;!--  获取自增主键的值：useGeneratedKeys 表示使用自增主键的值；keyProperty 表示将自增组件的值放到属性的名称上  --&gt;</span>
+<span style="color:#000080">&lt;insert</span> <span style="color:#008080">id=</span><span style="color:#d14">&#34;createUser&#34;</span> <span style="color:#008080">parameterType=</span><span style="color:#d14">&#34;User&#34;</span> <span style="color:#008080">useGeneratedKeys=</span><span style="color:#d14">&#34;true&#34;</span> <span style="color:#008080">keyProperty=</span><span style="color:#d14">&#34;id&#34;</span><span style="color:#000080">&gt;</span>
+  insert  into user (name, password, first_name, last_name) values (#{name}, #{password}, #{firstName}, #{lastName})
+<span style="color:#000080">&lt;/insert&gt;</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>对于 Oracle 等使用不能自增主键的则需要查询获取主键值，如下所示：</p>
+<div class="highlight"><div style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4">
+<table style="border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 1
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 2
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 3
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 4
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 5
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 6
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 7
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 8
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 9
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">10
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">11
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">12
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">13
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">14
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">15
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">16
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">17
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">18
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">19
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-xml" data-lang="xml"><span style="color:#000080">&lt;insert</span> <span style="color:#008080">id=</span><span style="color:#d14">&#34;createUser&#34;</span> <span style="color:#008080">databaseId=</span><span style="color:#d14">&#34;oracle&#34;</span><span style="color:#000080">&gt;</span>
+    <span style="color:#998;font-style:italic">&lt;!-- keyProperty: 查出的主键值封装给javaBean的哪个属性
+</span><span style="color:#998;font-style:italic">        order 类型有以下两种：
+</span><span style="color:#998;font-style:italic">        BEFORE运行顺序： 先运行selectKey查询id的sql；查出id值封装给javaBean的id属性，再运行插入的sql；就可以取出id属性对应的值
+</span><span style="color:#998;font-style:italic">        AFTER运行顺序： 先运行插入的sql（从序列中取出新值作为id）；再运行selectKey查询id的sql；
+</span><span style="color:#998;font-style:italic">        resultType:查出的数据的返回值类型 --&gt;</span>
+    <span style="color:#000080">&lt;selectKey</span> <span style="color:#008080">keyProperty=</span><span style="color:#d14">&#34;id&#34;</span> <span style="color:#008080">order=</span><span style="color:#d14">&#34;BEFORE&#34;</span> <span style="color:#008080">resultType=</span><span style="color:#d14">&#34;Integer&#34;</span><span style="color:#000080">&gt;</span>
+      <span style="color:#998;font-style:italic">&lt;!-- 查询主键的sql语句 --&gt;</span>
+      select EMPLOYEES_SEQ.nextval from dual
+    <span style="color:#000080">&lt;/selectKey&gt;</span>
+    insert  into user (id, name, password, first_name, last_name) values (#{id}, #{name}, #{password}, #{firstName}, #{lastName})
+<span style="color:#000080">&lt;/insert&gt;</span>
+<span style="color:#998;font-style:italic">&lt;!--&lt;insert id=&#34;createUser&#34; databaseId=&#34;oracle&#34;&gt;
+</span><span style="color:#998;font-style:italic">        &lt;selectKey keyProperty=&#34;id&#34; order=&#34;BEFORE&#34; resultType=&#34;Integer&#34;&gt;
+</span><span style="color:#998;font-style:italic">            select EMPLOYEES_SEQ.nextval from dual
+</span><span style="color:#998;font-style:italic">        &lt;/selectKey&gt;
+</span><span style="color:#998;font-style:italic">        insert into employees(EMPLOYEE_ID,LAST_NAME,EMAIL)
+</span><span style="color:#998;font-style:italic">        values(employees_seq.nextval,#{lastName},#{email})
+</span><span style="color:#998;font-style:italic">&lt;/insert&gt;--&gt;</span>
+</code></pre></td></tr></table>
+</div>
+</div><h3 id="mybatis-对于参数的处理">MyBatis 对于参数的处理</h3>
+<h4 id="单个参数">单个参数</h4>
+<p>没有特殊处理，使用 #{参数名/任意名称} 取出参数值。</p>
+<h4 id="多个参数">多个参数</h4>
+<p>多个参数会被封装成一个 Map， key 可以用 <code>param1, param2</code> 当然也可以用 <code>arg1, arg0</code>，value 就是传入的值。#{key} 就是从 map 中获取指定 key 的值。例如下面一个方法</p>
+<div class="highlight"><div style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4">
+<table style="border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">1
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">2
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java">User <span style="color:#900;font-weight:bold">getUserByFirstNameAndListName</span><span style="color:#000;font-weight:bold">(</span>String firstName<span style="color:#000;font-weight:bold">,</span> String lastName<span style="color:#000;font-weight:bold">);</span>
+<span style="color:#998;font-style:italic">// Available parameters are [arg1, arg0, param1, param2]
+</span></code></pre></td></tr></table>
+</div>
+</div><p>如果使用了命名参数则可以使用命名参数的中值获取，例如：</p>
+<div class="highlight"><div style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4">
+<table style="border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">1
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">2
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java">User <span style="color:#900;font-weight:bold">getUserByFirstNameAndListName</span><span style="color:#000;font-weight:bold">(</span><span style="color:#3c5d5d;font-weight:bold">@Param</span><span style="color:#000;font-weight:bold">(</span><span style="color:#d14">&#34;firstName&#34;</span><span style="color:#000;font-weight:bold">)</span> String firstName<span style="color:#000;font-weight:bold">,</span> <span style="color:#3c5d5d;font-weight:bold">@Param</span><span style="color:#000;font-weight:bold">(</span><span style="color:#d14">&#34;lastName&#34;</span><span style="color:#000;font-weight:bold">)</span> String lastName<span style="color:#000;font-weight:bold">);</span>
+<span style="color:#998;font-style:italic">// Available parameters are [firstName, lastName, param1, param2]
+</span></code></pre></td></tr></table>
+</div>
+</div><p>如果参数是我们实体对象或者是 Map，则分别可以通过属性名和属性的 Key 获取对应的 Value，<code>#{key}</code>。</p>
+<p>如果参数是 Collection 或者数组，也会封装到 Map 中，<code>Collection -&gt; collection; List -&gt; list; 数组 -&gt; array</code>。例如一个 <code>List&lt;Integer&gt; ids</code> 获取第 0 个元素则可以使用 <code>#{list[0]}</code> 获取。</p>
+<p>下面看一下解析参数的流程，主要是 <code>ParamNameResolver</code> 方法：</p>
+<div class="highlight"><div style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4">
+<table style="border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 1
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 2
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 3
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 4
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 5
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 6
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 7
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 8
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 9
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">10
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">11
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">12
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">13
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">14
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">15
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">16
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">17
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">18
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">19
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">20
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">21
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">22
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">23
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">24
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">25
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">26
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">27
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">28
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">29
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">30
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">31
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">32
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">33
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">34
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">35
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">36
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">37
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">38
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">39
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">40
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">41
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">42
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">43
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">44
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">45
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">46
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">47
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">48
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">49
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">50
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">51
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">52
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">53
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">54
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">55
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">56
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">57
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">58
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">59
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">60
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">61
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">62
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">63
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">64
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">65
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">66
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">67
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">68
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">69
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">70
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">71
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">72
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">73
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#998;font-style:italic">// ParamNameResolver
+</span><span style="color:#998;font-style:italic"></span><span style="color:#000;font-weight:bold">public</span> <span style="color:#900;font-weight:bold">ParamNameResolver</span><span style="color:#000;font-weight:bold">(</span>Configuration config<span style="color:#000;font-weight:bold">,</span> Method method<span style="color:#000;font-weight:bold">)</span> <span style="color:#000;font-weight:bold">{</span>
+  <span style="color:#998;font-style:italic">// 获取方法参数列表类型数组
+</span><span style="color:#998;font-style:italic"></span>  <span style="color:#000;font-weight:bold">final</span> Class<span style="color:#000;font-weight:bold">&lt;?&gt;[]</span> paramTypes <span style="color:#000;font-weight:bold">=</span> method<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">getParameterTypes</span><span style="color:#000;font-weight:bold">();</span>
+  <span style="color:#998;font-style:italic">// 获取方法参数注解数组
+</span><span style="color:#998;font-style:italic"></span>  <span style="color:#000;font-weight:bold">final</span> Annotation<span style="color:#000;font-weight:bold">[][]</span> paramAnnotations <span style="color:#000;font-weight:bold">=</span> method<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">getParameterAnnotations</span><span style="color:#000;font-weight:bold">();</span>
+  <span style="color:#998;font-style:italic">// 存放参数名称
+</span><span style="color:#998;font-style:italic"></span>  <span style="color:#000;font-weight:bold">final</span> SortedMap<span style="color:#000;font-weight:bold">&lt;</span>Integer<span style="color:#000;font-weight:bold">,</span> String<span style="color:#000;font-weight:bold">&gt;</span> map <span style="color:#000;font-weight:bold">=</span> <span style="color:#000;font-weight:bold">new</span> TreeMap<span style="color:#000;font-weight:bold">&lt;&gt;();</span>
+  <span style="color:#998;font-style:italic">// 获取参数数量
+</span><span style="color:#998;font-style:italic"></span>  <span style="color:#458;font-weight:bold">int</span> paramCount <span style="color:#000;font-weight:bold">=</span> paramAnnotations<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">length</span><span style="color:#000;font-weight:bold">;</span>
+  <span style="color:#998;font-style:italic">// 遍历参数放到参数名称 Map 中
+</span><span style="color:#998;font-style:italic"></span>  <span style="color:#000;font-weight:bold">for</span> <span style="color:#000;font-weight:bold">(</span><span style="color:#458;font-weight:bold">int</span> paramIndex <span style="color:#000;font-weight:bold">=</span> 0<span style="color:#000;font-weight:bold">;</span> paramIndex <span style="color:#000;font-weight:bold">&lt;</span> paramCount<span style="color:#000;font-weight:bold">;</span> paramIndex<span style="color:#000;font-weight:bold">++)</span> <span style="color:#000;font-weight:bold">{</span>
+    <span style="color:#000;font-weight:bold">if</span> <span style="color:#000;font-weight:bold">(</span>isSpecialParameter<span style="color:#000;font-weight:bold">(</span>paramTypes<span style="color:#000;font-weight:bold">[</span>paramIndex<span style="color:#000;font-weight:bold">]))</span> <span style="color:#000;font-weight:bold">{</span>
+      <span style="color:#998;font-style:italic">// 剔除特殊的参数类型：RowBounds.class.isAssignableFrom(clazz) || ResultHandler.class.isAssignableFrom(clazz);
+</span><span style="color:#998;font-style:italic"></span>      <span style="color:#000;font-weight:bold">continue</span><span style="color:#000;font-weight:bold">;</span>
+    <span style="color:#000;font-weight:bold">}</span>
+    String name <span style="color:#000;font-weight:bold">=</span> <span style="color:#000;font-weight:bold">null</span><span style="color:#000;font-weight:bold">;</span>
+    <span style="color:#998;font-style:italic">// 从 @Param 参数注解中获取注解名称作为 name
+</span><span style="color:#998;font-style:italic"></span>    <span style="color:#000;font-weight:bold">for</span> <span style="color:#000;font-weight:bold">(</span>Annotation annotation <span style="color:#000;font-weight:bold">:</span> paramAnnotations<span style="color:#000;font-weight:bold">[</span>paramIndex<span style="color:#000;font-weight:bold">])</span> <span style="color:#000;font-weight:bold">{</span>
+      <span style="color:#000;font-weight:bold">if</span> <span style="color:#000;font-weight:bold">(</span>annotation <span style="color:#000;font-weight:bold">instanceof</span> Param<span style="color:#000;font-weight:bold">)</span> <span style="color:#000;font-weight:bold">{</span>
+        hasParamAnnotation <span style="color:#000;font-weight:bold">=</span> <span style="color:#000;font-weight:bold">true</span><span style="color:#000;font-weight:bold">;</span>
+        name <span style="color:#000;font-weight:bold">=</span> <span style="color:#000;font-weight:bold">((</span>Param<span style="color:#000;font-weight:bold">)</span> annotation<span style="color:#000;font-weight:bold">).</span><span style="color:#008080">value</span><span style="color:#000;font-weight:bold">();</span>
+        <span style="color:#000;font-weight:bold">break</span><span style="color:#000;font-weight:bold">;</span>
+      <span style="color:#000;font-weight:bold">}</span>
+    <span style="color:#000;font-weight:bold">}</span>
+    <span style="color:#998;font-style:italic">// 如果找到即没有使用 @Param 注解
+</span><span style="color:#998;font-style:italic"></span>    <span style="color:#000;font-weight:bold">if</span> <span style="color:#000;font-weight:bold">(</span>name <span style="color:#000;font-weight:bold">==</span> <span style="color:#000;font-weight:bold">null</span><span style="color:#000;font-weight:bold">)</span> <span style="color:#000;font-weight:bold">{</span>
+      <span style="color:#998;font-style:italic">// 如果配置了获取 useActualParamName 为 true，默认为 true
+</span><span style="color:#998;font-style:italic"></span>      <span style="color:#000;font-weight:bold">if</span> <span style="color:#000;font-weight:bold">(</span>config<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">isUseActualParamName</span><span style="color:#000;font-weight:bold">())</span> <span style="color:#000;font-weight:bold">{</span>
+        <span style="color:#998;font-style:italic">// 获取真实的参数名称
+</span><span style="color:#998;font-style:italic"></span>        <span style="color:#998;font-style:italic">// 编译使用 JDK 8 且带有 -parameters 注解的时候才可以获取真实的参数名称作为 name，否则返回 arg0, arg1 这样的值作为 name
+</span><span style="color:#998;font-style:italic"></span>        name <span style="color:#000;font-weight:bold">=</span> getActualParamName<span style="color:#000;font-weight:bold">(</span>method<span style="color:#000;font-weight:bold">,</span> paramIndex<span style="color:#000;font-weight:bold">);</span>
+      <span style="color:#000;font-weight:bold">}</span>
+      <span style="color:#000;font-weight:bold">if</span> <span style="color:#000;font-weight:bold">(</span>name <span style="color:#000;font-weight:bold">==</span> <span style="color:#000;font-weight:bold">null</span><span style="color:#000;font-weight:bold">)</span> <span style="color:#000;font-weight:bold">{</span>
+        <span style="color:#998;font-style:italic">// 如果还是没有找到则使用 index 作为 name (&#34;0&#34;, &#34;1&#34;, ...)
+</span><span style="color:#998;font-style:italic"></span>        name <span style="color:#000;font-weight:bold">=</span> String<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">valueOf</span><span style="color:#000;font-weight:bold">(</span>map<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">size</span><span style="color:#000;font-weight:bold">());</span>
+      <span style="color:#000;font-weight:bold">}</span>
+    <span style="color:#000;font-weight:bold">}</span>
+    <span style="color:#998;font-style:italic">// 放到参数 name map中
+</span><span style="color:#998;font-style:italic"></span>    map<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">put</span><span style="color:#000;font-weight:bold">(</span>paramIndex<span style="color:#000;font-weight:bold">,</span> name<span style="color:#000;font-weight:bold">);</span>
+  <span style="color:#000;font-weight:bold">}</span>
+  <span style="color:#998;font-style:italic">// 放到类属性上
+</span><span style="color:#998;font-style:italic"></span>  names <span style="color:#000;font-weight:bold">=</span> Collections<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">unmodifiableSortedMap</span><span style="color:#000;font-weight:bold">(</span>map<span style="color:#000;font-weight:bold">);</span>
+<span style="color:#000;font-weight:bold">}</span>
+
+<span style="color:#000;font-weight:bold">public</span> Object <span style="color:#900;font-weight:bold">getNamedParams</span><span style="color:#000;font-weight:bold">(</span>Object<span style="color:#000;font-weight:bold">[]</span> args<span style="color:#000;font-weight:bold">)</span> <span style="color:#000;font-weight:bold">{</span>
+  <span style="color:#998;font-style:italic">// 获取参数的数量
+</span><span style="color:#998;font-style:italic"></span>  <span style="color:#000;font-weight:bold">final</span> <span style="color:#458;font-weight:bold">int</span> paramCount <span style="color:#000;font-weight:bold">=</span> names<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">size</span><span style="color:#000;font-weight:bold">();</span>
+  <span style="color:#000;font-weight:bold">if</span> <span style="color:#000;font-weight:bold">(</span>args <span style="color:#000;font-weight:bold">==</span> <span style="color:#000;font-weight:bold">null</span> <span style="color:#000;font-weight:bold">||</span> paramCount <span style="color:#000;font-weight:bold">==</span> 0<span style="color:#000;font-weight:bold">)</span> <span style="color:#000;font-weight:bold">{</span>
+    <span style="color:#998;font-style:italic">// 如果没有参数则直接返回 null
+</span><span style="color:#998;font-style:italic"></span>    <span style="color:#000;font-weight:bold">return</span> <span style="color:#000;font-weight:bold">null</span><span style="color:#000;font-weight:bold">;</span>
+  <span style="color:#000;font-weight:bold">}</span> <span style="color:#000;font-weight:bold">else</span> <span style="color:#000;font-weight:bold">if</span> <span style="color:#000;font-weight:bold">(!</span>hasParamAnnotation <span style="color:#000;font-weight:bold">&amp;&amp;</span> paramCount <span style="color:#000;font-weight:bold">==</span> 1<span style="color:#000;font-weight:bold">)</span> <span style="color:#000;font-weight:bold">{</span><span style="color:#a61717;background-color:#e3d2d2">‘</span>
+    <span style="color:#998;font-style:italic">// 如果没有参数注解且只有一个参数则直接返回第一个参数
+</span><span style="color:#998;font-style:italic"></span>    <span style="color:#000;font-weight:bold">return</span> args<span style="color:#000;font-weight:bold">[</span>names<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">firstKey</span><span style="color:#000;font-weight:bold">()];</span>
+  <span style="color:#000;font-weight:bold">}</span> <span style="color:#000;font-weight:bold">else</span> <span style="color:#000;font-weight:bold">{</span>
+    <span style="color:#998;font-style:italic">// 新建一个参数值 Map
+</span><span style="color:#998;font-style:italic"></span>    <span style="color:#000;font-weight:bold">final</span> Map<span style="color:#000;font-weight:bold">&lt;</span>String<span style="color:#000;font-weight:bold">,</span> Object<span style="color:#000;font-weight:bold">&gt;</span> param <span style="color:#000;font-weight:bold">=</span> <span style="color:#000;font-weight:bold">new</span> ParamMap<span style="color:#000;font-weight:bold">&lt;&gt;();</span>
+    <span style="color:#458;font-weight:bold">int</span> i <span style="color:#000;font-weight:bold">=</span> 0<span style="color:#000;font-weight:bold">;</span>
+    <span style="color:#000;font-weight:bold">for</span> <span style="color:#000;font-weight:bold">(</span>Map<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">Entry</span><span style="color:#000;font-weight:bold">&lt;</span>Integer<span style="color:#000;font-weight:bold">,</span> String<span style="color:#000;font-weight:bold">&gt;</span> entry <span style="color:#000;font-weight:bold">:</span> names<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">entrySet</span><span style="color:#000;font-weight:bold">())</span> <span style="color:#000;font-weight:bold">{</span>
+      <span style="color:#998;font-style:italic">// 把参数名称和参数值放到 Map 中
+</span><span style="color:#998;font-style:italic"></span>      param<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">put</span><span style="color:#000;font-weight:bold">(</span>entry<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">getValue</span><span style="color:#000;font-weight:bold">(),</span> args<span style="color:#000;font-weight:bold">[</span>entry<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">getKey</span><span style="color:#000;font-weight:bold">()]);</span>
+      <span style="color:#998;font-style:italic">// 添加通用参数名称例如 (param1, param2, ...)
+</span><span style="color:#998;font-style:italic"></span>      <span style="color:#000;font-weight:bold">final</span> String genericParamName <span style="color:#000;font-weight:bold">=</span> GENERIC_NAME_PREFIX <span style="color:#000;font-weight:bold">+</span> String<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">valueOf</span><span style="color:#000;font-weight:bold">(</span>i <span style="color:#000;font-weight:bold">+</span> 1<span style="color:#000;font-weight:bold">);</span>
+      <span style="color:#998;font-style:italic">// 确保通用的参数不会覆盖 @Param 中定义的属性
+</span><span style="color:#998;font-style:italic"></span>      <span style="color:#000;font-weight:bold">if</span> <span style="color:#000;font-weight:bold">(!</span>names<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">containsValue</span><span style="color:#000;font-weight:bold">(</span>genericParamName<span style="color:#000;font-weight:bold">))</span> <span style="color:#000;font-weight:bold">{</span>
+        param<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">put</span><span style="color:#000;font-weight:bold">(</span>genericParamName<span style="color:#000;font-weight:bold">,</span> args<span style="color:#000;font-weight:bold">[</span>entry<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">getKey</span><span style="color:#000;font-weight:bold">()]);</span>
+      <span style="color:#000;font-weight:bold">}</span>
+      i<span style="color:#000;font-weight:bold">++;</span>
+    <span style="color:#000;font-weight:bold">}</span>
+    <span style="color:#998;font-style:italic">// 返回参数值 Map
+</span><span style="color:#998;font-style:italic"></span>    <span style="color:#000;font-weight:bold">return</span> param<span style="color:#000;font-weight:bold">;</span>
+  <span style="color:#000;font-weight:bold">}</span>
+<span style="color:#000;font-weight:bold">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><h3 id="-和-"><code>#</code> 和 <code>$</code></h3>
+<p><code>#{}</code> 和 <code>${}</code> 均可以从 map 中获取 pojo 对象属性的值。其区别如下：</p>
+<p>对于 <code>#{}</code> 是以预编译的形式直接将参数设置到 SQL 语句中，使用 <code>PreparableStatement</code> 防止 SQL 注入。其可以规定参数的一些规则如：<code>javaType</code>, <code>jdbcType</code>, <code>mode</code>, <code>numericScale</code>, <code>resultMap</code>, <code>typeHanlder</code>, <code>jdbcTypeName</code>。其中 <code>jdbcType</code> 在某些特殊的情况下需要设置，例如如果数据为 null，MyBatis默认将 null 映射成了 JDBC 原生的 OTHER 类型，所以有些数据库不能识别 MyBatis 对 null 的处理。则可以设置如下 <code>#{name,jdbcType=NULL}</code>。当然也可以在全局配置 <code>&lt;setting name=&quot;jdbcTypeForNull&quot; value=&quot;NULL&quot;/&gt;</code>。例如：</p>
+<div class="highlight"><div style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4">
+<table style="border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">1
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">2
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">3
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-mysql" data-lang="mysql"><span style="color:#998;font-style:italic">#{age,javaType=int,jdbcType=NUMERIC,typeHandler=MyTypeHandler}
+</span><span style="color:#998;font-style:italic">#{height,javaType=double,jdbcType=NUMERIC,numericScale=2}
+</span><span style="color:#998;font-style:italic">#{department, mode=OUT, jdbcType=CURSOR, javaType=ResultSet, resultMap=departmentResultMap}
+</span></code></pre></td></tr></table>
+</div>
+</div><p>对于 <code>${}</code> 取出值直接拼接到 SQL 语句中，可能会有安全问题。但是对于一些 JDBC 不能使用占位符的情况可以使用其取值。例如：<code>ORDER BY ${columnName}</code>, <code>select * from ${year}_salary where xxx;</code>，简单可以认作为字符串替换。</p>
+<h3 id="select">Select</h3>
+<p>select 主要属性如下：</p>
+<pre><code class="language-properties" data-lang="properties">parameterType=可选属性，传入这条语句的限定名或别名。MyBatis 可以通过 TypeHandler 判断出具体传入数据的参数。
+resultType=返回的期望的类的完全限定名或别名，如果是集合或者 Map 则设置包含的类型
+resultMap=外部 resultMap 的命名引用
+flushCache=任何使用只要语句被调用都会清空本地和二级缓存，默认为 false
+useCache=使用耳机缓存，对于 select 默认为 true
+timeout=超时时间
+fetchSize=每次批量返回的结果行数
+statementType=STATEMENT，PERPARED 或 CALLABLE 的一个
+resultSetType=FORWARD_ONLY,SCROLL_SENSITIVE 或 SCROLL_INSENSITIVE 中一个
+databaseId=指定特定数据库的语句
+resultOrdered=针对嵌套结果的 select 语句使用，例如包含嵌套结果或是分组，返回一个主结果行，就不会出现对前面结果集引用的情况，避免嵌套获取结果集的时候内存不够用的情况
+resultSets=对多结果集的情况适用，将列出语句执行后返回的结果集并给每个结果集一个名称。
+</code></pre><p>如果查询需要返回一个 List，则需要将 <code>select</code> 中的 <code>resultType</code> 设置为 List 内的元素。</p>
+<div class="highlight"><div style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4">
+<table style="border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">1
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">2
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">3
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">4
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-xml" data-lang="xml"><span style="color:#998;font-style:italic">&lt;!-- List&lt;User&gt; findByNameLike(String name); --&gt;</span>
+<span style="color:#000080">&lt;select</span> <span style="color:#008080">id=</span><span style="color:#d14">&#34;findByNameLike&#34;</span> <span style="color:#008080">resultType=</span><span style="color:#d14">&#34;User&#34;</span><span style="color:#000080">&gt;</span>
+  select id, name, password, first_name firstName, last_name lastName from user where name like #{name}
+<span style="color:#000080">&lt;/select&gt;</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>如果查询要返回 Map 可以设置如下：</p>
+<div class="highlight"><div style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4">
+<table style="border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">1
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">2
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">3
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">4
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-xml" data-lang="xml"><span style="color:#998;font-style:italic">&lt;!-- Map&lt;String, Object&gt; getMapById(Integer id); --&gt;</span>
+<span style="color:#000080">&lt;select</span> <span style="color:#008080">id=</span><span style="color:#d14">&#34;getMapById&#34;</span> <span style="color:#008080">resultType=</span><span style="color:#d14">&#34;map&#34;</span> <span style="color:#008080">databaseId=</span><span style="color:#d14">&#34;mysql&#34;</span><span style="color:#000080">&gt;</span>
+  select id, name, password, first_name firstName, last_name lastName from user where id = #{id}
+<span style="color:#000080">&lt;/select&gt;</span>
+</code></pre></td></tr></table>
+</div>
+</div><div class="highlight"><div style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4">
+<table style="border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">1
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">2
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">3
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">4
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">5
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">6
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">7
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">8
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-xml" data-lang="xml"><span style="color:#998;font-style:italic">&lt;!--
+</span><span style="color:#998;font-style:italic">// 设置 Map 的 Key
+</span><span style="color:#998;font-style:italic">@MapKey(&#34;id&#34;)
+</span><span style="color:#998;font-style:italic">Map&lt;Integer, User&gt; getUserMap(String name);
+</span><span style="color:#998;font-style:italic">--&gt;</span>
+<span style="color:#000080">&lt;select</span> <span style="color:#008080">id=</span><span style="color:#d14">&#34;getUserMap&#34;</span> <span style="color:#008080">resultType=</span><span style="color:#d14">&#34;User&#34;</span><span style="color:#000080">&gt;</span>
+  select * from user where name like #{name}
+<span style="color:#000080">&lt;/select&gt;</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>可以使用 <code>resultMap</code> 自定义封装规则：</p>
+<div class="highlight"><div style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4">
+<table style="border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 1
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 2
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 3
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 4
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 5
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 6
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 7
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 8
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 9
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">10
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">11
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">12
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">13
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-xml" data-lang="xml"><span style="color:#998;font-style:italic">&lt;!-- 使用级联关系 --&gt;</span>
+<span style="color:#998;font-style:italic">&lt;!-- User getCustomizedUserById(Integer id); --&gt;</span>
+<span style="color:#000080">&lt;resultMap</span> <span style="color:#008080">id=</span><span style="color:#d14">&#34;CustomizedUser&#34;</span> <span style="color:#008080">type=</span><span style="color:#d14">&#34;com.xinyue.imybatis.model.User&#34;</span><span style="color:#000080">&gt;</span>
+   <span style="color:#000080">&lt;id</span> <span style="color:#008080">column=</span><span style="color:#d14">&#34;id&#34;</span> <span style="color:#008080">property=</span><span style="color:#d14">&#34;id&#34;</span> <span style="color:#000080">/&gt;</span>
+   <span style="color:#000080">&lt;result</span> <span style="color:#008080">column=</span><span style="color:#d14">&#34;name&#34;</span> <span style="color:#008080">property=</span><span style="color:#d14">&#34;name&#34;</span> <span style="color:#000080">/&gt;</span>
+   <span style="color:#000080">&lt;result</span> <span style="color:#008080">column=</span><span style="color:#d14">&#34;first_name&#34;</span> <span style="color:#008080">property=</span><span style="color:#d14">&#34;firstName&#34;</span> <span style="color:#000080">/&gt;</span>
+   <span style="color:#000080">&lt;result</span> <span style="color:#008080">column=</span><span style="color:#d14">&#34;last_name&#34;</span> <span style="color:#008080">property=</span><span style="color:#d14">&#34;lastName&#34;</span> <span style="color:#000080">/&gt;</span>
+   <span style="color:#998;font-style:italic">&lt;!--   未列出的列也会进行自动封装     --&gt;</span>
+<span style="color:#000080">&lt;/resultMap&gt;</span>
+
+<span style="color:#000080">&lt;select</span> <span style="color:#008080">id=</span><span style="color:#d14">&#34;getCustomizedUserById&#34;</span> <span style="color:#008080">resultMap=</span><span style="color:#d14">&#34;CustomizedUser&#34;</span> <span style="color:#008080">databaseId=</span><span style="color:#d14">&#34;mysql&#34;</span><span style="color:#000080">&gt;</span>
+  select id, name, password, first_name firstName, last_name lastName from user where id = #{id}
+<span style="color:#000080">&lt;/select&gt;</span>
+</code></pre></td></tr></table>
+</div>
+</div><div class="highlight"><div style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4">
+<table style="border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 1
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 2
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 3
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 4
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 5
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 6
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 7
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 8
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 9
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">10
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">11
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">12
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">13
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">14
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">15
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">16
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">17
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-xml" data-lang="xml"><span style="color:#998;font-style:italic">&lt;!-- 使用 association 属性 --&gt;</span>
+<span style="color:#998;font-style:italic">&lt;!--User getUserWithZone(Integer id); --&gt;</span>
+<span style="color:#000080">&lt;resultMap</span> <span style="color:#008080">id=</span><span style="color:#d14">&#34;UserWithZone&#34;</span> <span style="color:#008080">type=</span><span style="color:#d14">&#34;com.xinyue.imybatis.model.User&#34;</span><span style="color:#000080">&gt;</span>
+  <span style="color:#000080">&lt;id</span> <span style="color:#008080">column=</span><span style="color:#d14">&#34;id&#34;</span> <span style="color:#008080">property=</span><span style="color:#d14">&#34;id&#34;</span> <span style="color:#000080">/&gt;</span>
+  <span style="color:#000080">&lt;result</span> <span style="color:#008080">column=</span><span style="color:#d14">&#34;name&#34;</span> <span style="color:#008080">property=</span><span style="color:#d14">&#34;name&#34;</span> <span style="color:#000080">/&gt;</span>
+  <span style="color:#000080">&lt;result</span> <span style="color:#008080">column=</span><span style="color:#d14">&#34;first_name&#34;</span> <span style="color:#008080">property=</span><span style="color:#d14">&#34;firstName&#34;</span> <span style="color:#000080">/&gt;</span>
+  <span style="color:#000080">&lt;result</span> <span style="color:#008080">column=</span><span style="color:#d14">&#34;last_name&#34;</span> <span style="color:#008080">property=</span><span style="color:#d14">&#34;lastName&#34;</span> <span style="color:#000080">/&gt;</span>
+  <span style="color:#998;font-style:italic">&lt;!-- &lt;result column=&#34;z_id&#34; property=&#34;zone.id&#34; /&gt;
+</span><span style="color:#998;font-style:italic">  &lt;result column=&#34;z_name&#34; property=&#34;zone.name&#34; /&gt; --&gt;</span>
+  <span style="color:#000080">&lt;association</span> <span style="color:#008080">property=</span><span style="color:#d14">&#34;zone&#34;</span> <span style="color:#008080">javaType=</span><span style="color:#d14">&#34;com.xinyue.imybatis.model.Zone&#34;</span><span style="color:#000080">&gt;</span>
+    <span style="color:#000080">&lt;result</span> <span style="color:#008080">column=</span><span style="color:#d14">&#34;z_id&#34;</span> <span style="color:#008080">property=</span><span style="color:#d14">&#34;id&#34;</span> <span style="color:#000080">/&gt;</span>
+    <span style="color:#000080">&lt;result</span> <span style="color:#008080">column=</span><span style="color:#d14">&#34;z_name&#34;</span> <span style="color:#008080">property=</span><span style="color:#d14">&#34;name&#34;</span> <span style="color:#000080">/&gt;</span>
+  <span style="color:#000080">&lt;/association&gt;</span>
+<span style="color:#000080">&lt;/resultMap&gt;</span>
+<span style="color:#000080">&lt;select</span> <span style="color:#008080">id=</span><span style="color:#d14">&#34;getUserWithZone&#34;</span> <span style="color:#008080">resultMap=</span><span style="color:#d14">&#34;UserWithZone&#34;</span><span style="color:#000080">&gt;</span>
+  select u.id, u.name, u.`password`, u.first_name, u.last_name, z.id z_id, z.name as z_name from user u, zone z where u.zone_id = z.id and u.id = #{id};
+<span style="color:#000080">&lt;/select&gt;</span>
+</code></pre></td></tr></table>
+</div>
+</div><div class="highlight"><div style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4">
+<table style="border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 1
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 2
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 3
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 4
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 5
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 6
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 7
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 8
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 9
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">10
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">11
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-xml" data-lang="xml"><span style="color:#998;font-style:italic">&lt;!-- 使用 association 分布查询 --&gt;</span>
+<span style="color:#998;font-style:italic">&lt;!-- User getUserWithZoneSeq(Integer id); --&gt;</span>
+<span style="color:#000080">&lt;resultMap</span> <span style="color:#008080">id=</span><span style="color:#d14">&#34;UserWithZoneSeq&#34;</span> <span style="color:#008080">type=</span><span style="color:#d14">&#34;com.xinyue.imybatis.model.User&#34;</span><span style="color:#000080">&gt;</span>
+  <span style="color:#000080">&lt;id</span> <span style="color:#008080">column=</span><span style="color:#d14">&#34;id&#34;</span> <span style="color:#008080">property=</span><span style="color:#d14">&#34;id&#34;</span> <span style="color:#000080">/&gt;</span>
+  <span style="color:#000080">&lt;result</span> <span style="color:#008080">column=</span><span style="color:#d14">&#34;name&#34;</span> <span style="color:#008080">property=</span><span style="color:#d14">&#34;name&#34;</span> <span style="color:#000080">/&gt;</span>
+  <span style="color:#000080">&lt;association</span> <span style="color:#008080">property=</span><span style="color:#d14">&#34;zone&#34;</span> <span style="color:#008080">select=</span><span style="color:#d14">&#34;com.xinyue.imybatis.mapper.ZoneMapper.getById&#34;</span> <span style="color:#008080">column=</span><span style="color:#d14">&#34;zone_id&#34;</span><span style="color:#000080">&gt;</span>
+  <span style="color:#000080">&lt;/association&gt;</span>
+<span style="color:#000080">&lt;/resultMap&gt;</span>
+<span style="color:#000080">&lt;select</span> <span style="color:#008080">id=</span><span style="color:#d14">&#34;getUserWithZoneSeq&#34;</span> <span style="color:#008080">resultMap=</span><span style="color:#d14">&#34;UserWithZoneSeq&#34;</span><span style="color:#000080">&gt;</span>
+  select * from user u where u.id = #{id};
+<span style="color:#000080">&lt;/select&gt;</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>如果需要延迟加载需要在 <code>setting</code> 中配置如下：</p>
+<div class="highlight"><div style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4">
+<table style="border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">1
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">2
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-xml" data-lang="xml"><span style="color:#000080">&lt;setting</span> <span style="color:#008080">name=</span><span style="color:#d14">&#34;lazyLoadingEnabled&#34;</span> <span style="color:#008080">value=</span><span style="color:#d14">&#34;true&#34;</span> <span style="color:#000080">/&gt;</span>
+<span style="color:#000080">&lt;setting</span> <span style="color:#008080">name=</span><span style="color:#d14">&#34;aggressiveLazyLoading&#34;</span> <span style="color:#008080">value=</span><span style="color:#d14">&#34;false&#34;</span> <span style="color:#000080">/&gt;</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>对于查询结果中有集合的情况如下：</p>
+<div class="highlight"><div style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4">
+<table style="border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 1
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 2
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 3
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 4
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 5
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 6
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 7
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 8
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 9
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">10
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">11
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">12
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">13
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-xml" data-lang="xml"><span style="color:#998;font-style:italic">&lt;!-- Zone getZoneWithUsersById(Integer id); --&gt;</span>
+<span style="color:#000080">&lt;resultMap</span> <span style="color:#008080">id=</span><span style="color:#d14">&#34;ZoneWithUsers&#34;</span> <span style="color:#008080">type=</span><span style="color:#d14">&#34;Zone&#34;</span><span style="color:#000080">&gt;</span>
+  <span style="color:#000080">&lt;id</span> <span style="color:#008080">column=</span><span style="color:#d14">&#34;id&#34;</span> <span style="color:#008080">property=</span><span style="color:#d14">&#34;id&#34;</span> <span style="color:#000080">/&gt;</span>
+  <span style="color:#000080">&lt;result</span> <span style="color:#008080">column=</span><span style="color:#d14">&#34;name&#34;</span> <span style="color:#008080">property=</span><span style="color:#d14">&#34;name&#34;</span> <span style="color:#000080">/&gt;</span>
+  <span style="color:#000080">&lt;collection</span> <span style="color:#008080">property=</span><span style="color:#d14">&#34;userList&#34;</span> <span style="color:#008080">ofType=</span><span style="color:#d14">&#34;User&#34;</span><span style="color:#000080">&gt;</span>
+    <span style="color:#000080">&lt;id</span> <span style="color:#008080">column=</span><span style="color:#d14">&#34;u_id&#34;</span> <span style="color:#008080">property=</span><span style="color:#d14">&#34;id&#34;</span> <span style="color:#000080">/&gt;</span>
+    <span style="color:#000080">&lt;result</span> <span style="color:#008080">column=</span><span style="color:#d14">&#34;u_name&#34;</span> <span style="color:#008080">property=</span><span style="color:#d14">&#34;name&#34;</span> <span style="color:#000080">/&gt;</span>
+    <span style="color:#000080">&lt;result</span> <span style="color:#008080">column=</span><span style="color:#d14">&#34;u_password&#34;</span> <span style="color:#008080">property=</span><span style="color:#d14">&#34;password&#34;</span> <span style="color:#000080">/&gt;</span>
+  <span style="color:#000080">&lt;/collection&gt;</span>
+<span style="color:#000080">&lt;/resultMap&gt;</span>
+<span style="color:#000080">&lt;select</span> <span style="color:#008080">id=</span><span style="color:#d14">&#34;getZoneWithUsersById&#34;</span> <span style="color:#008080">resultMap=</span><span style="color:#d14">&#34;ZoneWithUsers&#34;</span><span style="color:#000080">&gt;</span>
+  select ze.id, ze.name, ze.zone_code, ur.id u_id, ur.name u_name, ur.`password` u_password  from zone ze, user ur where ze.id = ur.zone_id and ze.id = #{id};
+<span style="color:#000080">&lt;/select&gt;</span>
+</code></pre></td></tr></table>
+</div>
+</div><div class="highlight"><div style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4">
+<table style="border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 1
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 2
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 3
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 4
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 5
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 6
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 7
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 8
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 9
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">10
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">11
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-xml" data-lang="xml"><span style="color:#998;font-style:italic">&lt;!-- 延迟查询 --&gt;</span>
+<span style="color:#998;font-style:italic">&lt;!-- Zone getZoneWithUsersByIdSeq(Integer id); --&gt;</span>
+<span style="color:#000080">&lt;resultMap</span> <span style="color:#008080">id=</span><span style="color:#d14">&#34;ZoneWithUsersSeq&#34;</span> <span style="color:#008080">type=</span><span style="color:#d14">&#34;Zone&#34;</span><span style="color:#000080">&gt;</span>
+  <span style="color:#000080">&lt;id</span> <span style="color:#008080">column=</span><span style="color:#d14">&#34;id&#34;</span> <span style="color:#008080">property=</span><span style="color:#d14">&#34;id&#34;</span><span style="color:#000080">/&gt;</span>
+  <span style="color:#000080">&lt;result</span> <span style="color:#008080">column=</span><span style="color:#d14">&#34;name&#34;</span> <span style="color:#008080">property=</span><span style="color:#d14">&#34;name&#34;</span><span style="color:#000080">/&gt;</span>
+  <span style="color:#000080">&lt;collection</span> <span style="color:#008080">property=</span><span style="color:#d14">&#34;userList&#34;</span> <span style="color:#008080">select=</span><span style="color:#d14">&#34;com.xinyue.imybatis.mapper.UserMapper.getUsersByZoneId&#34;</span> <span style="color:#008080">column=</span><span style="color:#d14">&#34;id&#34;</span><span style="color:#000080">&gt;</span>
+  <span style="color:#000080">&lt;/collection&gt;</span>
+<span style="color:#000080">&lt;/resultMap&gt;</span>
+<span style="color:#000080">&lt;select</span> <span style="color:#008080">id=</span><span style="color:#d14">&#34;getZoneWithUsersByIdSeq&#34;</span> <span style="color:#008080">resultMap=</span><span style="color:#d14">&#34;ZoneWithUsersSeq&#34;</span><span style="color:#000080">&gt;</span>
+  select * from zone where id = #{id}
+<span style="color:#000080">&lt;/select&gt;</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>如果想要想 association 或 collection 传递多个值，则可以将多列的值封装成 Map，如下</p>
+<p><code>column=&quot;{key1=column1, key2=column2}&quot;</code>。</p>
+<p>如果想要根据查询结果在进行不同的查询，则可以使用 <code>discriminator</code> 一个简单的样例如下：</p>
+<div class="highlight"><div style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4">
+<table style="border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 1
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 2
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 3
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 4
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 5
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 6
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 7
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 8
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 9
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">10
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">11
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">12
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">13
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">14
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">15
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">16
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">17
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">18
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">19
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-xml" data-lang="xml"><span style="color:#998;font-style:italic">&lt;!-- User getUserWithZoneSeq(Integer id); --&gt;</span>
+<span style="color:#000080">&lt;resultMap</span> <span style="color:#008080">type=</span><span style="color:#d14">&#34;User&#34;</span> <span style="color:#008080">id=</span><span style="color:#d14">&#34;CustomizedUserDis&#34;</span><span style="color:#000080">&gt;</span>
+  <span style="color:#000080">&lt;id</span> <span style="color:#008080">column=</span><span style="color:#d14">&#34;id&#34;</span> <span style="color:#008080">property=</span><span style="color:#d14">&#34;id&#34;</span><span style="color:#000080">/&gt;</span>
+  <span style="color:#000080">&lt;result</span> <span style="color:#008080">column=</span><span style="color:#d14">&#34;name&#34;</span> <span style="color:#008080">property=</span><span style="color:#d14">&#34;name&#34;</span><span style="color:#000080">/&gt;</span>
+  <span style="color:#998;font-style:italic">&lt;!-- column：指定判定的列名; javaType：列值对应的java类型  --&gt;</span>
+  <span style="color:#000080">&lt;discriminator</span> <span style="color:#008080">javaType=</span><span style="color:#d14">&#34;string&#34;</span> <span style="color:#008080">column=</span><span style="color:#d14">&#34;first_name&#34;</span><span style="color:#000080">&gt;</span>
+    <span style="color:#000080">&lt;case</span> <span style="color:#008080">value=</span><span style="color:#d14">&#34;Lin&#34;</span> <span style="color:#008080">resultType=</span><span style="color:#d14">&#34;User&#34;</span><span style="color:#000080">&gt;</span>
+      <span style="color:#000080">&lt;association</span> <span style="color:#008080">property=</span><span style="color:#d14">&#34;zone&#34;</span>  <span style="color:#008080">select=</span><span style="color:#d14">&#34;com.xinyue.imybatis.mapper.ZoneMapper.getById&#34;</span> <span style="color:#008080">column=</span><span style="color:#d14">&#34;zone_id&#34;</span><span style="color:#000080">&gt;</span>
+      <span style="color:#000080">&lt;/association&gt;</span>
+    <span style="color:#000080">&lt;/case&gt;</span>
+    <span style="color:#000080">&lt;case</span> <span style="color:#008080">value=</span><span style="color:#d14">&#34;Xin&#34;</span> <span style="color:#008080">resultType=</span><span style="color:#d14">&#34;User&#34;</span><span style="color:#000080">&gt;</span>
+      <span style="color:#000080">&lt;id</span> <span style="color:#008080">column=</span><span style="color:#d14">&#34;id&#34;</span> <span style="color:#008080">property=</span><span style="color:#d14">&#34;id&#34;</span><span style="color:#000080">/&gt;</span>
+      <span style="color:#000080">&lt;result</span> <span style="color:#008080">column=</span><span style="color:#d14">&#34;first_name&#34;</span> <span style="color:#008080">property=</span><span style="color:#d14">&#34;lastName&#34;</span><span style="color:#000080">/&gt;</span>
+    <span style="color:#000080">&lt;/case&gt;</span>
+  <span style="color:#000080">&lt;/discriminator&gt;</span>
+<span style="color:#000080">&lt;/resultMap&gt;</span>
+<span style="color:#000080">&lt;select</span> <span style="color:#008080">id=</span><span style="color:#d14">&#34;getUserByIdDis&#34;</span> <span style="color:#008080">resultMap=</span><span style="color:#d14">&#34;CustomizedUserDis&#34;</span> <span style="color:#008080">databaseId=</span><span style="color:#d14">&#34;mysql&#34;</span><span style="color:#000080">&gt;</span>
+  select * from user where id = #{id}
+<span style="color:#000080">&lt;/select&gt;</span>
+</code></pre></td></tr></table>
+</div>
+</div>
+        </div>
+
+        
+
+
+        
+
+<div class="post-archive">
+    <h2>See Also</h2>
+    <ul class="listing">
+        
+        <li><a href="https://sangzhenya.github.io/post/DataBase/MyBatis/MyBaits-%E8%87%AA%E5%AE%9A%E4%B9%89-TypeHandler/">MyBatis 自定义 TypeHandler</a></li>
+        
+        <li><a href="https://sangzhenya.github.io/post/DataBase/MyBatis/MyBaits-%E8%BF%90%E8%A1%8C%E5%8E%9F%E7%90%86/">MyBatis 运行原理</a></li>
+        
+        <li><a href="https://sangzhenya.github.io/post/DataBase/MyBatis/MyBaits-%E9%85%8D%E7%BD%AE%E6%96%87%E4%BB%B6/">MyBatis 配置文件</a></li>
+        
+        <li><a href="https://sangzhenya.github.io/post/DataBase/MyBatis/MyBaits-%E7%BC%93%E5%AD%98/">MyBatis 缓存</a></li>
+        
+        <li><a href="https://sangzhenya.github.io/post/DataBase/MyBatis/MyBaits-%E5%8A%A8%E6%80%81-SQL/">MyBatis 动态 SQL</a></li>
+        
+    </ul>
+</div>
+
+
+        <div class="post-meta meta-tags">
+            
+            <ul class="clearfix">
+                
+                <li><a href='https://sangzhenya.github.io/tags/MyBaits'>MyBaits</a></li>
+                
+            </ul>
+            
+        </div>
+    </article>
+    
+    
+
+    
+    
+</div>
+
+                </div>
+
+                <div id="secondary">
+    <section class="widget">
+        <form id="search" action='//www.google.com/search' method="get" accept-charset="utf-8" target="_blank" _lpchecked="1">
+      
+      <input type="text" name="q" maxlength="20" placeholder="Search">
+      <input type="hidden" name="sitesearch" value="https://sangzhenya.github.io/">
+      <button type="submit" class="submit icon-search"></button>
+</form>
+    </section>
+    
+    <section class="widget">
+        <h3 class="widget-title">最近文章</h3>
+<ul class="widget-list">
+    
+    <li>
+        <a href="https://sangzhenya.github.io/post/Java/JVM/Java-JNDI/" title="Java JNDI">Java JNDI</a>
+    </li>
+    
+    <li>
+        <a href="https://sangzhenya.github.io/post/Java/JVM/Java-OOM/" title="Java OOM">Java OOM</a>
+    </li>
+    
+    <li>
+        <a href="https://sangzhenya.github.io/post/Java/JVM/Java-JVM/" title="Java JVM">Java JVM</a>
+    </li>
+    
+    <li>
+        <a href="https://sangzhenya.github.io/post/Java/JVM/Java-HotSpot-GC-%E7%AE%97%E6%B3%95%E5%AE%9E%E7%8E%B0/" title="Java HotSpot GC 算法实现">Java HotSpot GC 算法实现</a>
+    </li>
+    
+    <li>
+        <a href="https://sangzhenya.github.io/post/Java/JVM/Java-GC-2/" title="Java GC 2">Java GC 2</a>
+    </li>
+    
+    <li>
+        <a href="https://sangzhenya.github.io/post/Java/JVM/Java-GC-1/" title="Java GC 1">Java GC 1</a>
+    </li>
+    
+    <li>
+        <a href="https://sangzhenya.github.io/post/Java/JVM/Java-%E8%99%9A%E6%8B%9F%E6%9C%BA%E5%86%85%E5%AD%98%E6%A8%A1%E5%9E%8B/" title="Java 虚拟机内存模型">Java 虚拟机内存模型</a>
+    </li>
+    
+    <li>
+        <a href="https://sangzhenya.github.io/post/Java/JVM/Java-%E9%80%83%E9%80%B8%E5%88%86%E6%9E%90/" title="Java 逃逸分析">Java 逃逸分析</a>
+    </li>
+    
+    <li>
+        <a href="https://sangzhenya.github.io/post/Java/JVM/Java-%E5%9B%9B%E7%A7%8D%E5%BC%95%E7%94%A8%E7%B1%BB%E5%9E%8B/" title="Java 四种引用类型">Java 四种引用类型</a>
+    </li>
+    
+    <li>
+        <a href="https://sangzhenya.github.io/post/%E5%BE%AE%E6%9C%8D%E5%8A%A1/dubbo/Dubbo-%E5%8E%9F%E7%90%86/" title="Dubbo 原理">Dubbo 原理</a>
+    </li>
+    
+</ul>
+    </section>
+
+    
+
+    <section class="widget">
+        <h3 class="widget-title">分类</h3>
+<ul class="widget-list">
+    
+    <li><a href="https://sangzhenya.github.io/categories/Java/">Java (22)</a></li>
+    
+    <li><a href="https://sangzhenya.github.io/categories/MQ/">MQ (3)</a></li>
+    
+    <li><a href="https://sangzhenya.github.io/categories/MyBaits/">MyBaits (7)</a></li>
+    
+    <li><a href="https://sangzhenya.github.io/categories/MySQL/">MySQL (4)</a></li>
+    
+    <li><a href="https://sangzhenya.github.io/categories/Netty/">Netty (10)</a></li>
+    
+    <li><a href="https://sangzhenya.github.io/categories/Nginx/">Nginx (2)</a></li>
+    
+    <li><a href="https://sangzhenya.github.io/categories/Redis/">Redis (2)</a></li>
+    
+    <li><a href="https://sangzhenya.github.io/categories/Spring/">Spring (36)</a></li>
+    
+    <li><a href="https://sangzhenya.github.io/categories/%E5%85%B3%E4%BA%8E/">关于 (1)</a></li>
+    
+    <li><a href="https://sangzhenya.github.io/categories/%E5%85%B6%E4%BB%96/">其他 (8)</a></li>
+    
+    <li><a href="https://sangzhenya.github.io/categories/%E5%BE%AE%E6%9C%8D%E5%8A%A1/">微服务 (11)</a></li>
+    
+    <li><a href="https://sangzhenya.github.io/categories/%E7%AE%97%E6%B3%95/">算法 (3)</a></li>
+    
+    <li><a href="https://sangzhenya.github.io/categories/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/">读书笔记 (7)</a></li>
+    
+</ul>
+    </section>
+
+    <section class="widget">
+        <h3 class="widget-title">标签</h3>
+<div class="tagcloud">
+    
+    <a href="https://sangzhenya.github.io/tags/Active-MQ/">Active MQ</a>
+    
+    <a href="https://sangzhenya.github.io/tags/Cookie/">Cookie</a>
+    
+    <a href="https://sangzhenya.github.io/tags/Debug/">Debug</a>
+    
+    <a href="https://sangzhenya.github.io/tags/Docker/">Docker</a>
+    
+    <a href="https://sangzhenya.github.io/tags/Dubbo/">Dubbo</a>
+    
+    <a href="https://sangzhenya.github.io/tags/Git/">Git</a>
+    
+    <a href="https://sangzhenya.github.io/tags/JDK8/">JDK8</a>
+    
+    <a href="https://sangzhenya.github.io/tags/JPA/">JPA</a>
+    
+    <a href="https://sangzhenya.github.io/tags/JUC/">JUC</a>
+    
+    <a href="https://sangzhenya.github.io/tags/JVM/">JVM</a>
+    
+    <a href="https://sangzhenya.github.io/tags/java/">java</a>
+    
+    <a href="https://sangzhenya.github.io/tags/Jenkins/">Jenkins</a>
+    
+    <a href="https://sangzhenya.github.io/tags/Kafka/">Kafka</a>
+    
+    <a href="https://sangzhenya.github.io/tags/Kubernetes/">Kubernetes</a>
+    
+    <a href="https://sangzhenya.github.io/tags/Linux/">Linux</a>
+    
+    <a href="https://sangzhenya.github.io/tags/Maven/">Maven</a>
+    
+    <a href="https://sangzhenya.github.io/tags/MyBaits/">MyBaits</a>
+    
+    <a href="https://sangzhenya.github.io/tags/MySQL/">MySQL</a>
+    
+    <a href="https://sangzhenya.github.io/tags/Netty/">Netty</a>
+    
+    <a href="https://sangzhenya.github.io/tags/Nginx/">Nginx</a>
+    
+    <a href="https://sangzhenya.github.io/tags/Rabbit-MQ/">Rabbit MQ</a>
+    
+    <a href="https://sangzhenya.github.io/tags/Redis/">Redis</a>
+    
+    <a href="https://sangzhenya.github.io/tags/Rocket-MQ/">Rocket MQ</a>
+    
+    <a href="https://sangzhenya.github.io/tags/Session/">Session</a>
+    
+    <a href="https://sangzhenya.github.io/tags/Spring/">Spring</a>
+    
+    <a href="https://sangzhenya.github.io/tags/Spring-Boot/">Spring Boot</a>
+    
+    <a href="https://sangzhenya.github.io/tags/Spring-Cloud/">Spring Cloud</a>
+    
+    <a href="https://sangzhenya.github.io/tags/Spring-Data/">Spring Data</a>
+    
+    <a href="https://sangzhenya.github.io/tags/Spring-MVC/">Spring MVC</a>
+    
+    <a href="https://sangzhenya.github.io/tags/Spring-Security/">Spring Security</a>
+    
+    <a href="https://sangzhenya.github.io/tags/Spring-%E6%B3%A8%E8%A7%A3/">Spring 注解</a>
+    
+    <a href="https://sangzhenya.github.io/tags/Tmux/">Tmux</a>
+    
+    <a href="https://sangzhenya.github.io/tags/Zookeeper/">Zookeeper</a>
+    
+    <a href="https://sangzhenya.github.io/tags/java/">java</a>
+    
+    <a href="https://sangzhenya.github.io/tags/%E4%BB%A3%E7%A0%81/">代码</a>
+    
+    <a href="https://sangzhenya.github.io/tags/%E5%85%B3%E4%BA%8E/">关于</a>
+    
+    <a href="https://sangzhenya.github.io/tags/%E5%BE%AE%E6%9C%8D%E5%8A%A1/">微服务</a>
+    
+    <a href="https://sangzhenya.github.io/tags/%E6%BA%90%E7%A0%81/">源码</a>
+    
+    <a href="https://sangzhenya.github.io/tags/%E7%AE%97%E6%B3%95/">算法</a>
+    
+    <a href="https://sangzhenya.github.io/tags/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/">设计模式</a>
+    
+    <a href="https://sangzhenya.github.io/tags/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/">读书笔记</a>
+    
+    <a href="https://sangzhenya.github.io/tags/%E9%9B%86%E5%90%88/">集合</a>
+    
+</div>
+    </section>
+
+    
+
+    <section class="widget">
+        <h3 class="widget-title">其它</h3>
+        <ul class="widget-list">
+            <li><a href="https://sangzhenya.github.io/index.xml">文章 RSS</a></li>
+        </ul>
+    </section>
+</div>
+            </div>
+        </div>
+    </div>
+    <footer id="footer">
+    <div class="container">
+        &copy; 2020 <a href="https://sangzhenya.github.io/">新月的博客 By 新月</a>.
+        Powered by <a rel="nofollow noreferer noopener" href="https://gohugo.io" target="_blank">Hugo</a>.
+        Theme based on <a href="https://github.com/flysnow-org/maupassant-hugo" target="_blank">maupassant</a>.
+        
+    </div>
+</footer>
+
+
+    
+    <script type="text/javascript">
+        window.MathJax = {
+            tex2jax: {
+                inlineMath: [['$', '$']],
+                processEscapes: true
+                }
+            };
+    </script>
+    <script src='https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-MML-AM_CHTML' async></script>
+
+
+<a id="rocket" href="#top"></a>
+<script type="text/javascript" src='https://sangzhenya.github.io/js/totop.js?v=0.0.0' async=""></script>
+
+
+
+
+
+
+</body>
+
+</html>

@@ -1,0 +1,1621 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <title>Spring 和 Spring MVC 整合 | 新月的博客</title>
+    <meta property="og:title" content="Spring 和 Spring MVC 整合 - 新月的博客">
+    <meta property="og:type" content="article">
+        
+    <meta property="article:published_time" content='2019-02-01T09:00:00&#43;08:00'>
+        
+        
+    <meta property="article:modified_time" content='2019-02-01T09:00:00&#43;08:00'>
+        
+    <meta name="Keywords" content="">
+    <meta name="description" content="Spring 和 Spring MVC 整合">
+        
+    <meta name="author" content="新月">
+    <meta property="og:url" content="https://sangzhenya.github.io/post/Spring/Spring-MVC/Spring-%E5%92%8C-Spring-MVC%E6%95%B4%E5%90%88/">
+    <link rel="shortcut icon" href="https://sangzhenya.github.io/favicon.ico" type="image/x-icon">
+
+    <link rel="stylesheet" href='https://sangzhenya.github.io/css/normalize.css'>
+    <link rel="stylesheet" href='https://sangzhenya.github.io/css/style.css'>
+    <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+
+    
+
+
+    
+    
+</head>
+
+
+<body>
+    <header id="header" class="clearfix">
+    <div class="container">
+        <div class="col-group">
+            <div class="site-name ">
+                
+                    <a id="logo" href="https://sangzhenya.github.io/">
+                        新月的博客
+                    </a>
+                
+                <p class="description">晚来天欲雪，能饮一杯无？</p>
+            </div>
+            <div>
+                <nav id="nav-menu" class="clearfix">
+                    <a class="current" href="https://sangzhenya.github.io/">首页</a>
+                    
+                    <a  href="https://sangzhenya.github.io/archives/" title="归档">归档</a>
+                    
+                    <a  href="https://sangzhenya.github.io/about/" title="关于">关于</a>
+                    
+                </nav>
+            </div>
+        </div>
+    </div>
+</header>
+
+    <div id="body">
+        <div class="container">
+            <div class="col-group">
+
+                <div class="col-8" id="main">
+                    
+<div class="res-cons">
+    
+    <article class="post">
+        <header>
+            <h1 class="post-title">Spring 和 Spring MVC 整合</h1>
+        </header>
+        <date class="post-meta meta-date">
+            2019年2月1日
+        </date>
+        
+        <div class="post-meta">
+            <span>|</span>
+            
+            <span class="meta-category"><a href='https://sangzhenya.github.io/categories/Spring'>Spring</a></span>
+            
+        </div>
+        
+        
+        
+        <div class="post-content">
+            <p>Web 容器启动的时候会扫描每个 jar 包下的 <code>META-INF\services\javax.servlet.ServletContainerInitializer</code> 文件中的内容，根据文件中的定义全类名找到 <code>ServletContainerInitializer</code> 的子类，然后调用其 <code>onStartup</code> 方法。在引入的 <code>spring-web</code>  下就有这样的一个文件，其内容是 <code>org.springframework.web.SpringServletContainerInitializer</code>， 即定义了一个  <code>SpringServletContainerInitializer</code>， 容器启动的时候会执行该类的 <code>onStartup</code> 方法。其内容如下：</p>
+<div class="highlight"><div style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4">
+<table style="border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 1
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 2
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 3
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 4
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 5
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 6
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 7
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 8
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 9
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">10
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">11
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">12
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">13
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">14
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">15
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">16
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">17
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">18
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">19
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">20
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">21
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">22
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">23
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">24
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">25
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">26
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">27
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">28
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">29
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">30
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">31
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">32
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">33
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">34
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">35
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">36
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">37
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">38
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">39
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">40
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">41
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">42
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">43
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">44
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">45
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">46
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#998;font-style:italic">// 关注所有 WebApplicationInitializer 的实现类
+</span><span style="color:#998;font-style:italic"></span><span style="color:#3c5d5d;font-weight:bold">@HandlesTypes</span><span style="color:#000;font-weight:bold">(</span>WebApplicationInitializer<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">class</span><span style="color:#000;font-weight:bold">)</span>
+<span style="color:#000;font-weight:bold">public</span> <span style="color:#000;font-weight:bold">class</span> <span style="color:#458;font-weight:bold">SpringServletContainerInitializer</span> <span style="color:#000;font-weight:bold">implements</span> ServletContainerInitializer <span style="color:#000;font-weight:bold">{</span>
+
+	<span style="color:#3c5d5d;font-weight:bold">@Override</span>
+	<span style="color:#000;font-weight:bold">public</span> <span style="color:#458;font-weight:bold">void</span> <span style="color:#900;font-weight:bold">onStartup</span><span style="color:#000;font-weight:bold">(</span><span style="color:#3c5d5d;font-weight:bold">@Nullable</span> Set<span style="color:#000;font-weight:bold">&lt;</span>Class<span style="color:#000;font-weight:bold">&lt;?&gt;&gt;</span> webAppInitializerClasses<span style="color:#000;font-weight:bold">,</span> ServletContext servletContext<span style="color:#000;font-weight:bold">)</span>
+			<span style="color:#000;font-weight:bold">throws</span> ServletException <span style="color:#000;font-weight:bold">{</span>
+
+		List<span style="color:#000;font-weight:bold">&lt;</span>WebApplicationInitializer<span style="color:#000;font-weight:bold">&gt;</span> initializers <span style="color:#000;font-weight:bold">=</span> <span style="color:#000;font-weight:bold">new</span> LinkedList<span style="color:#000;font-weight:bold">&lt;&gt;();</span>
+
+        <span style="color:#998;font-style:italic">// 如果存在 WebApplicationInitializer 的实现类
+</span><span style="color:#998;font-style:italic"></span>		<span style="color:#000;font-weight:bold">if</span> <span style="color:#000;font-weight:bold">(</span>webAppInitializerClasses <span style="color:#000;font-weight:bold">!=</span> <span style="color:#000;font-weight:bold">null</span><span style="color:#000;font-weight:bold">)</span> <span style="color:#000;font-weight:bold">{</span>
+            <span style="color:#998;font-style:italic">// 遍历实现类
+</span><span style="color:#998;font-style:italic"></span>			<span style="color:#000;font-weight:bold">for</span> <span style="color:#000;font-weight:bold">(</span>Class<span style="color:#000;font-weight:bold">&lt;?&gt;</span> waiClass <span style="color:#000;font-weight:bold">:</span> webAppInitializerClasses<span style="color:#000;font-weight:bold">)</span> <span style="color:#000;font-weight:bold">{</span>
+				<span style="color:#998;font-style:italic">// Be defensive: Some servlet containers provide us with invalid classes,
+</span><span style="color:#998;font-style:italic"></span>				<span style="color:#998;font-style:italic">// no matter what @HandlesTypes says...
+</span><span style="color:#998;font-style:italic"></span>                <span style="color:#998;font-style:italic">// 如果不是 接口。抽象的冰倩是 WebApplicationInitializer 类型的
+</span><span style="color:#998;font-style:italic"></span>                <span style="color:#998;font-style:italic">// 则创建实例加入到 initializers 中
+</span><span style="color:#998;font-style:italic"></span>				<span style="color:#000;font-weight:bold">if</span> <span style="color:#000;font-weight:bold">(!</span>waiClass<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">isInterface</span><span style="color:#000;font-weight:bold">()</span> <span style="color:#000;font-weight:bold">&amp;&amp;</span> <span style="color:#000;font-weight:bold">!</span>Modifier<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">isAbstract</span><span style="color:#000;font-weight:bold">(</span>waiClass<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">getModifiers</span><span style="color:#000;font-weight:bold">())</span> <span style="color:#000;font-weight:bold">&amp;&amp;</span>
+						WebApplicationInitializer<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">class</span><span style="color:#000;font-weight:bold">.</span><span style="color:#008080">isAssignableFrom</span><span style="color:#000;font-weight:bold">(</span>waiClass<span style="color:#000;font-weight:bold">))</span> <span style="color:#000;font-weight:bold">{</span>
+					<span style="color:#000;font-weight:bold">try</span> <span style="color:#000;font-weight:bold">{</span>
+						initializers<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">add</span><span style="color:#000;font-weight:bold">((</span>WebApplicationInitializer<span style="color:#000;font-weight:bold">)</span>
+								ReflectionUtils<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">accessibleConstructor</span><span style="color:#000;font-weight:bold">(</span>waiClass<span style="color:#000;font-weight:bold">).</span><span style="color:#008080">newInstance</span><span style="color:#000;font-weight:bold">());</span>
+					<span style="color:#000;font-weight:bold">}</span>
+					<span style="color:#000;font-weight:bold">catch</span> <span style="color:#000;font-weight:bold">(</span>Throwable ex<span style="color:#000;font-weight:bold">)</span> <span style="color:#000;font-weight:bold">{</span>
+						<span style="color:#000;font-weight:bold">throw</span> <span style="color:#000;font-weight:bold">new</span> ServletException<span style="color:#000;font-weight:bold">(</span><span style="color:#d14">&#34;Failed to instantiate WebApplicationInitializer class&#34;</span><span style="color:#000;font-weight:bold">,</span> ex<span style="color:#000;font-weight:bold">);</span>
+					<span style="color:#000;font-weight:bold">}</span>
+				<span style="color:#000;font-weight:bold">}</span>
+			<span style="color:#000;font-weight:bold">}</span>
+		<span style="color:#000;font-weight:bold">}</span>
+
+        <span style="color:#998;font-style:italic">// 如果为空则出错，记录没有 Spring WebApplicationInitializer
+</span><span style="color:#998;font-style:italic"></span>		<span style="color:#000;font-weight:bold">if</span> <span style="color:#000;font-weight:bold">(</span>initializers<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">isEmpty</span><span style="color:#000;font-weight:bold">())</span> <span style="color:#000;font-weight:bold">{</span>
+			servletContext<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">log</span><span style="color:#000;font-weight:bold">(</span><span style="color:#d14">&#34;No Spring WebApplicationInitializer types detected on classpath&#34;</span><span style="color:#000;font-weight:bold">);</span>
+			<span style="color:#000;font-weight:bold">return</span><span style="color:#000;font-weight:bold">;</span>
+		<span style="color:#000;font-weight:bold">}</span>
+
+		servletContext<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">log</span><span style="color:#000;font-weight:bold">(</span>initializers<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">size</span><span style="color:#000;font-weight:bold">()</span> <span style="color:#000;font-weight:bold">+</span> <span style="color:#d14">&#34; Spring WebApplicationInitializers detected on classpath&#34;</span><span style="color:#000;font-weight:bold">);</span>
+		<span style="color:#998;font-style:italic">// 对 initializers 进行排序
+</span><span style="color:#998;font-style:italic"></span>        AnnotationAwareOrderComparator<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">sort</span><span style="color:#000;font-weight:bold">(</span>initializers<span style="color:#000;font-weight:bold">);</span>
+		<span style="color:#000;font-weight:bold">for</span> <span style="color:#000;font-weight:bold">(</span>WebApplicationInitializer initializer <span style="color:#000;font-weight:bold">:</span> initializers<span style="color:#000;font-weight:bold">)</span> <span style="color:#000;font-weight:bold">{</span>
+            <span style="color:#998;font-style:italic">// 逐个调用 WebApplicationInitializer 的 onStartup 方法。
+</span><span style="color:#998;font-style:italic"></span>			initializer<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">onStartup</span><span style="color:#000;font-weight:bold">(</span>servletContext<span style="color:#000;font-weight:bold">);</span>
+		<span style="color:#000;font-weight:bold">}</span>
+	<span style="color:#000;font-weight:bold">}</span>
+<span style="color:#000;font-weight:bold">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>默认有 4 个抽象类实现了 <code>WebApplicationInitializer</code> 接口，如下图所示：</p>
+<p><img src="http://img.programya.com/Snipaste_2019-11-30_19-22-35.png" alt="WebApplicationInitializer"></p>
+<p>最底层的 <code>AbstractAnnotationConfigDispatcherServletInitializer</code> 中并没有对 <code>onStartup</code> 方法重写，所以看 <code>AbstractDispatcherServletInitializer</code> 类，其重写了 父类的 <code>onStartup</code> 方法，如下所示：</p>
+<div class="highlight"><div style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4">
+<table style="border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">1
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">2
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">3
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">4
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">5
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">6
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">7
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#3c5d5d;font-weight:bold">@Override</span>
+<span style="color:#000;font-weight:bold">public</span> <span style="color:#458;font-weight:bold">void</span> <span style="color:#900;font-weight:bold">onStartup</span><span style="color:#000;font-weight:bold">(</span>ServletContext servletContext<span style="color:#000;font-weight:bold">)</span> <span style="color:#000;font-weight:bold">throws</span> ServletException <span style="color:#000;font-weight:bold">{</span>
+    <span style="color:#998;font-style:italic">// 调用父类的 onStartup 方法
+</span><span style="color:#998;font-style:italic"></span>    <span style="color:#000;font-weight:bold">super</span><span style="color:#000;font-weight:bold">.</span><span style="color:#008080">onStartup</span><span style="color:#000;font-weight:bold">(</span>servletContext<span style="color:#000;font-weight:bold">);</span>
+    <span style="color:#998;font-style:italic">// 注册 Dispatcher Servlet
+</span><span style="color:#998;font-style:italic"></span>    registerDispatcherServlet<span style="color:#000;font-weight:bold">(</span>servletContext<span style="color:#000;font-weight:bold">);</span>
+<span style="color:#000;font-weight:bold">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>所以先看以下其他父类 <code>AbstractContextLoaderInitializer</code> 中的 <code>onStartup</code>  方法。</p>
+<div class="highlight"><div style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4">
+<table style="border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 1
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 2
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 3
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 4
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 5
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 6
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 7
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 8
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 9
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">10
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">11
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">12
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">13
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">14
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">15
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">16
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">17
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">18
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">19
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">20
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">21
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">22
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">23
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">24
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">25
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">26
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">27
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">28
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">29
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">30
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">31
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#998;font-style:italic">// AbstractContextLoaderInitializer
+</span><span style="color:#998;font-style:italic"></span><span style="color:#3c5d5d;font-weight:bold">@Override</span>
+<span style="color:#000;font-weight:bold">public</span> <span style="color:#458;font-weight:bold">void</span> <span style="color:#900;font-weight:bold">onStartup</span><span style="color:#000;font-weight:bold">(</span>ServletContext servletContext<span style="color:#000;font-weight:bold">)</span> <span style="color:#000;font-weight:bold">throws</span> ServletException <span style="color:#000;font-weight:bold">{</span>
+    <span style="color:#998;font-style:italic">// 注册 ContextLoaderListener
+</span><span style="color:#998;font-style:italic"></span>    registerContextLoaderListener<span style="color:#000;font-weight:bold">(</span>servletContext<span style="color:#000;font-weight:bold">);</span>
+<span style="color:#000;font-weight:bold">}</span>
+
+<span style="color:#000;font-weight:bold">protected</span> <span style="color:#458;font-weight:bold">void</span> <span style="color:#900;font-weight:bold">registerContextLoaderListener</span><span style="color:#000;font-weight:bold">(</span>ServletContext servletContext<span style="color:#000;font-weight:bold">)</span> <span style="color:#000;font-weight:bold">{</span>
+    <span style="color:#998;font-style:italic">// 获取 WebApplicationContext，创建根容器
+</span><span style="color:#998;font-style:italic"></span>    WebApplicationContext rootAppContext <span style="color:#000;font-weight:bold">=</span> createRootApplicationContext<span style="color:#000;font-weight:bold">();</span>
+    <span style="color:#000;font-weight:bold">if</span> <span style="color:#000;font-weight:bold">(</span>rootAppContext <span style="color:#000;font-weight:bold">!=</span> <span style="color:#000;font-weight:bold">null</span><span style="color:#000;font-weight:bold">)</span> <span style="color:#000;font-weight:bold">{</span>
+        <span style="color:#998;font-style:italic">// 如果获取到了则根据获取到的 WebApplicationContext 
+</span><span style="color:#998;font-style:italic"></span>        <span style="color:#998;font-style:italic">// 新建一个 ContextLoaderListener
+</span><span style="color:#998;font-style:italic"></span>        ContextLoaderListener listener <span style="color:#000;font-weight:bold">=</span> <span style="color:#000;font-weight:bold">new</span> ContextLoaderListener<span style="color:#000;font-weight:bold">(</span>rootAppContext<span style="color:#000;font-weight:bold">);</span>
+        <span style="color:#998;font-style:italic">// 添加其他的 ContextInitializers，默认是空
+</span><span style="color:#998;font-style:italic"></span>        listener<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">setContextInitializers</span><span style="color:#000;font-weight:bold">(</span>getRootApplicationContextInitializers<span style="color:#000;font-weight:bold">());</span>
+        <span style="color:#998;font-style:italic">// 动态添加到 Servlet Context 中
+</span><span style="color:#998;font-style:italic"></span>        servletContext<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">addListener</span><span style="color:#000;font-weight:bold">(</span>listener<span style="color:#000;font-weight:bold">);</span>
+    <span style="color:#000;font-weight:bold">}</span>
+    <span style="color:#000;font-weight:bold">else</span> <span style="color:#000;font-weight:bold">{</span>
+        logger<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">debug</span><span style="color:#000;font-weight:bold">(</span><span style="color:#d14">&#34;No ContextLoaderListener registered, as &#34;</span> <span style="color:#000;font-weight:bold">+</span>
+                     <span style="color:#d14">&#34;createRootApplicationContext() did not return an application context&#34;</span><span style="color:#000;font-weight:bold">);</span>
+    <span style="color:#000;font-weight:bold">}</span>
+<span style="color:#000;font-weight:bold">}</span>
+
+<span style="color:#000;font-weight:bold">protected</span> <span style="color:#000;font-weight:bold">abstract</span> WebApplicationContext <span style="color:#900;font-weight:bold">createRootApplicationContext</span><span style="color:#000;font-weight:bold">();</span>
+
+<span style="color:#3c5d5d;font-weight:bold">@Nullable</span>
+<span style="color:#000;font-weight:bold">protected</span> ApplicationContextInitializer<span style="color:#000;font-weight:bold">&lt;?&gt;[]</span> getRootApplicationContextInitializers<span style="color:#000;font-weight:bold">()</span> <span style="color:#000;font-weight:bold">{</span>
+    <span style="color:#000;font-weight:bold">return</span> <span style="color:#000;font-weight:bold">null</span><span style="color:#000;font-weight:bold">;</span>
+<span style="color:#000;font-weight:bold">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>在子类 <code>AbstractAnnotationConfigDispatcherServletInitializer</code> 中实现了 <code>createRootApplicationContext</code> 方法，如下：</p>
+<div class="highlight"><div style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4">
+<table style="border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 1
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 2
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 3
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 4
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 5
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 6
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 7
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 8
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 9
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">10
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">11
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">12
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">13
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">14
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">15
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">16
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">17
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">18
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">19
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">20
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">21
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">22
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">23
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">24
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">25
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">26
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">27
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">28
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">29
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">30
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#998;font-style:italic">// AbstractAnnotationConfigDispatcherServletInitializer
+</span><span style="color:#998;font-style:italic"></span><span style="color:#3c5d5d;font-weight:bold">@Override</span>
+<span style="color:#3c5d5d;font-weight:bold">@Nullable</span>
+<span style="color:#000;font-weight:bold">protected</span> WebApplicationContext <span style="color:#900;font-weight:bold">createRootApplicationContext</span><span style="color:#000;font-weight:bold">()</span> <span style="color:#000;font-weight:bold">{</span>
+    <span style="color:#998;font-style:italic">// 获取到 Root 配置的类
+</span><span style="color:#998;font-style:italic"></span>    Class<span style="color:#000;font-weight:bold">&lt;?&gt;[]</span> configClasses <span style="color:#000;font-weight:bold">=</span> getRootConfigClasses<span style="color:#000;font-weight:bold">();</span>
+    <span style="color:#000;font-weight:bold">if</span> <span style="color:#000;font-weight:bold">(!</span>ObjectUtils<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">isEmpty</span><span style="color:#000;font-weight:bold">(</span>configClasses<span style="color:#000;font-weight:bold">))</span> <span style="color:#000;font-weight:bold">{</span>
+        <span style="color:#998;font-style:italic">// 如果配置的类不为空的话则新建一个 AnnotationConfigWebApplicationContext
+</span><span style="color:#998;font-style:italic"></span>        AnnotationConfigWebApplicationContext context <span style="color:#000;font-weight:bold">=</span> <span style="color:#000;font-weight:bold">new</span> AnnotationConfigWebApplicationContext<span style="color:#000;font-weight:bold">();</span>
+        <span style="color:#998;font-style:italic">// 将配置的类注册的 WebApplicationContext 中
+</span><span style="color:#998;font-style:italic"></span>        context<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">register</span><span style="color:#000;font-weight:bold">(</span>configClasses<span style="color:#000;font-weight:bold">);</span>
+        <span style="color:#000;font-weight:bold">return</span> context<span style="color:#000;font-weight:bold">;</span>
+    <span style="color:#000;font-weight:bold">}</span>
+    <span style="color:#000;font-weight:bold">else</span> <span style="color:#000;font-weight:bold">{</span>
+        <span style="color:#000;font-weight:bold">return</span> <span style="color:#000;font-weight:bold">null</span><span style="color:#000;font-weight:bold">;</span>
+    <span style="color:#000;font-weight:bold">}</span>
+<span style="color:#000;font-weight:bold">}</span>
+
+<span style="color:#3c5d5d;font-weight:bold">@Override</span>
+<span style="color:#000;font-weight:bold">protected</span> WebApplicationContext <span style="color:#900;font-weight:bold">createServletApplicationContext</span><span style="color:#000;font-weight:bold">()</span> <span style="color:#000;font-weight:bold">{</span>
+    <span style="color:#998;font-style:italic">// 创建 WebApplicationContext
+</span><span style="color:#998;font-style:italic"></span>    AnnotationConfigWebApplicationContext context <span style="color:#000;font-weight:bold">=</span> <span style="color:#000;font-weight:bold">new</span> AnnotationConfigWebApplicationContext<span style="color:#000;font-weight:bold">();</span>
+    <span style="color:#998;font-style:italic">// 获取 Config 类
+</span><span style="color:#998;font-style:italic"></span>    Class<span style="color:#000;font-weight:bold">&lt;?&gt;[]</span> configClasses <span style="color:#000;font-weight:bold">=</span> getServletConfigClasses<span style="color:#000;font-weight:bold">();</span>
+    <span style="color:#000;font-weight:bold">if</span> <span style="color:#000;font-weight:bold">(!</span>ObjectUtils<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">isEmpty</span><span style="color:#000;font-weight:bold">(</span>configClasses<span style="color:#000;font-weight:bold">))</span> <span style="color:#000;font-weight:bold">{</span>
+        <span style="color:#998;font-style:italic">// 注册 Config
+</span><span style="color:#998;font-style:italic"></span>        context<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">register</span><span style="color:#000;font-weight:bold">(</span>configClasses<span style="color:#000;font-weight:bold">);</span>
+    <span style="color:#000;font-weight:bold">}</span>
+    <span style="color:#000;font-weight:bold">return</span> context<span style="color:#000;font-weight:bold">;</span>
+<span style="color:#000;font-weight:bold">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>所以接下看一下 <code>ContextLoaderListener</code> 的 <code>contextInitialized</code> 方法，其如下：</p>
+<div class="highlight"><div style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4">
+<table style="border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">1
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">2
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">3
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">4
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">5
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">6
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#998;font-style:italic">// ContextLoaderListener
+</span><span style="color:#998;font-style:italic"></span><span style="color:#3c5d5d;font-weight:bold">@Override</span>
+<span style="color:#000;font-weight:bold">public</span> <span style="color:#458;font-weight:bold">void</span> <span style="color:#900;font-weight:bold">contextInitialized</span><span style="color:#000;font-weight:bold">(</span>ServletContextEvent event<span style="color:#000;font-weight:bold">)</span> <span style="color:#000;font-weight:bold">{</span>
+    <span style="color:#998;font-style:italic">// 初始化 Web 容器
+</span><span style="color:#998;font-style:italic"></span>    initWebApplicationContext<span style="color:#000;font-weight:bold">(</span>event<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">getServletContext</span><span style="color:#000;font-weight:bold">());</span>
+<span style="color:#000;font-weight:bold">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><div class="highlight"><div style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4">
+<table style="border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">  1
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">  2
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">  3
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">  4
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">  5
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">  6
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">  7
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">  8
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">  9
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 10
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 11
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 12
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 13
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 14
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 15
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 16
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 17
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 18
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 19
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 20
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 21
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 22
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 23
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 24
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 25
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 26
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 27
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 28
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 29
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 30
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 31
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 32
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 33
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 34
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 35
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 36
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 37
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 38
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 39
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 40
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 41
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 42
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 43
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 44
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 45
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 46
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 47
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 48
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 49
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 50
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 51
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 52
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 53
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 54
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 55
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 56
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 57
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 58
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 59
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 60
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 61
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 62
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 63
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 64
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 65
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 66
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 67
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 68
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 69
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 70
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 71
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 72
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 73
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 74
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 75
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 76
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 77
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 78
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 79
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 80
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 81
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 82
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 83
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 84
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 85
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 86
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 87
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 88
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 89
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 90
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 91
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 92
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 93
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 94
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 95
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 96
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 97
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 98
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 99
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">100
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">101
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">102
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">103
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">104
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">105
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">106
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">107
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">108
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">109
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">110
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">111
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">112
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">113
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">114
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">115
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">116
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">117
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">118
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">119
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">120
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">121
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">122
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">123
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">124
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">125
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">126
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">127
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">128
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">129
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">130
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">131
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">132
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">133
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">134
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">135
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">136
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">137
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">138
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">139
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">140
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">141
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">142
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">143
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">144
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">145
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">146
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">147
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">148
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">149
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">150
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">151
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">152
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">153
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">154
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">155
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">156
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">157
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">158
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">159
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">160
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">161
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">162
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">163
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">164
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">165
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">166
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">167
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">168
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">169
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">170
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">171
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">172
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">173
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">174
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">175
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">176
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">177
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">178
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">179
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">180
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">181
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">182
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">183
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">184
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">185
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">186
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">187
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">188
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">189
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">190
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">191
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">192
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">193
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">194
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">195
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">196
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">197
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">198
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">199
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">200
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">201
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">202
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#998;font-style:italic">// ContextLoader
+</span><span style="color:#998;font-style:italic">// 调用父类 ContextLoader 中的 initWebApplicationContext 初始化 Web 容器
+</span><span style="color:#998;font-style:italic"></span><span style="color:#000;font-weight:bold">public</span> WebApplicationContext <span style="color:#900;font-weight:bold">initWebApplicationContext</span><span style="color:#000;font-weight:bold">(</span>ServletContext servletContext<span style="color:#000;font-weight:bold">)</span> <span style="color:#000;font-weight:bold">{</span>
+    <span style="color:#998;font-style:italic">// 判断是否已经初始化过了
+</span><span style="color:#998;font-style:italic"></span>    <span style="color:#000;font-weight:bold">if</span> <span style="color:#000;font-weight:bold">(</span>servletContext<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">getAttribute</span><span style="color:#000;font-weight:bold">(</span>WebApplicationContext<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">ROOT_WEB_APPLICATION_CONTEXT_ATTRIBUTE</span><span style="color:#000;font-weight:bold">)</span> <span style="color:#000;font-weight:bold">!=</span> <span style="color:#000;font-weight:bold">null</span><span style="color:#000;font-weight:bold">)</span> <span style="color:#000;font-weight:bold">{</span>
+        <span style="color:#000;font-weight:bold">throw</span> <span style="color:#000;font-weight:bold">new</span> IllegalStateException<span style="color:#000;font-weight:bold">(</span>
+            <span style="color:#d14">&#34;Cannot initialize context because there is already a root application context present - &#34;</span> <span style="color:#000;font-weight:bold">+</span>
+            <span style="color:#d14">&#34;check whether you have multiple ContextLoader* definitions in your web.xml!&#34;</span><span style="color:#000;font-weight:bold">);</span>
+    <span style="color:#000;font-weight:bold">}</span>
+
+    servletContext<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">log</span><span style="color:#000;font-weight:bold">(</span><span style="color:#d14">&#34;Initializing Spring root WebApplicationContext&#34;</span><span style="color:#000;font-weight:bold">);</span>
+    Log logger <span style="color:#000;font-weight:bold">=</span> LogFactory<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">getLog</span><span style="color:#000;font-weight:bold">(</span>ContextLoader<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">class</span><span style="color:#000;font-weight:bold">);</span>
+    <span style="color:#000;font-weight:bold">if</span> <span style="color:#000;font-weight:bold">(</span>logger<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">isInfoEnabled</span><span style="color:#000;font-weight:bold">())</span> <span style="color:#000;font-weight:bold">{</span>
+        logger<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">info</span><span style="color:#000;font-weight:bold">(</span><span style="color:#d14">&#34;Root WebApplicationContext: initialization started&#34;</span><span style="color:#000;font-weight:bold">);</span>
+    <span style="color:#000;font-weight:bold">}</span>
+    <span style="color:#458;font-weight:bold">long</span> startTime <span style="color:#000;font-weight:bold">=</span> System<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">currentTimeMillis</span><span style="color:#000;font-weight:bold">();</span>
+
+    <span style="color:#000;font-weight:bold">try</span> <span style="color:#000;font-weight:bold">{</span>
+        <span style="color:#998;font-style:italic">// Store context in local instance variable, to guarantee that
+</span><span style="color:#998;font-style:italic"></span>        <span style="color:#998;font-style:italic">// it is available on ServletContext shutdown.
+</span><span style="color:#998;font-style:italic"></span>        <span style="color:#998;font-style:italic">// 如果没有 WebApplication 容器，则创建一个 WebApplicationContext 容器
+</span><span style="color:#998;font-style:italic"></span>        <span style="color:#000;font-weight:bold">if</span> <span style="color:#000;font-weight:bold">(</span><span style="color:#000;font-weight:bold">this</span><span style="color:#000;font-weight:bold">.</span><span style="color:#008080">context</span> <span style="color:#000;font-weight:bold">==</span> <span style="color:#000;font-weight:bold">null</span><span style="color:#000;font-weight:bold">)</span> <span style="color:#000;font-weight:bold">{</span>
+            <span style="color:#000;font-weight:bold">this</span><span style="color:#000;font-weight:bold">.</span><span style="color:#008080">context</span> <span style="color:#000;font-weight:bold">=</span> createWebApplicationContext<span style="color:#000;font-weight:bold">(</span>servletContext<span style="color:#000;font-weight:bold">);</span>
+        <span style="color:#000;font-weight:bold">}</span>
+        <span style="color:#000;font-weight:bold">if</span> <span style="color:#000;font-weight:bold">(</span><span style="color:#000;font-weight:bold">this</span><span style="color:#000;font-weight:bold">.</span><span style="color:#008080">context</span> <span style="color:#000;font-weight:bold">instanceof</span> ConfigurableWebApplicationContext<span style="color:#000;font-weight:bold">)</span> <span style="color:#000;font-weight:bold">{</span>
+            <span style="color:#998;font-style:italic">// 把获取到的 WebApplicationContext 转成 ConfigurableWebApplicationContext
+</span><span style="color:#998;font-style:italic"></span>            ConfigurableWebApplicationContext cwac <span style="color:#000;font-weight:bold">=</span> <span style="color:#000;font-weight:bold">(</span>ConfigurableWebApplicationContext<span style="color:#000;font-weight:bold">)</span> <span style="color:#000;font-weight:bold">this</span><span style="color:#000;font-weight:bold">.</span><span style="color:#008080">context</span><span style="color:#000;font-weight:bold">;</span>
+            <span style="color:#998;font-style:italic">// 判断是否 Active 状态
+</span><span style="color:#998;font-style:italic"></span>            <span style="color:#000;font-weight:bold">if</span> <span style="color:#000;font-weight:bold">(!</span>cwac<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">isActive</span><span style="color:#000;font-weight:bold">())</span> <span style="color:#000;font-weight:bold">{</span>
+                <span style="color:#998;font-style:italic">// The context has not yet been refreshed -&gt; provide services such as
+</span><span style="color:#998;font-style:italic"></span>                <span style="color:#998;font-style:italic">// setting the parent context, setting the application context id, etc
+</span><span style="color:#998;font-style:italic"></span>                <span style="color:#998;font-style:italic">// 如果当前 WebApplicationContext 的 ParentContext 为空
+</span><span style="color:#998;font-style:italic"></span>                <span style="color:#998;font-style:italic">// 则尝试获取 Parent 放到当前 Context 上
+</span><span style="color:#998;font-style:italic"></span>                <span style="color:#000;font-weight:bold">if</span> <span style="color:#000;font-weight:bold">(</span>cwac<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">getParent</span><span style="color:#000;font-weight:bold">()</span> <span style="color:#000;font-weight:bold">==</span> <span style="color:#000;font-weight:bold">null</span><span style="color:#000;font-weight:bold">)</span> <span style="color:#000;font-weight:bold">{</span>
+                    <span style="color:#998;font-style:italic">// The context instance was injected without an explicit parent -&gt;
+</span><span style="color:#998;font-style:italic"></span>                    <span style="color:#998;font-style:italic">// determine parent for root web application context, if any.
+</span><span style="color:#998;font-style:italic"></span>                    ApplicationContext parent <span style="color:#000;font-weight:bold">=</span> loadParentContext<span style="color:#000;font-weight:bold">(</span>servletContext<span style="color:#000;font-weight:bold">);</span>
+                    cwac<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">setParent</span><span style="color:#000;font-weight:bold">(</span>parent<span style="color:#000;font-weight:bold">);</span>
+                <span style="color:#000;font-weight:bold">}</span>
+                <span style="color:#998;font-style:italic">// 配置并刷新容器
+</span><span style="color:#998;font-style:italic"></span>                configureAndRefreshWebApplicationContext<span style="color:#000;font-weight:bold">(</span>cwac<span style="color:#000;font-weight:bold">,</span> servletContext<span style="color:#000;font-weight:bold">);</span>
+            <span style="color:#000;font-weight:bold">}</span>
+        <span style="color:#000;font-weight:bold">}</span>
+        <span style="color:#998;font-style:italic">// 将 ROOT_WEB_APPLICATION_CONTEXT_ATTRIBUTE 放到 Servlet 容器中
+</span><span style="color:#998;font-style:italic"></span>        servletContext<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">setAttribute</span><span style="color:#000;font-weight:bold">(</span>WebApplicationContext<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">ROOT_WEB_APPLICATION_CONTEXT_ATTRIBUTE</span><span style="color:#000;font-weight:bold">,</span> <span style="color:#000;font-weight:bold">this</span><span style="color:#000;font-weight:bold">.</span><span style="color:#008080">context</span><span style="color:#000;font-weight:bold">);</span>
+
+        <span style="color:#998;font-style:italic">// 存放 WebApplicationContext
+</span><span style="color:#998;font-style:italic"></span>        ClassLoader ccl <span style="color:#000;font-weight:bold">=</span> Thread<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">currentThread</span><span style="color:#000;font-weight:bold">().</span><span style="color:#008080">getContextClassLoader</span><span style="color:#000;font-weight:bold">();</span>
+        <span style="color:#000;font-weight:bold">if</span> <span style="color:#000;font-weight:bold">(</span>ccl <span style="color:#000;font-weight:bold">==</span> ContextLoader<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">class</span><span style="color:#000;font-weight:bold">.</span><span style="color:#008080">getClassLoader</span><span style="color:#000;font-weight:bold">())</span> <span style="color:#000;font-weight:bold">{</span>
+            currentContext <span style="color:#000;font-weight:bold">=</span> <span style="color:#000;font-weight:bold">this</span><span style="color:#000;font-weight:bold">.</span><span style="color:#008080">context</span><span style="color:#000;font-weight:bold">;</span>
+        <span style="color:#000;font-weight:bold">}</span>
+        <span style="color:#000;font-weight:bold">else</span> <span style="color:#000;font-weight:bold">if</span> <span style="color:#000;font-weight:bold">(</span>ccl <span style="color:#000;font-weight:bold">!=</span> <span style="color:#000;font-weight:bold">null</span><span style="color:#000;font-weight:bold">)</span> <span style="color:#000;font-weight:bold">{</span>
+            currentContextPerThread<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">put</span><span style="color:#000;font-weight:bold">(</span>ccl<span style="color:#000;font-weight:bold">,</span> <span style="color:#000;font-weight:bold">this</span><span style="color:#000;font-weight:bold">.</span><span style="color:#008080">context</span><span style="color:#000;font-weight:bold">);</span>
+        <span style="color:#000;font-weight:bold">}</span>
+
+        <span style="color:#000;font-weight:bold">if</span> <span style="color:#000;font-weight:bold">(</span>logger<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">isInfoEnabled</span><span style="color:#000;font-weight:bold">())</span> <span style="color:#000;font-weight:bold">{</span>
+            <span style="color:#458;font-weight:bold">long</span> elapsedTime <span style="color:#000;font-weight:bold">=</span> System<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">currentTimeMillis</span><span style="color:#000;font-weight:bold">()</span> <span style="color:#000;font-weight:bold">-</span> startTime<span style="color:#000;font-weight:bold">;</span>
+            logger<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">info</span><span style="color:#000;font-weight:bold">(</span><span style="color:#d14">&#34;Root WebApplicationContext initialized in &#34;</span> <span style="color:#000;font-weight:bold">+</span> elapsedTime <span style="color:#000;font-weight:bold">+</span> <span style="color:#d14">&#34; ms&#34;</span><span style="color:#000;font-weight:bold">);</span>
+        <span style="color:#000;font-weight:bold">}</span>
+
+        <span style="color:#000;font-weight:bold">return</span> <span style="color:#000;font-weight:bold">this</span><span style="color:#000;font-weight:bold">.</span><span style="color:#008080">context</span><span style="color:#000;font-weight:bold">;</span>
+    <span style="color:#000;font-weight:bold">}</span>
+    <span style="color:#000;font-weight:bold">catch</span> <span style="color:#000;font-weight:bold">(</span>RuntimeException <span style="color:#000;font-weight:bold">|</span> Error ex<span style="color:#000;font-weight:bold">)</span> <span style="color:#000;font-weight:bold">{</span>
+        logger<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">error</span><span style="color:#000;font-weight:bold">(</span><span style="color:#d14">&#34;Context initialization failed&#34;</span><span style="color:#000;font-weight:bold">,</span> ex<span style="color:#000;font-weight:bold">);</span>
+        servletContext<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">setAttribute</span><span style="color:#000;font-weight:bold">(</span>WebApplicationContext<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">ROOT_WEB_APPLICATION_CONTEXT_ATTRIBUTE</span><span style="color:#000;font-weight:bold">,</span> ex<span style="color:#000;font-weight:bold">);</span>
+        <span style="color:#000;font-weight:bold">throw</span> ex<span style="color:#000;font-weight:bold">;</span>
+    <span style="color:#000;font-weight:bold">}</span>
+<span style="color:#000;font-weight:bold">}</span>
+
+<span style="color:#000;font-weight:bold">protected</span> WebApplicationContext <span style="color:#900;font-weight:bold">createWebApplicationContext</span><span style="color:#000;font-weight:bold">(</span>ServletContext sc<span style="color:#000;font-weight:bold">)</span> <span style="color:#000;font-weight:bold">{</span>
+    <span style="color:#998;font-style:italic">// 根据 ServletContext 获取 Context 的类
+</span><span style="color:#998;font-style:italic"></span>    Class<span style="color:#000;font-weight:bold">&lt;?&gt;</span> contextClass <span style="color:#000;font-weight:bold">=</span> determineContextClass<span style="color:#000;font-weight:bold">(</span>sc<span style="color:#000;font-weight:bold">);</span>
+    <span style="color:#998;font-style:italic">// 如果获取到 Class 不是则抛错
+</span><span style="color:#998;font-style:italic"></span>    <span style="color:#000;font-weight:bold">if</span> <span style="color:#000;font-weight:bold">(!</span>ConfigurableWebApplicationContext<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">class</span><span style="color:#000;font-weight:bold">.</span><span style="color:#008080">isAssignableFrom</span><span style="color:#000;font-weight:bold">(</span>contextClass<span style="color:#000;font-weight:bold">))</span> <span style="color:#000;font-weight:bold">{</span>
+        <span style="color:#000;font-weight:bold">throw</span> <span style="color:#000;font-weight:bold">new</span> ApplicationContextException<span style="color:#000;font-weight:bold">(</span><span style="color:#d14">&#34;Custom context class [&#34;</span> <span style="color:#000;font-weight:bold">+</span> contextClass<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">getName</span><span style="color:#000;font-weight:bold">()</span> <span style="color:#000;font-weight:bold">+</span>
+                                              <span style="color:#d14">&#34;] is not of type [&#34;</span> <span style="color:#000;font-weight:bold">+</span> ConfigurableWebApplicationContext<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">class</span><span style="color:#000;font-weight:bold">.</span><span style="color:#008080">getName</span><span style="color:#000;font-weight:bold">()</span> <span style="color:#000;font-weight:bold">+</span> <span style="color:#d14">&#34;]&#34;</span><span style="color:#000;font-weight:bold">);</span>
+    <span style="color:#000;font-weight:bold">}</span>
+    <span style="color:#998;font-style:italic">// 通过 BeanUtils 获取 WebApplicationContext
+</span><span style="color:#998;font-style:italic"></span>    <span style="color:#000;font-weight:bold">return</span> <span style="color:#000;font-weight:bold">(</span>ConfigurableWebApplicationContext<span style="color:#000;font-weight:bold">)</span> BeanUtils<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">instantiateClass</span><span style="color:#000;font-weight:bold">(</span>contextClass<span style="color:#000;font-weight:bold">);</span>
+<span style="color:#000;font-weight:bold">}</span>
+
+<span style="color:#000;font-weight:bold">protected</span> Class<span style="color:#000;font-weight:bold">&lt;?&gt;</span> determineContextClass<span style="color:#000;font-weight:bold">(</span>ServletContext servletContext<span style="color:#000;font-weight:bold">)</span> <span style="color:#000;font-weight:bold">{</span>
+    <span style="color:#998;font-style:italic">// 从 ServletContext 中获取初始化参数 contextClass 作为 contextClassName
+</span><span style="color:#998;font-style:italic"></span>    String contextClassName <span style="color:#000;font-weight:bold">=</span> servletContext<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">getInitParameter</span><span style="color:#000;font-weight:bold">(</span>CONTEXT_CLASS_PARAM<span style="color:#000;font-weight:bold">);</span>
+    <span style="color:#000;font-weight:bold">if</span> <span style="color:#000;font-weight:bold">(</span>contextClassName <span style="color:#000;font-weight:bold">!=</span> <span style="color:#000;font-weight:bold">null</span><span style="color:#000;font-weight:bold">)</span> <span style="color:#000;font-weight:bold">{</span>
+        <span style="color:#000;font-weight:bold">try</span> <span style="color:#000;font-weight:bold">{</span>
+            <span style="color:#998;font-style:italic">// 如果配置不为空则根据类名获取 Class 返回
+</span><span style="color:#998;font-style:italic"></span>            <span style="color:#000;font-weight:bold">return</span> ClassUtils<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">forName</span><span style="color:#000;font-weight:bold">(</span>contextClassName<span style="color:#000;font-weight:bold">,</span> ClassUtils<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">getDefaultClassLoader</span><span style="color:#000;font-weight:bold">());</span>
+        <span style="color:#000;font-weight:bold">}</span>
+        <span style="color:#000;font-weight:bold">catch</span> <span style="color:#000;font-weight:bold">(</span>ClassNotFoundException ex<span style="color:#000;font-weight:bold">)</span> <span style="color:#000;font-weight:bold">{</span>
+            <span style="color:#000;font-weight:bold">throw</span> <span style="color:#000;font-weight:bold">new</span> ApplicationContextException<span style="color:#000;font-weight:bold">(</span>
+                <span style="color:#d14">&#34;Failed to load custom context class [&#34;</span> <span style="color:#000;font-weight:bold">+</span> contextClassName <span style="color:#000;font-weight:bold">+</span> <span style="color:#d14">&#34;]&#34;</span><span style="color:#000;font-weight:bold">,</span> ex<span style="color:#000;font-weight:bold">);</span>
+        <span style="color:#000;font-weight:bold">}</span>
+    <span style="color:#000;font-weight:bold">}</span>
+    <span style="color:#000;font-weight:bold">else</span> <span style="color:#000;font-weight:bold">{</span>
+        <span style="color:#998;font-style:italic">// 如果初始化参数中没有则从 ContextLoader.properties 配置文件中
+</span><span style="color:#998;font-style:italic"></span>        <span style="color:#998;font-style:italic">// 读取 WebApplicationContext 属性的值
+</span><span style="color:#998;font-style:italic"></span>        contextClassName <span style="color:#000;font-weight:bold">=</span> defaultStrategies<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">getProperty</span><span style="color:#000;font-weight:bold">(</span>WebApplicationContext<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">class</span><span style="color:#000;font-weight:bold">.</span><span style="color:#008080">getName</span><span style="color:#000;font-weight:bold">());</span>
+        <span style="color:#000;font-weight:bold">try</span> <span style="color:#000;font-weight:bold">{</span>
+            <span style="color:#998;font-style:italic">// 获取 Class 返回
+</span><span style="color:#998;font-style:italic"></span>            <span style="color:#000;font-weight:bold">return</span> ClassUtils<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">forName</span><span style="color:#000;font-weight:bold">(</span>contextClassName<span style="color:#000;font-weight:bold">,</span> ContextLoader<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">class</span><span style="color:#000;font-weight:bold">.</span><span style="color:#008080">getClassLoader</span><span style="color:#000;font-weight:bold">());</span>
+        <span style="color:#000;font-weight:bold">}</span>
+        <span style="color:#000;font-weight:bold">catch</span> <span style="color:#000;font-weight:bold">(</span>ClassNotFoundException ex<span style="color:#000;font-weight:bold">)</span> <span style="color:#000;font-weight:bold">{</span>
+            <span style="color:#000;font-weight:bold">throw</span> <span style="color:#000;font-weight:bold">new</span> ApplicationContextException<span style="color:#000;font-weight:bold">(</span>
+                <span style="color:#d14">&#34;Failed to load default context class [&#34;</span> <span style="color:#000;font-weight:bold">+</span> contextClassName <span style="color:#000;font-weight:bold">+</span> <span style="color:#d14">&#34;]&#34;</span><span style="color:#000;font-weight:bold">,</span> ex<span style="color:#000;font-weight:bold">);</span>
+        <span style="color:#000;font-weight:bold">}</span>
+    <span style="color:#000;font-weight:bold">}</span>
+<span style="color:#000;font-weight:bold">}</span>
+
+<span style="color:#998;font-style:italic">// 配置和刷新容器
+</span><span style="color:#998;font-style:italic"></span><span style="color:#000;font-weight:bold">protected</span> <span style="color:#458;font-weight:bold">void</span> <span style="color:#900;font-weight:bold">configureAndRefreshWebApplicationContext</span><span style="color:#000;font-weight:bold">(</span>ConfigurableWebApplicationContext wac<span style="color:#000;font-weight:bold">,</span> ServletContext sc<span style="color:#000;font-weight:bold">)</span> <span style="color:#000;font-weight:bold">{</span>
+    <span style="color:#000;font-weight:bold">if</span> <span style="color:#000;font-weight:bold">(</span>ObjectUtils<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">identityToString</span><span style="color:#000;font-weight:bold">(</span>wac<span style="color:#000;font-weight:bold">).</span><span style="color:#008080">equals</span><span style="color:#000;font-weight:bold">(</span>wac<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">getId</span><span style="color:#000;font-weight:bold">()))</span> <span style="color:#000;font-weight:bold">{</span>
+        <span style="color:#998;font-style:italic">// The application context id is still set to its original default value
+</span><span style="color:#998;font-style:italic"></span>        <span style="color:#998;font-style:italic">// -&gt; assign a more useful id based on available information
+</span><span style="color:#998;font-style:italic"></span>        <span style="color:#998;font-style:italic">// 为 WebApplicationContext 设置一个更有用 ID 基于现有的信息
+</span><span style="color:#998;font-style:italic"></span>        String idParam <span style="color:#000;font-weight:bold">=</span> sc<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">getInitParameter</span><span style="color:#000;font-weight:bold">(</span>CONTEXT_ID_PARAM<span style="color:#000;font-weight:bold">);</span>
+        <span style="color:#000;font-weight:bold">if</span> <span style="color:#000;font-weight:bold">(</span>idParam <span style="color:#000;font-weight:bold">!=</span> <span style="color:#000;font-weight:bold">null</span><span style="color:#000;font-weight:bold">)</span> <span style="color:#000;font-weight:bold">{</span>
+            wac<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">setId</span><span style="color:#000;font-weight:bold">(</span>idParam<span style="color:#000;font-weight:bold">);</span>
+        <span style="color:#000;font-weight:bold">}</span>
+        <span style="color:#000;font-weight:bold">else</span> <span style="color:#000;font-weight:bold">{</span>
+            <span style="color:#998;font-style:italic">// Generate default id...
+</span><span style="color:#998;font-style:italic"></span>            wac<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">setId</span><span style="color:#000;font-weight:bold">(</span>ConfigurableWebApplicationContext<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">APPLICATION_CONTEXT_ID_PREFIX</span> <span style="color:#000;font-weight:bold">+</span>
+                      ObjectUtils<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">getDisplayString</span><span style="color:#000;font-weight:bold">(</span>sc<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">getContextPath</span><span style="color:#000;font-weight:bold">()));</span>
+        <span style="color:#000;font-weight:bold">}</span>
+    <span style="color:#000;font-weight:bold">}</span>
+
+    <span style="color:#998;font-style:italic">// 将 ServletContext 放到 WebApplicationContext
+</span><span style="color:#998;font-style:italic"></span>    wac<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">setServletContext</span><span style="color:#000;font-weight:bold">(</span>sc<span style="color:#000;font-weight:bold">);</span>
+    <span style="color:#998;font-style:italic">// 从 ServletContext 的初始化参数中读取 Config 的位置并放到 WebApplicationContext 上
+</span><span style="color:#998;font-style:italic"></span>    String configLocationParam <span style="color:#000;font-weight:bold">=</span> sc<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">getInitParameter</span><span style="color:#000;font-weight:bold">(</span>CONFIG_LOCATION_PARAM<span style="color:#000;font-weight:bold">);</span>
+    <span style="color:#000;font-weight:bold">if</span> <span style="color:#000;font-weight:bold">(</span>configLocationParam <span style="color:#000;font-weight:bold">!=</span> <span style="color:#000;font-weight:bold">null</span><span style="color:#000;font-weight:bold">)</span> <span style="color:#000;font-weight:bold">{</span>
+        wac<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">setConfigLocation</span><span style="color:#000;font-weight:bold">(</span>configLocationParam<span style="color:#000;font-weight:bold">);</span>
+    <span style="color:#000;font-weight:bold">}</span>
+
+    <span style="color:#998;font-style:italic">// The wac environment&#39;s #initPropertySources will be called in any case when the context
+</span><span style="color:#998;font-style:italic"></span>    <span style="color:#998;font-style:italic">// is refreshed; do it eagerly here to ensure servlet property sources are in place for
+</span><span style="color:#998;font-style:italic"></span>    <span style="color:#998;font-style:italic">// use in any post-processing or initialization that occurs below prior to #refresh
+</span><span style="color:#998;font-style:italic"></span>    <span style="color:#998;font-style:italic">// 获取当前的环境
+</span><span style="color:#998;font-style:italic"></span>    ConfigurableEnvironment env <span style="color:#000;font-weight:bold">=</span> wac<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">getEnvironment</span><span style="color:#000;font-weight:bold">();</span>
+    <span style="color:#000;font-weight:bold">if</span> <span style="color:#000;font-weight:bold">(</span>env <span style="color:#000;font-weight:bold">instanceof</span> ConfigurableWebEnvironment<span style="color:#000;font-weight:bold">)</span> <span style="color:#000;font-weight:bold">{</span>
+        <span style="color:#998;font-style:italic">// 设置初始化配置
+</span><span style="color:#998;font-style:italic"></span>        <span style="color:#000;font-weight:bold">((</span>ConfigurableWebEnvironment<span style="color:#000;font-weight:bold">)</span> env<span style="color:#000;font-weight:bold">).</span><span style="color:#008080">initPropertySources</span><span style="color:#000;font-weight:bold">(</span>sc<span style="color:#000;font-weight:bold">,</span> <span style="color:#000;font-weight:bold">null</span><span style="color:#000;font-weight:bold">);</span>
+    <span style="color:#000;font-weight:bold">}</span>
+    <span style="color:#998;font-style:italic">// 自定义 WebApplicationContext
+</span><span style="color:#998;font-style:italic"></span>    customizeContext<span style="color:#000;font-weight:bold">(</span>sc<span style="color:#000;font-weight:bold">,</span> wac<span style="color:#000;font-weight:bold">);</span>
+    <span style="color:#998;font-style:italic">// 调用 refresh 刷新容器，就是 Spring 的刷新流程
+</span><span style="color:#998;font-style:italic"></span>    wac<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">refresh</span><span style="color:#000;font-weight:bold">();</span>
+<span style="color:#000;font-weight:bold">}</span>
+
+<span style="color:#000;font-weight:bold">protected</span> <span style="color:#458;font-weight:bold">void</span> <span style="color:#900;font-weight:bold">customizeContext</span><span style="color:#000;font-weight:bold">(</span>ServletContext sc<span style="color:#000;font-weight:bold">,</span> ConfigurableWebApplicationContext wac<span style="color:#000;font-weight:bold">)</span> <span style="color:#000;font-weight:bold">{</span>
+    <span style="color:#998;font-style:italic">// 从 ServletContext 获取 ApplicationContextInitializer 类列表
+</span><span style="color:#998;font-style:italic"></span>    List<span style="color:#000;font-weight:bold">&lt;</span>Class<span style="color:#000;font-weight:bold">&lt;</span>ApplicationContextInitializer<span style="color:#000;font-weight:bold">&lt;</span>ConfigurableApplicationContext<span style="color:#000;font-weight:bold">&gt;&gt;&gt;</span> initializerClasses <span style="color:#000;font-weight:bold">=</span>
+        determineContextInitializerClasses<span style="color:#000;font-weight:bold">(</span>sc<span style="color:#000;font-weight:bold">);</span>
+    <span style="color:#998;font-style:italic">// 遍历 ApplicationContextInitializer 列表
+</span><span style="color:#998;font-style:italic"></span>    <span style="color:#000;font-weight:bold">for</span> <span style="color:#000;font-weight:bold">(</span>Class<span style="color:#000;font-weight:bold">&lt;</span>ApplicationContextInitializer<span style="color:#000;font-weight:bold">&lt;</span>ConfigurableApplicationContext<span style="color:#000;font-weight:bold">&gt;&gt;</span> initializerClass <span style="color:#000;font-weight:bold">:</span> initializerClasses<span style="color:#000;font-weight:bold">)</span> <span style="color:#000;font-weight:bold">{</span>
+        Class<span style="color:#000;font-weight:bold">&lt;?&gt;</span> initializerContextClass <span style="color:#000;font-weight:bold">=</span>
+            GenericTypeResolver<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">resolveTypeArgument</span><span style="color:#000;font-weight:bold">(</span>initializerClass<span style="color:#000;font-weight:bold">,</span> ApplicationContextInitializer<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">class</span><span style="color:#000;font-weight:bold">);</span>
+        <span style="color:#000;font-weight:bold">if</span> <span style="color:#000;font-weight:bold">(</span>initializerContextClass <span style="color:#000;font-weight:bold">!=</span> <span style="color:#000;font-weight:bold">null</span> <span style="color:#000;font-weight:bold">&amp;&amp;</span> <span style="color:#000;font-weight:bold">!</span>initializerContextClass<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">isInstance</span><span style="color:#000;font-weight:bold">(</span>wac<span style="color:#000;font-weight:bold">))</span> <span style="color:#000;font-weight:bold">{</span>
+            <span style="color:#000;font-weight:bold">throw</span> <span style="color:#000;font-weight:bold">new</span> ApplicationContextException<span style="color:#000;font-weight:bold">(</span>String<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">format</span><span style="color:#000;font-weight:bold">(</span>
+                <span style="color:#d14">&#34;Could not apply context initializer [%s] since its generic parameter [%s] &#34;</span> <span style="color:#000;font-weight:bold">+</span>
+                <span style="color:#d14">&#34;is not assignable from the type of application context used by this &#34;</span> <span style="color:#000;font-weight:bold">+</span>
+                <span style="color:#d14">&#34;context loader: [%s]&#34;</span><span style="color:#000;font-weight:bold">,</span> initializerClass<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">getName</span><span style="color:#000;font-weight:bold">(),</span> initializerContextClass<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">getName</span><span style="color:#000;font-weight:bold">(),</span>
+                wac<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">getClass</span><span style="color:#000;font-weight:bold">().</span><span style="color:#008080">getName</span><span style="color:#000;font-weight:bold">()));</span>
+        <span style="color:#000;font-weight:bold">}</span>
+        <span style="color:#998;font-style:italic">// 将排除掉不可以初始化的后的 ApplicationContextInitializer 
+</span><span style="color:#998;font-style:italic"></span>        <span style="color:#998;font-style:italic">// 实例化后放到  contextInitializers 
+</span><span style="color:#998;font-style:italic"></span>        <span style="color:#000;font-weight:bold">this</span><span style="color:#000;font-weight:bold">.</span><span style="color:#008080">contextInitializers</span><span style="color:#000;font-weight:bold">.</span><span style="color:#008080">add</span><span style="color:#000;font-weight:bold">(</span>BeanUtils<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">instantiateClass</span><span style="color:#000;font-weight:bold">(</span>initializerClass<span style="color:#000;font-weight:bold">));</span>
+    <span style="color:#000;font-weight:bold">}</span>
+
+    <span style="color:#998;font-style:italic">// 对 contextInitializers 排序
+</span><span style="color:#998;font-style:italic"></span>    AnnotationAwareOrderComparator<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">sort</span><span style="color:#000;font-weight:bold">(</span><span style="color:#000;font-weight:bold">this</span><span style="color:#000;font-weight:bold">.</span><span style="color:#008080">contextInitializers</span><span style="color:#000;font-weight:bold">);</span>
+    <span style="color:#998;font-style:italic">// 遍历自定义的 ApplicationContextInitializer 逐个调用其 initialize 方法
+</span><span style="color:#998;font-style:italic"></span>    <span style="color:#000;font-weight:bold">for</span> <span style="color:#000;font-weight:bold">(</span>ApplicationContextInitializer<span style="color:#000;font-weight:bold">&lt;</span>ConfigurableApplicationContext<span style="color:#000;font-weight:bold">&gt;</span> initializer <span style="color:#000;font-weight:bold">:</span> <span style="color:#000;font-weight:bold">this</span><span style="color:#000;font-weight:bold">.</span><span style="color:#008080">contextInitializers</span><span style="color:#000;font-weight:bold">)</span> <span style="color:#000;font-weight:bold">{</span>
+        initializer<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">initialize</span><span style="color:#000;font-weight:bold">(</span>wac<span style="color:#000;font-weight:bold">);</span>
+    <span style="color:#000;font-weight:bold">}</span>
+<span style="color:#000;font-weight:bold">}</span>
+
+<span style="color:#998;font-style:italic">// 从 ServletContext 中获取 ApplicationContextInitializer List
+</span><span style="color:#998;font-style:italic"></span><span style="color:#000;font-weight:bold">protected</span> List<span style="color:#000;font-weight:bold">&lt;</span>Class<span style="color:#000;font-weight:bold">&lt;</span>ApplicationContextInitializer<span style="color:#000;font-weight:bold">&lt;</span>ConfigurableApplicationContext<span style="color:#000;font-weight:bold">&gt;&gt;&gt;</span>
+			<span style="color:#900;font-weight:bold">determineContextInitializerClasses</span><span style="color:#000;font-weight:bold">(</span>ServletContext servletContext<span style="color:#000;font-weight:bold">)</span> <span style="color:#000;font-weight:bold">{</span>
+
+    List<span style="color:#000;font-weight:bold">&lt;</span>Class<span style="color:#000;font-weight:bold">&lt;</span>ApplicationContextInitializer<span style="color:#000;font-weight:bold">&lt;</span>ConfigurableApplicationContext<span style="color:#000;font-weight:bold">&gt;&gt;&gt;</span> classes <span style="color:#000;font-weight:bold">=</span>
+        <span style="color:#000;font-weight:bold">new</span> ArrayList<span style="color:#000;font-weight:bold">&lt;&gt;();</span>
+
+    <span style="color:#998;font-style:italic">// 从 ServletContext 的初始化参数中获取 globalInitializerClasses 值
+</span><span style="color:#998;font-style:italic"></span>    String globalClassNames <span style="color:#000;font-weight:bold">=</span> servletContext<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">getInitParameter</span><span style="color:#000;font-weight:bold">(</span>GLOBAL_INITIALIZER_CLASSES_PARAM<span style="color:#000;font-weight:bold">);</span>
+    <span style="color:#000;font-weight:bold">if</span> <span style="color:#000;font-weight:bold">(</span>globalClassNames <span style="color:#000;font-weight:bold">!=</span> <span style="color:#000;font-weight:bold">null</span><span style="color:#000;font-weight:bold">)</span> <span style="color:#000;font-weight:bold">{</span>
+        <span style="color:#000;font-weight:bold">for</span> <span style="color:#000;font-weight:bold">(</span>String className <span style="color:#000;font-weight:bold">:</span> StringUtils<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">tokenizeToStringArray</span><span style="color:#000;font-weight:bold">(</span>globalClassNames<span style="color:#000;font-weight:bold">,</span> INIT_PARAM_DELIMITERS<span style="color:#000;font-weight:bold">))</span> <span style="color:#000;font-weight:bold">{</span>
+            classes<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">add</span><span style="color:#000;font-weight:bold">(</span>loadInitializerClass<span style="color:#000;font-weight:bold">(</span>className<span style="color:#000;font-weight:bold">));</span>
+        <span style="color:#000;font-weight:bold">}</span>
+    <span style="color:#000;font-weight:bold">}</span>
+
+    <span style="color:#998;font-style:italic">// 从 ServletContext 的初始化参数中获取 contextInitializerClasses 的值
+</span><span style="color:#998;font-style:italic"></span>    String localClassNames <span style="color:#000;font-weight:bold">=</span> servletContext<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">getInitParameter</span><span style="color:#000;font-weight:bold">(</span>CONTEXT_INITIALIZER_CLASSES_PARAM<span style="color:#000;font-weight:bold">);</span>
+    <span style="color:#000;font-weight:bold">if</span> <span style="color:#000;font-weight:bold">(</span>localClassNames <span style="color:#000;font-weight:bold">!=</span> <span style="color:#000;font-weight:bold">null</span><span style="color:#000;font-weight:bold">)</span> <span style="color:#000;font-weight:bold">{</span>
+        <span style="color:#000;font-weight:bold">for</span> <span style="color:#000;font-weight:bold">(</span>String className <span style="color:#000;font-weight:bold">:</span> StringUtils<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">tokenizeToStringArray</span><span style="color:#000;font-weight:bold">(</span>localClassNames<span style="color:#000;font-weight:bold">,</span> INIT_PARAM_DELIMITERS<span style="color:#000;font-weight:bold">))</span> <span style="color:#000;font-weight:bold">{</span>
+            classes<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">add</span><span style="color:#000;font-weight:bold">(</span>loadInitializerClass<span style="color:#000;font-weight:bold">(</span>className<span style="color:#000;font-weight:bold">));</span>
+        <span style="color:#000;font-weight:bold">}</span>
+    <span style="color:#000;font-weight:bold">}</span>
+
+    <span style="color:#000;font-weight:bold">return</span> classes<span style="color:#000;font-weight:bold">;</span>
+<span style="color:#000;font-weight:bold">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>然后我们回头到 <code>AbstractDispatcherServletInitializer</code> 中看起添加的一个步骤：</p>
+<div class="highlight"><div style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4">
+<table style="border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 1
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 2
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 3
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 4
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 5
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 6
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 7
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 8
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 9
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">10
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">11
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">12
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">13
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">14
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">15
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">16
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">17
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">18
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">19
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">20
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">21
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">22
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">23
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">24
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">25
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">26
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">27
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">28
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">29
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">30
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">31
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">32
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">33
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">34
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">35
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">36
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">37
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">38
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">39
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">40
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">41
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">42
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#998;font-style:italic">// AbstractDispatcherServletInitializer
+</span><span style="color:#998;font-style:italic">// 注册 Dispatcher Servlet
+</span><span style="color:#998;font-style:italic"></span><span style="color:#000;font-weight:bold">protected</span> <span style="color:#458;font-weight:bold">void</span> <span style="color:#900;font-weight:bold">registerDispatcherServlet</span><span style="color:#000;font-weight:bold">(</span>ServletContext servletContext<span style="color:#000;font-weight:bold">)</span> <span style="color:#000;font-weight:bold">{</span>
+    <span style="color:#998;font-style:italic">// 获取 Servlet 的名称
+</span><span style="color:#998;font-style:italic"></span>    String servletName <span style="color:#000;font-weight:bold">=</span> getServletName<span style="color:#000;font-weight:bold">();</span>
+    Assert<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">hasLength</span><span style="color:#000;font-weight:bold">(</span>servletName<span style="color:#000;font-weight:bold">,</span> <span style="color:#d14">&#34;getServletName() must not return null or empty&#34;</span><span style="color:#000;font-weight:bold">);</span>
+
+    <span style="color:#998;font-style:italic">// 创建 servletAppContext， Web IOC 容器
+</span><span style="color:#998;font-style:italic"></span>    WebApplicationContext servletAppContext <span style="color:#000;font-weight:bold">=</span> createServletApplicationContext<span style="color:#000;font-weight:bold">();</span>
+    Assert<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">notNull</span><span style="color:#000;font-weight:bold">(</span>servletAppContext<span style="color:#000;font-weight:bold">,</span> <span style="color:#d14">&#34;createServletApplicationContext() must not return null&#34;</span><span style="color:#000;font-weight:bold">);</span>
+
+    <span style="color:#998;font-style:italic">// 创建 dispatcherServlet
+</span><span style="color:#998;font-style:italic"></span>    FrameworkServlet dispatcherServlet <span style="color:#000;font-weight:bold">=</span> createDispatcherServlet<span style="color:#000;font-weight:bold">(</span>servletAppContext<span style="color:#000;font-weight:bold">);</span>
+    Assert<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">notNull</span><span style="color:#000;font-weight:bold">(</span>dispatcherServlet<span style="color:#000;font-weight:bold">,</span> <span style="color:#d14">&#34;createDispatcherServlet(WebApplicationContext) must not return null&#34;</span><span style="color:#000;font-weight:bold">);</span>
+    dispatcherServlet<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">setContextInitializers</span><span style="color:#000;font-weight:bold">(</span>getServletApplicationContextInitializers<span style="color:#000;font-weight:bold">());</span>
+
+    <span style="color:#998;font-style:italic">// 在当前 ServletContext 中添加一个 dispatcherServlet
+</span><span style="color:#998;font-style:italic"></span>    ServletRegistration<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">Dynamic</span> registration <span style="color:#000;font-weight:bold">=</span> servletContext<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">addServlet</span><span style="color:#000;font-weight:bold">(</span>servletName<span style="color:#000;font-weight:bold">,</span> dispatcherServlet<span style="color:#000;font-weight:bold">);</span>
+    <span style="color:#000;font-weight:bold">if</span> <span style="color:#000;font-weight:bold">(</span>registration <span style="color:#000;font-weight:bold">==</span> <span style="color:#000;font-weight:bold">null</span><span style="color:#000;font-weight:bold">)</span> <span style="color:#000;font-weight:bold">{</span>
+        <span style="color:#000;font-weight:bold">throw</span> <span style="color:#000;font-weight:bold">new</span> IllegalStateException<span style="color:#000;font-weight:bold">(</span><span style="color:#d14">&#34;Failed to register servlet with name &#39;&#34;</span> <span style="color:#000;font-weight:bold">+</span> servletName <span style="color:#000;font-weight:bold">+</span> <span style="color:#d14">&#34;&#39;. &#34;</span> <span style="color:#000;font-weight:bold">+</span>
+                                        <span style="color:#d14">&#34;Check if there is another servlet registered under the same name.&#34;</span><span style="color:#000;font-weight:bold">);</span>
+    <span style="color:#000;font-weight:bold">}</span>
+
+    <span style="color:#998;font-style:italic">// 设置相关的属性信息
+</span><span style="color:#998;font-style:italic"></span>    <span style="color:#998;font-style:italic">// 加载时机
+</span><span style="color:#998;font-style:italic"></span>    registration<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">setLoadOnStartup</span><span style="color:#000;font-weight:bold">(</span>1<span style="color:#000;font-weight:bold">);</span>
+    <span style="color:#998;font-style:italic">// 映射信息
+</span><span style="color:#998;font-style:italic"></span>    registration<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">addMapping</span><span style="color:#000;font-weight:bold">(</span>getServletMappings<span style="color:#000;font-weight:bold">());</span>
+    <span style="color:#998;font-style:italic">// 异步支持
+</span><span style="color:#998;font-style:italic"></span>    registration<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">setAsyncSupported</span><span style="color:#000;font-weight:bold">(</span>isAsyncSupported<span style="color:#000;font-weight:bold">());</span>
+
+    <span style="color:#998;font-style:italic">// 获取 Filter 并逐个注册到 ServletContext 中
+</span><span style="color:#998;font-style:italic"></span>    Filter<span style="color:#000;font-weight:bold">[]</span> filters <span style="color:#000;font-weight:bold">=</span> getServletFilters<span style="color:#000;font-weight:bold">();</span>
+    <span style="color:#000;font-weight:bold">if</span> <span style="color:#000;font-weight:bold">(!</span>ObjectUtils<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">isEmpty</span><span style="color:#000;font-weight:bold">(</span>filters<span style="color:#000;font-weight:bold">))</span> <span style="color:#000;font-weight:bold">{</span>
+        <span style="color:#000;font-weight:bold">for</span> <span style="color:#000;font-weight:bold">(</span>Filter filter <span style="color:#000;font-weight:bold">:</span> filters<span style="color:#000;font-weight:bold">)</span> <span style="color:#000;font-weight:bold">{</span>
+            registerServletFilter<span style="color:#000;font-weight:bold">(</span>servletContext<span style="color:#000;font-weight:bold">,</span> filter<span style="color:#000;font-weight:bold">);</span>
+        <span style="color:#000;font-weight:bold">}</span>
+    <span style="color:#000;font-weight:bold">}</span>
+
+    <span style="color:#998;font-style:italic">// 留给子类的自定义方法
+</span><span style="color:#998;font-style:italic"></span>    customizeRegistration<span style="color:#000;font-weight:bold">(</span>registration<span style="color:#000;font-weight:bold">);</span>
+<span style="color:#000;font-weight:bold">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>到这里可以看到 Root 容器创建和刷新是在 <code>ContextLoaderListener</code> 的 <code>contextInitialized</code> 方法做的。Web 容器创建是在 <code>AbstractDispatcherServletInitializer</code> 中做的，但是并没加载器刷新容器的方法。通过 Debug 可知刷新容器是在 <code>HttpServletBean</code> 的 <code>init</code> 方法中调用的。如下所示：</p>
+<div class="highlight"><div style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4">
+<table style="border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 1
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 2
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 3
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 4
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 5
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 6
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 7
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 8
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 9
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">10
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">11
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">12
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">13
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">14
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">15
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">16
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">17
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">18
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">19
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">20
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">21
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">22
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">23
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">24
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">25
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">26
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#998;font-style:italic">// HttpServletBean
+</span><span style="color:#998;font-style:italic"></span><span style="color:#3c5d5d;font-weight:bold">@Override</span>
+<span style="color:#000;font-weight:bold">public</span> <span style="color:#000;font-weight:bold">final</span> <span style="color:#458;font-weight:bold">void</span> <span style="color:#900;font-weight:bold">init</span><span style="color:#000;font-weight:bold">()</span> <span style="color:#000;font-weight:bold">throws</span> ServletException <span style="color:#000;font-weight:bold">{</span>
+
+   <span style="color:#998;font-style:italic">// Set bean properties from init parameters.
+</span><span style="color:#998;font-style:italic"></span>   PropertyValues pvs <span style="color:#000;font-weight:bold">=</span> <span style="color:#000;font-weight:bold">new</span> ServletConfigPropertyValues<span style="color:#000;font-weight:bold">(</span>getServletConfig<span style="color:#000;font-weight:bold">(),</span> <span style="color:#000;font-weight:bold">this</span><span style="color:#000;font-weight:bold">.</span><span style="color:#008080">requiredProperties</span><span style="color:#000;font-weight:bold">);</span>
+   <span style="color:#000;font-weight:bold">if</span> <span style="color:#000;font-weight:bold">(!</span>pvs<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">isEmpty</span><span style="color:#000;font-weight:bold">())</span> <span style="color:#000;font-weight:bold">{</span>
+       <span style="color:#000;font-weight:bold">try</span> <span style="color:#000;font-weight:bold">{</span>
+           BeanWrapper bw <span style="color:#000;font-weight:bold">=</span> PropertyAccessorFactory<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">forBeanPropertyAccess</span><span style="color:#000;font-weight:bold">(</span><span style="color:#000;font-weight:bold">this</span><span style="color:#000;font-weight:bold">);</span>
+           ResourceLoader resourceLoader <span style="color:#000;font-weight:bold">=</span> <span style="color:#000;font-weight:bold">new</span> ServletContextResourceLoader<span style="color:#000;font-weight:bold">(</span>getServletContext<span style="color:#000;font-weight:bold">());</span>
+           bw<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">registerCustomEditor</span><span style="color:#000;font-weight:bold">(</span>Resource<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">class</span><span style="color:#000;font-weight:bold">,</span> <span style="color:#000;font-weight:bold">new</span> ResourceEditor<span style="color:#000;font-weight:bold">(</span>resourceLoader<span style="color:#000;font-weight:bold">,</span> getEnvironment<span style="color:#000;font-weight:bold">()));</span>
+           initBeanWrapper<span style="color:#000;font-weight:bold">(</span>bw<span style="color:#000;font-weight:bold">);</span>
+           bw<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">setPropertyValues</span><span style="color:#000;font-weight:bold">(</span>pvs<span style="color:#000;font-weight:bold">,</span> <span style="color:#000;font-weight:bold">true</span><span style="color:#000;font-weight:bold">);</span>
+       <span style="color:#000;font-weight:bold">}</span>
+       <span style="color:#000;font-weight:bold">catch</span> <span style="color:#000;font-weight:bold">(</span>BeansException ex<span style="color:#000;font-weight:bold">)</span> <span style="color:#000;font-weight:bold">{</span>
+           <span style="color:#000;font-weight:bold">if</span> <span style="color:#000;font-weight:bold">(</span>logger<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">isErrorEnabled</span><span style="color:#000;font-weight:bold">())</span> <span style="color:#000;font-weight:bold">{</span>
+               logger<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">error</span><span style="color:#000;font-weight:bold">(</span><span style="color:#d14">&#34;Failed to set bean properties on servlet &#39;&#34;</span> <span style="color:#000;font-weight:bold">+</span> getServletName<span style="color:#000;font-weight:bold">()</span> <span style="color:#000;font-weight:bold">+</span> <span style="color:#d14">&#34;&#39;&#34;</span><span style="color:#000;font-weight:bold">,</span> ex<span style="color:#000;font-weight:bold">);</span>
+           <span style="color:#000;font-weight:bold">}</span>
+           <span style="color:#000;font-weight:bold">throw</span> ex<span style="color:#000;font-weight:bold">;</span>
+       <span style="color:#000;font-weight:bold">}</span>
+   <span style="color:#000;font-weight:bold">}</span>
+
+   <span style="color:#998;font-style:italic">// Let subclasses do whatever initialization they like.
+</span><span style="color:#998;font-style:italic"></span>   <span style="color:#998;font-style:italic">// 初始化 Servlet Bean
+</span><span style="color:#998;font-style:italic"></span>   initServletBean<span style="color:#000;font-weight:bold">();</span>
+<span style="color:#000;font-weight:bold">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><div class="highlight"><div style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4">
+<table style="border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">  1
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">  2
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">  3
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">  4
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">  5
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">  6
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">  7
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">  8
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">  9
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 10
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 11
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 12
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 13
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 14
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 15
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 16
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 17
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 18
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 19
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 20
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 21
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 22
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 23
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 24
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 25
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 26
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 27
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 28
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 29
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 30
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 31
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 32
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 33
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 34
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 35
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 36
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 37
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 38
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 39
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 40
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 41
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 42
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 43
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 44
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 45
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 46
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 47
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 48
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 49
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 50
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 51
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 52
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 53
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 54
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 55
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 56
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 57
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 58
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 59
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 60
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 61
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 62
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 63
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 64
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 65
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 66
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 67
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 68
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 69
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 70
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 71
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 72
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 73
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 74
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 75
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 76
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 77
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 78
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 79
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 80
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 81
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 82
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 83
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 84
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 85
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 86
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 87
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 88
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 89
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 90
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 91
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 92
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 93
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 94
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 95
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 96
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 97
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 98
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 99
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">100
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">101
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">102
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">103
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">104
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">105
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">106
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">107
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">108
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">109
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">110
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">111
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">112
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">113
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">114
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">115
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">116
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">117
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">118
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">119
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">120
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">121
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">122
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">123
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">124
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">125
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">126
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">127
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">128
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">129
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">130
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">131
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">132
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">133
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">134
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#998;font-style:italic">// FrameworkServlet
+</span><span style="color:#998;font-style:italic"></span><span style="color:#3c5d5d;font-weight:bold">@Override</span>
+<span style="color:#000;font-weight:bold">protected</span> <span style="color:#000;font-weight:bold">final</span> <span style="color:#458;font-weight:bold">void</span> <span style="color:#900;font-weight:bold">initServletBean</span><span style="color:#000;font-weight:bold">()</span> <span style="color:#000;font-weight:bold">throws</span> ServletException <span style="color:#000;font-weight:bold">{</span>
+    getServletContext<span style="color:#000;font-weight:bold">().</span><span style="color:#008080">log</span><span style="color:#000;font-weight:bold">(</span><span style="color:#d14">&#34;Initializing Spring &#34;</span> <span style="color:#000;font-weight:bold">+</span> getClass<span style="color:#000;font-weight:bold">().</span><span style="color:#008080">getSimpleName</span><span style="color:#000;font-weight:bold">()</span> <span style="color:#000;font-weight:bold">+</span> <span style="color:#d14">&#34; &#39;&#34;</span> <span style="color:#000;font-weight:bold">+</span> getServletName<span style="color:#000;font-weight:bold">()</span> <span style="color:#000;font-weight:bold">+</span> <span style="color:#d14">&#34;&#39;&#34;</span><span style="color:#000;font-weight:bold">);</span>
+    <span style="color:#000;font-weight:bold">if</span> <span style="color:#000;font-weight:bold">(</span>logger<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">isInfoEnabled</span><span style="color:#000;font-weight:bold">())</span> <span style="color:#000;font-weight:bold">{</span>
+        logger<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">info</span><span style="color:#000;font-weight:bold">(</span><span style="color:#d14">&#34;Initializing Servlet &#39;&#34;</span> <span style="color:#000;font-weight:bold">+</span> getServletName<span style="color:#000;font-weight:bold">()</span> <span style="color:#000;font-weight:bold">+</span> <span style="color:#d14">&#34;&#39;&#34;</span><span style="color:#000;font-weight:bold">);</span>
+    <span style="color:#000;font-weight:bold">}</span>
+    <span style="color:#458;font-weight:bold">long</span> startTime <span style="color:#000;font-weight:bold">=</span> System<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">currentTimeMillis</span><span style="color:#000;font-weight:bold">();</span>
+
+    <span style="color:#000;font-weight:bold">try</span> <span style="color:#000;font-weight:bold">{</span>
+        <span style="color:#998;font-style:italic">// 初始化 Web 容器
+</span><span style="color:#998;font-style:italic"></span>        <span style="color:#000;font-weight:bold">this</span><span style="color:#000;font-weight:bold">.</span><span style="color:#008080">webApplicationContext</span> <span style="color:#000;font-weight:bold">=</span> initWebApplicationContext<span style="color:#000;font-weight:bold">();</span>
+        initFrameworkServlet<span style="color:#000;font-weight:bold">();</span>
+    <span style="color:#000;font-weight:bold">}</span>
+    <span style="color:#000;font-weight:bold">catch</span> <span style="color:#000;font-weight:bold">(</span>ServletException <span style="color:#000;font-weight:bold">|</span> RuntimeException ex<span style="color:#000;font-weight:bold">)</span> <span style="color:#000;font-weight:bold">{</span>
+        logger<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">error</span><span style="color:#000;font-weight:bold">(</span><span style="color:#d14">&#34;Context initialization failed&#34;</span><span style="color:#000;font-weight:bold">,</span> ex<span style="color:#000;font-weight:bold">);</span>
+        <span style="color:#000;font-weight:bold">throw</span> ex<span style="color:#000;font-weight:bold">;</span>
+    <span style="color:#000;font-weight:bold">}</span>
+
+    <span style="color:#000;font-weight:bold">if</span> <span style="color:#000;font-weight:bold">(</span>logger<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">isDebugEnabled</span><span style="color:#000;font-weight:bold">())</span> <span style="color:#000;font-weight:bold">{</span>
+        String value <span style="color:#000;font-weight:bold">=</span> <span style="color:#000;font-weight:bold">this</span><span style="color:#000;font-weight:bold">.</span><span style="color:#008080">enableLoggingRequestDetails</span> <span style="color:#000;font-weight:bold">?</span>
+            <span style="color:#d14">&#34;shown which may lead to unsafe logging of potentially sensitive data&#34;</span> <span style="color:#000;font-weight:bold">:</span>
+        <span style="color:#d14">&#34;masked to prevent unsafe logging of potentially sensitive data&#34;</span><span style="color:#000;font-weight:bold">;</span>
+        logger<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">debug</span><span style="color:#000;font-weight:bold">(</span><span style="color:#d14">&#34;enableLoggingRequestDetails=&#39;&#34;</span> <span style="color:#000;font-weight:bold">+</span> <span style="color:#000;font-weight:bold">this</span><span style="color:#000;font-weight:bold">.</span><span style="color:#008080">enableLoggingRequestDetails</span> <span style="color:#000;font-weight:bold">+</span>
+                     <span style="color:#d14">&#34;&#39;: request parameters and headers will be &#34;</span> <span style="color:#000;font-weight:bold">+</span> value<span style="color:#000;font-weight:bold">);</span>
+    <span style="color:#000;font-weight:bold">}</span>
+
+    <span style="color:#000;font-weight:bold">if</span> <span style="color:#000;font-weight:bold">(</span>logger<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">isInfoEnabled</span><span style="color:#000;font-weight:bold">())</span> <span style="color:#000;font-weight:bold">{</span>
+        logger<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">info</span><span style="color:#000;font-weight:bold">(</span><span style="color:#d14">&#34;Completed initialization in &#34;</span> <span style="color:#000;font-weight:bold">+</span> <span style="color:#000;font-weight:bold">(</span>System<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">currentTimeMillis</span><span style="color:#000;font-weight:bold">()</span> <span style="color:#000;font-weight:bold">-</span> startTime<span style="color:#000;font-weight:bold">)</span> <span style="color:#000;font-weight:bold">+</span> <span style="color:#d14">&#34; ms&#34;</span><span style="color:#000;font-weight:bold">);</span>
+    <span style="color:#000;font-weight:bold">}</span>
+<span style="color:#000;font-weight:bold">}</span>
+
+<span style="color:#998;font-style:italic">// 初始化 Web 容器
+</span><span style="color:#998;font-style:italic"></span><span style="color:#000;font-weight:bold">protected</span> WebApplicationContext <span style="color:#900;font-weight:bold">initWebApplicationContext</span><span style="color:#000;font-weight:bold">()</span> <span style="color:#000;font-weight:bold">{</span>
+    <span style="color:#998;font-style:italic">// 从 ServletContext 上获取 Root 容器
+</span><span style="color:#998;font-style:italic"></span>    WebApplicationContext rootContext <span style="color:#000;font-weight:bold">=</span>
+        WebApplicationContextUtils<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">getWebApplicationContext</span><span style="color:#000;font-weight:bold">(</span>getServletContext<span style="color:#000;font-weight:bold">());</span>
+    WebApplicationContext wac <span style="color:#000;font-weight:bold">=</span> <span style="color:#000;font-weight:bold">null</span><span style="color:#000;font-weight:bold">;</span>
+
+    <span style="color:#998;font-style:italic">// 如果 Web 容器不为空则获取当前的 Web 容器
+</span><span style="color:#998;font-style:italic"></span>    <span style="color:#000;font-weight:bold">if</span> <span style="color:#000;font-weight:bold">(</span><span style="color:#000;font-weight:bold">this</span><span style="color:#000;font-weight:bold">.</span><span style="color:#008080">webApplicationContext</span> <span style="color:#000;font-weight:bold">!=</span> <span style="color:#000;font-weight:bold">null</span><span style="color:#000;font-weight:bold">)</span> <span style="color:#000;font-weight:bold">{</span>
+        <span style="color:#998;font-style:italic">// A context instance was injected at construction time -&gt; use it
+</span><span style="color:#998;font-style:italic"></span>        wac <span style="color:#000;font-weight:bold">=</span> <span style="color:#000;font-weight:bold">this</span><span style="color:#000;font-weight:bold">.</span><span style="color:#008080">webApplicationContext</span><span style="color:#000;font-weight:bold">;</span>
+        <span style="color:#000;font-weight:bold">if</span> <span style="color:#000;font-weight:bold">(</span>wac <span style="color:#000;font-weight:bold">instanceof</span> ConfigurableWebApplicationContext<span style="color:#000;font-weight:bold">)</span> <span style="color:#000;font-weight:bold">{</span>
+            ConfigurableWebApplicationContext cwac <span style="color:#000;font-weight:bold">=</span> <span style="color:#000;font-weight:bold">(</span>ConfigurableWebApplicationContext<span style="color:#000;font-weight:bold">)</span> wac<span style="color:#000;font-weight:bold">;</span>
+            <span style="color:#000;font-weight:bold">if</span> <span style="color:#000;font-weight:bold">(!</span>cwac<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">isActive</span><span style="color:#000;font-weight:bold">())</span> <span style="color:#000;font-weight:bold">{</span>
+                <span style="color:#998;font-style:italic">// The context has not yet been refreshed -&gt; provide services such as
+</span><span style="color:#998;font-style:italic"></span>                <span style="color:#998;font-style:italic">// setting the parent context, setting the application context id, etc
+</span><span style="color:#998;font-style:italic"></span>                <span style="color:#000;font-weight:bold">if</span> <span style="color:#000;font-weight:bold">(</span>cwac<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">getParent</span><span style="color:#000;font-weight:bold">()</span> <span style="color:#000;font-weight:bold">==</span> <span style="color:#000;font-weight:bold">null</span><span style="color:#000;font-weight:bold">)</span> <span style="color:#000;font-weight:bold">{</span>
+                    <span style="color:#998;font-style:italic">// The context instance was injected without an explicit parent -&gt; set
+</span><span style="color:#998;font-style:italic"></span>                    <span style="color:#998;font-style:italic">// the root application context (if any; may be null) as the parent
+</span><span style="color:#998;font-style:italic"></span>                    <span style="color:#998;font-style:italic">// 设置 Web 容器的 Parent 为 Root 容器
+</span><span style="color:#998;font-style:italic"></span>                    cwac<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">setParent</span><span style="color:#000;font-weight:bold">(</span>rootContext<span style="color:#000;font-weight:bold">);</span>
+                <span style="color:#000;font-weight:bold">}</span>
+                <span style="color:#998;font-style:italic">// 配置和刷新 Web 容器
+</span><span style="color:#998;font-style:italic"></span>                configureAndRefreshWebApplicationContext<span style="color:#000;font-weight:bold">(</span>cwac<span style="color:#000;font-weight:bold">);</span>
+            <span style="color:#000;font-weight:bold">}</span>
+        <span style="color:#000;font-weight:bold">}</span>
+    <span style="color:#000;font-weight:bold">}</span>
+    <span style="color:#000;font-weight:bold">if</span> <span style="color:#000;font-weight:bold">(</span>wac <span style="color:#000;font-weight:bold">==</span> <span style="color:#000;font-weight:bold">null</span><span style="color:#000;font-weight:bold">)</span> <span style="color:#000;font-weight:bold">{</span>
+        <span style="color:#998;font-style:italic">// No context instance was injected at construction time -&gt; see if one
+</span><span style="color:#998;font-style:italic"></span>        <span style="color:#998;font-style:italic">// has been registered in the servlet context. If one exists, it is assumed
+</span><span style="color:#998;font-style:italic"></span>        <span style="color:#998;font-style:italic">// that the parent context (if any) has already been set and that the
+</span><span style="color:#998;font-style:italic"></span>        <span style="color:#998;font-style:italic">// user has performed any initialization such as setting the context id
+</span><span style="color:#998;font-style:italic"></span>        <span style="color:#998;font-style:italic">// 如果没有 Web 容器则尝试从 Servlet Context 中获取 Web 容器
+</span><span style="color:#998;font-style:italic"></span>        wac <span style="color:#000;font-weight:bold">=</span> findWebApplicationContext<span style="color:#000;font-weight:bold">();</span>
+    <span style="color:#000;font-weight:bold">}</span>
+    <span style="color:#000;font-weight:bold">if</span> <span style="color:#000;font-weight:bold">(</span>wac <span style="color:#000;font-weight:bold">==</span> <span style="color:#000;font-weight:bold">null</span><span style="color:#000;font-weight:bold">)</span> <span style="color:#000;font-weight:bold">{</span>
+        <span style="color:#998;font-style:italic">// No context instance is defined for this servlet -&gt; create a local one
+</span><span style="color:#998;font-style:italic"></span>        <span style="color:#998;font-style:italic">// 如果还是没有根据 Root 容器创建一个 Web 容器并配置刷新容器
+</span><span style="color:#998;font-style:italic"></span>        wac <span style="color:#000;font-weight:bold">=</span> createWebApplicationContext<span style="color:#000;font-weight:bold">(</span>rootContext<span style="color:#000;font-weight:bold">);</span>
+    <span style="color:#000;font-weight:bold">}</span>
+
+    <span style="color:#998;font-style:italic">// 手动调用 容器刷新
+</span><span style="color:#998;font-style:italic"></span>    <span style="color:#000;font-weight:bold">if</span> <span style="color:#000;font-weight:bold">(!</span><span style="color:#000;font-weight:bold">this</span><span style="color:#000;font-weight:bold">.</span><span style="color:#008080">refreshEventReceived</span><span style="color:#000;font-weight:bold">)</span> <span style="color:#000;font-weight:bold">{</span>
+        <span style="color:#998;font-style:italic">// Either the context is not a ConfigurableApplicationContext with refresh
+</span><span style="color:#998;font-style:italic"></span>        <span style="color:#998;font-style:italic">// support or the context injected at construction time had already been
+</span><span style="color:#998;font-style:italic"></span>        <span style="color:#998;font-style:italic">// refreshed -&gt; trigger initial onRefresh manually here.
+</span><span style="color:#998;font-style:italic"></span>        <span style="color:#000;font-weight:bold">synchronized</span> <span style="color:#000;font-weight:bold">(</span><span style="color:#000;font-weight:bold">this</span><span style="color:#000;font-weight:bold">.</span><span style="color:#008080">onRefreshMonitor</span><span style="color:#000;font-weight:bold">)</span> <span style="color:#000;font-weight:bold">{</span>
+            onRefresh<span style="color:#000;font-weight:bold">(</span>wac<span style="color:#000;font-weight:bold">);</span>
+        <span style="color:#000;font-weight:bold">}</span>
+    <span style="color:#000;font-weight:bold">}</span>
+
+    <span style="color:#998;font-style:italic">// 将 Web 容器放到 Servlet Context 上
+</span><span style="color:#998;font-style:italic"></span>    <span style="color:#000;font-weight:bold">if</span> <span style="color:#000;font-weight:bold">(</span><span style="color:#000;font-weight:bold">this</span><span style="color:#000;font-weight:bold">.</span><span style="color:#008080">publishContext</span><span style="color:#000;font-weight:bold">)</span> <span style="color:#000;font-weight:bold">{</span>
+        <span style="color:#998;font-style:italic">// Publish the context as a servlet context attribute.
+</span><span style="color:#998;font-style:italic"></span>        String attrName <span style="color:#000;font-weight:bold">=</span> getServletContextAttributeName<span style="color:#000;font-weight:bold">();</span>
+        getServletContext<span style="color:#000;font-weight:bold">().</span><span style="color:#008080">setAttribute</span><span style="color:#000;font-weight:bold">(</span>attrName<span style="color:#000;font-weight:bold">,</span> wac<span style="color:#000;font-weight:bold">);</span>
+    <span style="color:#000;font-weight:bold">}</span>
+
+    <span style="color:#000;font-weight:bold">return</span> wac<span style="color:#000;font-weight:bold">;</span>
+<span style="color:#000;font-weight:bold">}</span>
+
+<span style="color:#000;font-weight:bold">protected</span> <span style="color:#458;font-weight:bold">void</span> <span style="color:#900;font-weight:bold">configureAndRefreshWebApplicationContext</span><span style="color:#000;font-weight:bold">(</span>ConfigurableWebApplicationContext wac<span style="color:#000;font-weight:bold">)</span> <span style="color:#000;font-weight:bold">{</span>
+    <span style="color:#998;font-style:italic">// 设置 ID
+</span><span style="color:#998;font-style:italic"></span>    <span style="color:#000;font-weight:bold">if</span> <span style="color:#000;font-weight:bold">(</span>ObjectUtils<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">identityToString</span><span style="color:#000;font-weight:bold">(</span>wac<span style="color:#000;font-weight:bold">).</span><span style="color:#008080">equals</span><span style="color:#000;font-weight:bold">(</span>wac<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">getId</span><span style="color:#000;font-weight:bold">()))</span> <span style="color:#000;font-weight:bold">{</span>
+        <span style="color:#998;font-style:italic">// The application context id is still set to its original default value
+</span><span style="color:#998;font-style:italic"></span>        <span style="color:#998;font-style:italic">// -&gt; assign a more useful id based on available information
+</span><span style="color:#998;font-style:italic"></span>        <span style="color:#000;font-weight:bold">if</span> <span style="color:#000;font-weight:bold">(</span><span style="color:#000;font-weight:bold">this</span><span style="color:#000;font-weight:bold">.</span><span style="color:#008080">contextId</span> <span style="color:#000;font-weight:bold">!=</span> <span style="color:#000;font-weight:bold">null</span><span style="color:#000;font-weight:bold">)</span> <span style="color:#000;font-weight:bold">{</span>
+            wac<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">setId</span><span style="color:#000;font-weight:bold">(</span><span style="color:#000;font-weight:bold">this</span><span style="color:#000;font-weight:bold">.</span><span style="color:#008080">contextId</span><span style="color:#000;font-weight:bold">);</span>
+        <span style="color:#000;font-weight:bold">}</span>
+        <span style="color:#000;font-weight:bold">else</span> <span style="color:#000;font-weight:bold">{</span>
+            <span style="color:#998;font-style:italic">// Generate default id...
+</span><span style="color:#998;font-style:italic"></span>            wac<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">setId</span><span style="color:#000;font-weight:bold">(</span>ConfigurableWebApplicationContext<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">APPLICATION_CONTEXT_ID_PREFIX</span> <span style="color:#000;font-weight:bold">+</span>
+                      ObjectUtils<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">getDisplayString</span><span style="color:#000;font-weight:bold">(</span>getServletContext<span style="color:#000;font-weight:bold">().</span><span style="color:#008080">getContextPath</span><span style="color:#000;font-weight:bold">())</span> <span style="color:#000;font-weight:bold">+</span> <span style="color:#d14">&#39;/&#39;</span> <span style="color:#000;font-weight:bold">+</span> getServletName<span style="color:#000;font-weight:bold">());</span>
+        <span style="color:#000;font-weight:bold">}</span>
+    <span style="color:#000;font-weight:bold">}</span>
+
+    <span style="color:#998;font-style:italic">// 存放 Servlet Context
+</span><span style="color:#998;font-style:italic"></span>    wac<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">setServletContext</span><span style="color:#000;font-weight:bold">(</span>getServletContext<span style="color:#000;font-weight:bold">());</span>
+    <span style="color:#998;font-style:italic">// 存放 ServletConfig
+</span><span style="color:#998;font-style:italic"></span>    wac<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">setServletConfig</span><span style="color:#000;font-weight:bold">(</span>getServletConfig<span style="color:#000;font-weight:bold">());</span>
+    <span style="color:#998;font-style:italic">// 存放 NameSpace
+</span><span style="color:#998;font-style:italic"></span>    wac<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">setNamespace</span><span style="color:#000;font-weight:bold">(</span>getNamespace<span style="color:#000;font-weight:bold">());</span>
+    <span style="color:#998;font-style:italic">// 设置 Listener
+</span><span style="color:#998;font-style:italic"></span>    wac<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">addApplicationListener</span><span style="color:#000;font-weight:bold">(</span><span style="color:#000;font-weight:bold">new</span> SourceFilteringListener<span style="color:#000;font-weight:bold">(</span>wac<span style="color:#000;font-weight:bold">,</span> <span style="color:#000;font-weight:bold">new</span> ContextRefreshListener<span style="color:#000;font-weight:bold">()));</span>
+
+    <span style="color:#998;font-style:italic">// The wac environment&#39;s #initPropertySources will be called in any case when the context
+</span><span style="color:#998;font-style:italic"></span>    <span style="color:#998;font-style:italic">// is refreshed; do it eagerly here to ensure servlet property sources are in place for
+</span><span style="color:#998;font-style:italic"></span>    <span style="color:#998;font-style:italic">// use in any post-processing or initialization that occurs below prior to #refresh
+</span><span style="color:#998;font-style:italic"></span>    ConfigurableEnvironment env <span style="color:#000;font-weight:bold">=</span> wac<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">getEnvironment</span><span style="color:#000;font-weight:bold">();</span>
+    <span style="color:#000;font-weight:bold">if</span> <span style="color:#000;font-weight:bold">(</span>env <span style="color:#000;font-weight:bold">instanceof</span> ConfigurableWebEnvironment<span style="color:#000;font-weight:bold">)</span> <span style="color:#000;font-weight:bold">{</span>
+        <span style="color:#998;font-style:italic">// 初始化一些属性信息
+</span><span style="color:#998;font-style:italic"></span>        <span style="color:#000;font-weight:bold">((</span>ConfigurableWebEnvironment<span style="color:#000;font-weight:bold">)</span> env<span style="color:#000;font-weight:bold">).</span><span style="color:#008080">initPropertySources</span><span style="color:#000;font-weight:bold">(</span>getServletContext<span style="color:#000;font-weight:bold">(),</span> getServletConfig<span style="color:#000;font-weight:bold">());</span>
+    <span style="color:#000;font-weight:bold">}</span>
+
+    <span style="color:#998;font-style:italic">// 留给子类的接口
+</span><span style="color:#998;font-style:italic"></span>    postProcessWebApplicationContext<span style="color:#000;font-weight:bold">(</span>wac<span style="color:#000;font-weight:bold">);</span>
+    <span style="color:#998;font-style:italic">// 从 Servlet Context 中取出初始化参数配置单 Initializers 类
+</span><span style="color:#998;font-style:italic"></span>    <span style="color:#998;font-style:italic">// 并逐个调用其 initialize 方法
+</span><span style="color:#998;font-style:italic"></span>    applyInitializers<span style="color:#000;font-weight:bold">(</span>wac<span style="color:#000;font-weight:bold">);</span>
+    <span style="color:#998;font-style:italic">// 调用容器的刷新过程
+</span><span style="color:#998;font-style:italic"></span>    wac<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">refresh</span><span style="color:#000;font-weight:bold">();</span>
+<span style="color:#000;font-weight:bold">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>通过以上的分析，清楚以注解的方法启动 SpringMVC 需要继承 <code>AbstractAnnotationConfigDispatcherServletInitializer</code> 类。实现其抽象方法指定 <code>DispatcherServlet</code> 的信息，同时指定两个容器分别管理 Web Bean 和 其他 Bean，如下图所示：</p>
+<p><img src="http://img.programya.com/Snipaste_2019-11-30_20-26-43.png" alt="Spring MVC 容器"></p>
+<p>主要代码如下：</p>
+<div class="highlight"><div style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4">
+<table style="border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 1
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 2
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 3
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 4
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 5
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 6
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 7
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 8
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 9
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">10
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">11
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">12
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">13
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">14
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">15
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">16
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">17
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">18
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">19
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">20
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">21
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#000;font-weight:bold">public</span> <span style="color:#000;font-weight:bold">class</span> <span style="color:#458;font-weight:bold">MySpringMVCInitializer</span> <span style="color:#000;font-weight:bold">extends</span> AbstractAnnotationConfigDispatcherServletInitializer <span style="color:#000;font-weight:bold">{</span>
+    <span style="color:#998;font-style:italic">// Root 容器 配置文件
+</span><span style="color:#998;font-style:italic"></span>    <span style="color:#3c5d5d;font-weight:bold">@Override</span>
+    <span style="color:#000;font-weight:bold">protected</span> Class<span style="color:#000;font-weight:bold">&lt;?&gt;[]</span> getRootConfigClasses<span style="color:#000;font-weight:bold">()</span> <span style="color:#000;font-weight:bold">{</span>
+        <span style="color:#000;font-weight:bold">return</span> <span style="color:#000;font-weight:bold">new</span> Class<span style="color:#000;font-weight:bold">[]{</span>RootConfig<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">class</span><span style="color:#000;font-weight:bold">};</span>
+    <span style="color:#000;font-weight:bold">}</span>
+
+    <span style="color:#998;font-style:italic">// Web 容器 配置文件
+</span><span style="color:#998;font-style:italic"></span>    <span style="color:#3c5d5d;font-weight:bold">@Override</span>
+    <span style="color:#000;font-weight:bold">protected</span> Class<span style="color:#000;font-weight:bold">&lt;?&gt;[]</span> getServletConfigClasses<span style="color:#000;font-weight:bold">()</span> <span style="color:#000;font-weight:bold">{</span>
+        <span style="color:#000;font-weight:bold">return</span> <span style="color:#000;font-weight:bold">new</span> Class<span style="color:#000;font-weight:bold">[]{</span>WebConfig<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">class</span><span style="color:#000;font-weight:bold">};</span>
+    <span style="color:#000;font-weight:bold">}</span>
+
+    <span style="color:#998;font-style:italic">// Servlet 的映射信息
+</span><span style="color:#998;font-style:italic"></span>    <span style="color:#3c5d5d;font-weight:bold">@Override</span>
+    <span style="color:#000;font-weight:bold">protected</span> String<span style="color:#000;font-weight:bold">[]</span> <span style="color:#900;font-weight:bold">getServletMappings</span><span style="color:#000;font-weight:bold">()</span> <span style="color:#000;font-weight:bold">{</span>
+        <span style="color:#998;font-style:italic">// &#34;/&#34; 拦截所有请求，不包括 *.jsp
+</span><span style="color:#998;font-style:italic"></span>        <span style="color:#998;font-style:italic">// &#34;/*&#34; 拦截所有请求，包含 *.jsp
+</span><span style="color:#998;font-style:italic"></span>        <span style="color:#000;font-weight:bold">return</span> <span style="color:#000;font-weight:bold">new</span> String<span style="color:#000;font-weight:bold">[]{</span><span style="color:#d14">&#34;/&#34;</span><span style="color:#000;font-weight:bold">};</span>
+    <span style="color:#000;font-weight:bold">}</span>
+<span style="color:#000;font-weight:bold">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><div class="highlight"><div style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4">
+<table style="border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">1
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">2
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">3
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">4
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">5
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#3c5d5d;font-weight:bold">@ComponentScan</span><span style="color:#000;font-weight:bold">(</span>value <span style="color:#000;font-weight:bold">=</span> <span style="color:#d14">&#34;com.xinyue.myspring4&#34;</span><span style="color:#000;font-weight:bold">,</span> excludeFilters <span style="color:#000;font-weight:bold">=</span> <span style="color:#000;font-weight:bold">{</span>
+    <span style="color:#3c5d5d;font-weight:bold">@ComponentScan.Filter</span><span style="color:#000;font-weight:bold">(</span>type <span style="color:#000;font-weight:bold">=</span> FilterType<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">ANNOTATION</span><span style="color:#000;font-weight:bold">,</span> classes <span style="color:#000;font-weight:bold">=</span> <span style="color:#000;font-weight:bold">{</span>Controller<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">class</span><span style="color:#000;font-weight:bold">})</span>
+<span style="color:#000;font-weight:bold">})</span>
+<span style="color:#000;font-weight:bold">public</span> <span style="color:#000;font-weight:bold">class</span> <span style="color:#458;font-weight:bold">RootConfig</span> <span style="color:#000;font-weight:bold">{</span>
+<span style="color:#000;font-weight:bold">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><div class="highlight"><div style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4">
+<table style="border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 1
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 2
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 3
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 4
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 5
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 6
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 7
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 8
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 9
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">10
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">11
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#3c5d5d;font-weight:bold">@ComponentScan</span><span style="color:#000;font-weight:bold">(</span>value <span style="color:#000;font-weight:bold">=</span> <span style="color:#d14">&#34;com.xinyue.myspring4&#34;</span><span style="color:#000;font-weight:bold">,</span> includeFilters <span style="color:#000;font-weight:bold">=</span> <span style="color:#000;font-weight:bold">{</span>
+    <span style="color:#3c5d5d;font-weight:bold">@ComponentScan.Filter</span><span style="color:#000;font-weight:bold">(</span>type <span style="color:#000;font-weight:bold">=</span> FilterType<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">ANNOTATION</span><span style="color:#000;font-weight:bold">,</span> classes <span style="color:#000;font-weight:bold">=</span> <span style="color:#000;font-weight:bold">{</span>Controller<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">class</span><span style="color:#000;font-weight:bold">})</span>
+<span style="color:#000;font-weight:bold">},</span> useDefaultFilters <span style="color:#000;font-weight:bold">=</span> <span style="color:#000;font-weight:bold">false</span><span style="color:#000;font-weight:bold">)</span>
+<span style="color:#3c5d5d;font-weight:bold">@EnableWebMvc</span> <span style="color:#998;font-style:italic">// 开启 Spring MVC 定制
+</span><span style="color:#998;font-style:italic"></span><span style="color:#000;font-weight:bold">public</span> <span style="color:#000;font-weight:bold">class</span> <span style="color:#458;font-weight:bold">WebConfig</span> <span style="color:#000;font-weight:bold">implements</span> WebMvcConfigurer <span style="color:#000;font-weight:bold">{</span>
+    <span style="color:#998;font-style:italic">// 对于 Spring MVC 进行定制 等同 spring-mvc.xml config
+</span><span style="color:#998;font-style:italic"></span>    <span style="color:#3c5d5d;font-weight:bold">@Override</span>
+    <span style="color:#000;font-weight:bold">public</span> <span style="color:#458;font-weight:bold">void</span> <span style="color:#900;font-weight:bold">configureDefaultServletHandling</span><span style="color:#000;font-weight:bold">(</span>DefaultServletHandlerConfigurer configurer<span style="color:#000;font-weight:bold">)</span> <span style="color:#000;font-weight:bold">{</span>
+        configurer<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">enable</span><span style="color:#000;font-weight:bold">();</span>
+    <span style="color:#000;font-weight:bold">}</span>
+<span style="color:#000;font-weight:bold">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><div class="highlight"><div style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4">
+<table style="border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 1
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 2
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 3
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 4
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 5
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 6
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 7
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 8
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 9
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">10
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">11
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">12
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">13
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#000;font-weight:bold">public</span> <span style="color:#000;font-weight:bold">class</span> <span style="color:#458;font-weight:bold">DemoController</span> <span style="color:#000;font-weight:bold">{</span>
+    <span style="color:#000;font-weight:bold">private</span> <span style="color:#000;font-weight:bold">final</span> DemoService demoService<span style="color:#000;font-weight:bold">;</span>
+
+    <span style="color:#000;font-weight:bold">public</span> <span style="color:#900;font-weight:bold">DemoController</span><span style="color:#000;font-weight:bold">(</span>DemoService demoService<span style="color:#000;font-weight:bold">)</span> <span style="color:#000;font-weight:bold">{</span>
+        <span style="color:#000;font-weight:bold">this</span><span style="color:#000;font-weight:bold">.</span><span style="color:#008080">demoService</span> <span style="color:#000;font-weight:bold">=</span> demoService<span style="color:#000;font-weight:bold">;</span>
+    <span style="color:#000;font-weight:bold">}</span>
+
+    <span style="color:#3c5d5d;font-weight:bold">@ResponseBody</span>
+    <span style="color:#3c5d5d;font-weight:bold">@RequestMapping</span><span style="color:#000;font-weight:bold">(</span><span style="color:#d14">&#34;/demo&#34;</span><span style="color:#000;font-weight:bold">)</span>
+    <span style="color:#000;font-weight:bold">public</span> String <span style="color:#900;font-weight:bold">demo</span><span style="color:#000;font-weight:bold">()</span> <span style="color:#000;font-weight:bold">{</span>
+        <span style="color:#000;font-weight:bold">return</span> demoService<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">demo</span><span style="color:#000;font-weight:bold">()</span> <span style="color:#000;font-weight:bold">+</span> <span style="color:#d14">&#34;\n Demo From Controller&#34;</span><span style="color:#000;font-weight:bold">;</span>
+    <span style="color:#000;font-weight:bold">}</span>
+<span style="color:#000;font-weight:bold">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><div class="highlight"><div style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4">
+<table style="border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">1
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">2
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">3
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">4
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">5
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">6
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#3c5d5d;font-weight:bold">@Service</span>
+<span style="color:#000;font-weight:bold">public</span> <span style="color:#000;font-weight:bold">class</span> <span style="color:#458;font-weight:bold">DemoService</span> <span style="color:#000;font-weight:bold">{</span>
+    <span style="color:#000;font-weight:bold">public</span> String <span style="color:#900;font-weight:bold">demo</span><span style="color:#000;font-weight:bold">()</span> <span style="color:#000;font-weight:bold">{</span>
+        <span style="color:#000;font-weight:bold">return</span> <span style="color:#d14">&#34;Demo From Service&#34;</span><span style="color:#000;font-weight:bold">;</span>
+    <span style="color:#000;font-weight:bold">}</span>
+<span style="color:#000;font-weight:bold">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>测试结构如下：</p>
+<p><img src="http://img.programya.com/Snipaste_2019-11-30_22-57-26.png" alt="测试结果"></p>
+
+        </div>
+
+        
+
+
+        
+
+<div class="post-archive">
+    <h2>See Also</h2>
+    <ul class="listing">
+        
+        <li><a href="https://sangzhenya.github.io/post/Spring/Spring-Data/Spring-Data/">Spring Data</a></li>
+        
+        <li><a href="https://sangzhenya.github.io/post/Spring/Spring-Data/JPQL/">JPA JPQL</a></li>
+        
+        <li><a href="https://sangzhenya.github.io/post/Spring/Spring-Data/JPA-%E6%98%A0%E5%B0%84%E5%85%B3%E7%B3%BB/">JPA 映射关系</a></li>
+        
+        <li><a href="https://sangzhenya.github.io/post/Spring/Spring-Data/JPA-%E5%9F%BA%E6%9C%AC%E6%B3%A8%E8%A7%A3/">JPA 基本注解</a></li>
+        
+        <li><a href="https://sangzhenya.github.io/post/Spring/Spring-Data/JPA-EntityManager/">JPA EntityManager</a></li>
+        
+    </ul>
+</div>
+
+
+        <div class="post-meta meta-tags">
+            
+            <ul class="clearfix">
+                
+                <li><a href='https://sangzhenya.github.io/tags/Spring'>Spring</a></li>
+                
+                <li><a href='https://sangzhenya.github.io/tags/Spring-MVC'>Spring MVC</a></li>
+                
+            </ul>
+            
+        </div>
+    </article>
+    
+    
+
+    
+    
+</div>
+
+                </div>
+
+                <div id="secondary">
+    <section class="widget">
+        <form id="search" action='//www.google.com/search' method="get" accept-charset="utf-8" target="_blank" _lpchecked="1">
+      
+      <input type="text" name="q" maxlength="20" placeholder="Search">
+      <input type="hidden" name="sitesearch" value="https://sangzhenya.github.io/">
+      <button type="submit" class="submit icon-search"></button>
+</form>
+    </section>
+    
+    <section class="widget">
+        <h3 class="widget-title">最近文章</h3>
+<ul class="widget-list">
+    
+    <li>
+        <a href="https://sangzhenya.github.io/post/Java/JVM/Java-JNDI/" title="Java JNDI">Java JNDI</a>
+    </li>
+    
+    <li>
+        <a href="https://sangzhenya.github.io/post/Java/JVM/Java-OOM/" title="Java OOM">Java OOM</a>
+    </li>
+    
+    <li>
+        <a href="https://sangzhenya.github.io/post/Java/JVM/Java-JVM/" title="Java JVM">Java JVM</a>
+    </li>
+    
+    <li>
+        <a href="https://sangzhenya.github.io/post/Java/JVM/Java-HotSpot-GC-%E7%AE%97%E6%B3%95%E5%AE%9E%E7%8E%B0/" title="Java HotSpot GC 算法实现">Java HotSpot GC 算法实现</a>
+    </li>
+    
+    <li>
+        <a href="https://sangzhenya.github.io/post/Java/JVM/Java-GC-2/" title="Java GC 2">Java GC 2</a>
+    </li>
+    
+    <li>
+        <a href="https://sangzhenya.github.io/post/Java/JVM/Java-GC-1/" title="Java GC 1">Java GC 1</a>
+    </li>
+    
+    <li>
+        <a href="https://sangzhenya.github.io/post/Java/JVM/Java-%E8%99%9A%E6%8B%9F%E6%9C%BA%E5%86%85%E5%AD%98%E6%A8%A1%E5%9E%8B/" title="Java 虚拟机内存模型">Java 虚拟机内存模型</a>
+    </li>
+    
+    <li>
+        <a href="https://sangzhenya.github.io/post/Java/JVM/Java-%E9%80%83%E9%80%B8%E5%88%86%E6%9E%90/" title="Java 逃逸分析">Java 逃逸分析</a>
+    </li>
+    
+    <li>
+        <a href="https://sangzhenya.github.io/post/Java/JVM/Java-%E5%9B%9B%E7%A7%8D%E5%BC%95%E7%94%A8%E7%B1%BB%E5%9E%8B/" title="Java 四种引用类型">Java 四种引用类型</a>
+    </li>
+    
+    <li>
+        <a href="https://sangzhenya.github.io/post/%E5%BE%AE%E6%9C%8D%E5%8A%A1/dubbo/Dubbo-%E5%8E%9F%E7%90%86/" title="Dubbo 原理">Dubbo 原理</a>
+    </li>
+    
+</ul>
+    </section>
+
+    
+
+    <section class="widget">
+        <h3 class="widget-title">分类</h3>
+<ul class="widget-list">
+    
+    <li><a href="https://sangzhenya.github.io/categories/Java/">Java (22)</a></li>
+    
+    <li><a href="https://sangzhenya.github.io/categories/MQ/">MQ (3)</a></li>
+    
+    <li><a href="https://sangzhenya.github.io/categories/MyBaits/">MyBaits (7)</a></li>
+    
+    <li><a href="https://sangzhenya.github.io/categories/MySQL/">MySQL (4)</a></li>
+    
+    <li><a href="https://sangzhenya.github.io/categories/Netty/">Netty (10)</a></li>
+    
+    <li><a href="https://sangzhenya.github.io/categories/Nginx/">Nginx (2)</a></li>
+    
+    <li><a href="https://sangzhenya.github.io/categories/Redis/">Redis (2)</a></li>
+    
+    <li><a href="https://sangzhenya.github.io/categories/Spring/">Spring (36)</a></li>
+    
+    <li><a href="https://sangzhenya.github.io/categories/%E5%85%B3%E4%BA%8E/">关于 (1)</a></li>
+    
+    <li><a href="https://sangzhenya.github.io/categories/%E5%85%B6%E4%BB%96/">其他 (8)</a></li>
+    
+    <li><a href="https://sangzhenya.github.io/categories/%E5%BE%AE%E6%9C%8D%E5%8A%A1/">微服务 (11)</a></li>
+    
+    <li><a href="https://sangzhenya.github.io/categories/%E7%AE%97%E6%B3%95/">算法 (3)</a></li>
+    
+    <li><a href="https://sangzhenya.github.io/categories/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/">读书笔记 (7)</a></li>
+    
+</ul>
+    </section>
+
+    <section class="widget">
+        <h3 class="widget-title">标签</h3>
+<div class="tagcloud">
+    
+    <a href="https://sangzhenya.github.io/tags/Active-MQ/">Active MQ</a>
+    
+    <a href="https://sangzhenya.github.io/tags/Cookie/">Cookie</a>
+    
+    <a href="https://sangzhenya.github.io/tags/Debug/">Debug</a>
+    
+    <a href="https://sangzhenya.github.io/tags/Docker/">Docker</a>
+    
+    <a href="https://sangzhenya.github.io/tags/Dubbo/">Dubbo</a>
+    
+    <a href="https://sangzhenya.github.io/tags/Git/">Git</a>
+    
+    <a href="https://sangzhenya.github.io/tags/JDK8/">JDK8</a>
+    
+    <a href="https://sangzhenya.github.io/tags/JPA/">JPA</a>
+    
+    <a href="https://sangzhenya.github.io/tags/JUC/">JUC</a>
+    
+    <a href="https://sangzhenya.github.io/tags/JVM/">JVM</a>
+    
+    <a href="https://sangzhenya.github.io/tags/java/">java</a>
+    
+    <a href="https://sangzhenya.github.io/tags/Jenkins/">Jenkins</a>
+    
+    <a href="https://sangzhenya.github.io/tags/Kafka/">Kafka</a>
+    
+    <a href="https://sangzhenya.github.io/tags/Kubernetes/">Kubernetes</a>
+    
+    <a href="https://sangzhenya.github.io/tags/Linux/">Linux</a>
+    
+    <a href="https://sangzhenya.github.io/tags/Maven/">Maven</a>
+    
+    <a href="https://sangzhenya.github.io/tags/MyBaits/">MyBaits</a>
+    
+    <a href="https://sangzhenya.github.io/tags/MySQL/">MySQL</a>
+    
+    <a href="https://sangzhenya.github.io/tags/Netty/">Netty</a>
+    
+    <a href="https://sangzhenya.github.io/tags/Nginx/">Nginx</a>
+    
+    <a href="https://sangzhenya.github.io/tags/Rabbit-MQ/">Rabbit MQ</a>
+    
+    <a href="https://sangzhenya.github.io/tags/Redis/">Redis</a>
+    
+    <a href="https://sangzhenya.github.io/tags/Rocket-MQ/">Rocket MQ</a>
+    
+    <a href="https://sangzhenya.github.io/tags/Session/">Session</a>
+    
+    <a href="https://sangzhenya.github.io/tags/Spring/">Spring</a>
+    
+    <a href="https://sangzhenya.github.io/tags/Spring-Boot/">Spring Boot</a>
+    
+    <a href="https://sangzhenya.github.io/tags/Spring-Cloud/">Spring Cloud</a>
+    
+    <a href="https://sangzhenya.github.io/tags/Spring-Data/">Spring Data</a>
+    
+    <a href="https://sangzhenya.github.io/tags/Spring-MVC/">Spring MVC</a>
+    
+    <a href="https://sangzhenya.github.io/tags/Spring-Security/">Spring Security</a>
+    
+    <a href="https://sangzhenya.github.io/tags/Spring-%E6%B3%A8%E8%A7%A3/">Spring 注解</a>
+    
+    <a href="https://sangzhenya.github.io/tags/Tmux/">Tmux</a>
+    
+    <a href="https://sangzhenya.github.io/tags/Zookeeper/">Zookeeper</a>
+    
+    <a href="https://sangzhenya.github.io/tags/java/">java</a>
+    
+    <a href="https://sangzhenya.github.io/tags/%E4%BB%A3%E7%A0%81/">代码</a>
+    
+    <a href="https://sangzhenya.github.io/tags/%E5%85%B3%E4%BA%8E/">关于</a>
+    
+    <a href="https://sangzhenya.github.io/tags/%E5%BE%AE%E6%9C%8D%E5%8A%A1/">微服务</a>
+    
+    <a href="https://sangzhenya.github.io/tags/%E6%BA%90%E7%A0%81/">源码</a>
+    
+    <a href="https://sangzhenya.github.io/tags/%E7%AE%97%E6%B3%95/">算法</a>
+    
+    <a href="https://sangzhenya.github.io/tags/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/">设计模式</a>
+    
+    <a href="https://sangzhenya.github.io/tags/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/">读书笔记</a>
+    
+    <a href="https://sangzhenya.github.io/tags/%E9%9B%86%E5%90%88/">集合</a>
+    
+</div>
+    </section>
+
+    
+
+    <section class="widget">
+        <h3 class="widget-title">其它</h3>
+        <ul class="widget-list">
+            <li><a href="https://sangzhenya.github.io/index.xml">文章 RSS</a></li>
+        </ul>
+    </section>
+</div>
+            </div>
+        </div>
+    </div>
+    <footer id="footer">
+    <div class="container">
+        &copy; 2020 <a href="https://sangzhenya.github.io/">新月的博客 By 新月</a>.
+        Powered by <a rel="nofollow noreferer noopener" href="https://gohugo.io" target="_blank">Hugo</a>.
+        Theme based on <a href="https://github.com/flysnow-org/maupassant-hugo" target="_blank">maupassant</a>.
+        
+    </div>
+</footer>
+
+
+    
+    <script type="text/javascript">
+        window.MathJax = {
+            tex2jax: {
+                inlineMath: [['$', '$']],
+                processEscapes: true
+                }
+            };
+    </script>
+    <script src='https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-MML-AM_CHTML' async></script>
+
+
+<a id="rocket" href="#top"></a>
+<script type="text/javascript" src='https://sangzhenya.github.io/js/totop.js?v=0.0.0' async=""></script>
+
+
+
+
+
+
+</body>
+
+</html>

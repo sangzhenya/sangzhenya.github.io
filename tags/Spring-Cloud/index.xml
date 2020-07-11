@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Spring Cloud on 新月的博客</title>
+    <link>https://sangzhenya.github.io/tags/Spring-Cloud/</link>
+    <description>Recent content in Spring Cloud on 新月的博客</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>zh-CN</language>
+    <lastBuildDate>Fri, 15 Mar 2019 09:00:00 +0800</lastBuildDate>
+    
+	<atom:link href="https://sangzhenya.github.io/tags/Spring-Cloud/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>Spring Cloud Eureka</title>
+      <link>https://sangzhenya.github.io/post/Spring/Spring-Cloud/Spring-Cloud-Eureka-%E6%B3%A8%E5%86%8C%E4%B8%AD%E5%BF%83/</link>
+      <pubDate>Fri, 15 Mar 2019 09:00:00 +0800</pubDate>
+      
+      <guid>https://sangzhenya.github.io/post/Spring/Spring-Cloud/Spring-Cloud-Eureka-%E6%B3%A8%E5%86%8C%E4%B8%AD%E5%BF%83/</guid>
+      <description>Eureka 是 Netflix 的一个子模块，也是核心模块之一。Eureka 是一个基于 REST 的服务，用于定位服务，实现云端中间层服务发现与故障转移。服务注册与发现对于微服务是非常的重要的，有了服务注册与发现只需要使用服务的标识符，就昆虫访问到服务，而不需要修改服务调用的配置文件。功能和 Dubbo 的注册中心类似。Eur</description>
+    </item>
+    
+    <item>
+      <title>Spring Cloud Ribbon Feign Hystrix Zuul</title>
+      <link>https://sangzhenya.github.io/post/Spring/Spring-Cloud/Spring-Cloud-Ribbon-%E8%B4%9F%E8%BD%BD%E5%9D%87%E8%A1%A1/</link>
+      <pubDate>Wed, 13 Mar 2019 09:00:00 +0800</pubDate>
+      
+      <guid>https://sangzhenya.github.io/post/Spring/Spring-Cloud/Spring-Cloud-Ribbon-%E8%B4%9F%E8%BD%BD%E5%9D%87%E8%A1%A1/</guid>
+      <description>Ribbon Spring Cloud Ribbon 是基于 Netflix Ribbon 实现一套客户端负载均衡的工具。Ribbon 是 Netflix 发布的开源项目，其主要功能是提供客户端的负载均衡算法，将 Netflix 的中间层服务连接在一起。Ribbon 客户端组件提供了一系列完善的配置项如连接超时，重试等。简单的说就是在配置文件中列出 Load Balancer 后面所有的服务，Ribbon 会自动的</description>
+    </item>
+    
+    <item>
+      <title>Spring Cloud Config Server</title>
+      <link>https://sangzhenya.github.io/post/Spring/Spring-Cloud/Spring-Cloud-ConfigServer/</link>
+      <pubDate>Mon, 11 Mar 2019 09:00:00 +0800</pubDate>
+      
+      <guid>https://sangzhenya.github.io/post/Spring/Spring-Cloud/Spring-Cloud-ConfigServer/</guid>
+      <description>微服务意味着将单体应用的业务拆分成一个个子服务，每个服务的粒度相对较小，因此系统中会出现大量的服务。由于每个服务都需要必要的配置信息才能运行，所以一套集中式，动态的配置管理是必要的。Spring Cloud 提供了 Config Server 来解决这个问题，其为微服务架构中的微服务提供集中化的外部配置支持，配置服务</description>
+    </item>
+    
+  </channel>
+</rss>
