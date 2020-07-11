@@ -1,15 +1,24 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>Xinyue Blog</title>
+    <title>新月的博客</title>
     <link>https://sangzhenya.github.io/</link>
-    <description>Recent content on Xinyue Blog</description>
+    <description>Recent content on 新月的博客</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>zh-CN</language>
-    <lastBuildDate>Fri, 13 Dec 2019 21:00:00 +0800</lastBuildDate>
+    <lastBuildDate>Wed, 01 Jan 2020 00:00:00 +0000</lastBuildDate>
     
 	<atom:link href="https://sangzhenya.github.io/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>关于我</title>
+      <link>https://sangzhenya.github.io/about/</link>
+      <pubDate>Wed, 01 Jan 2020 00:00:00 +0000</pubDate>
+      
+      <guid>https://sangzhenya.github.io/about/</guid>
+      <description>风景很美、何不停下脚步看看。 如有任何对博客内容的疑问或者涉及到文章内容引用侵权的问题，请联系我邮件地址：sangzhenya@gmail.com。一定会及时处理回复，谢谢！</description>
+    </item>
     
     <item>
       <title>D12312</title>
@@ -45,15 +54,6 @@
       
       <guid>https://sangzhenya.github.io/post/demo/</guid>
       <description>标题 段落内容 标题 段落内容 标题 段落内容 标题 段落内容 标题 段落内容</description>
-    </item>
-    
-    <item>
-      <title>关于我</title>
-      <link>https://sangzhenya.github.io/about/</link>
-      <pubDate>Tue, 10 Mar 2015 00:13:27 +0000</pubDate>
-      
-      <guid>https://sangzhenya.github.io/about/</guid>
-      <description>《Go 实战笔记》系列作者，《Golang Gin 实战》系列作者，《Android Gradle权威指南》作者，现负责技术管理。 Android Gradle权威指南</description>
     </item>
     
     <item>
