@@ -1,0 +1,384 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <title> | 新月的博客</title>
+    <meta property="og:title" content=" - 新月的博客">
+    <meta property="og:type" content="article">
+        
+        
+    <meta name="Keywords" content="">
+    <meta name="description" content="">
+        
+    <meta name="author" content="新月">
+    <meta property="og:url" content="https://sangzhenya.github.io/post/%E5%BE%AE%E6%9C%8D%E5%8A%A1/zookeeper/Zookeeper/">
+    <link rel="shortcut icon" href="https://sangzhenya.github.io/favicon.ico" type="image/x-icon">
+
+    <link rel="stylesheet" href='https://sangzhenya.github.io/css/normalize.css'>
+    <link rel="stylesheet" href='https://sangzhenya.github.io/css/style.css'>
+    <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+
+    
+
+
+    
+    
+</head>
+
+
+<body>
+    <header id="header" class="clearfix">
+    <div class="container">
+        <div class="col-group">
+            <div class="site-name ">
+                
+                    <a id="logo" href="https://sangzhenya.github.io/">
+                        新月的博客
+                    </a>
+                
+                <p class="description">晚来天欲雪，能饮一杯无？</p>
+            </div>
+            <div>
+                <nav id="nav-menu" class="clearfix">
+                    <a class="current" href="https://sangzhenya.github.io/">首页</a>
+                    
+                    <a  href="https://sangzhenya.github.io/archives/" title="归档">归档</a>
+                    
+                    <a  href="https://sangzhenya.github.io/about/" title="关于">关于</a>
+                    
+                </nav>
+            </div>
+        </div>
+    </div>
+</header>
+
+    <div id="body">
+        <div class="container">
+            <div class="col-group">
+
+                <div class="col-8" id="main">
+                    
+<div class="res-cons">
+    
+    <article class="post">
+        <header>
+            <h1 class="post-title"></h1>
+        </header>
+        <date class="post-meta meta-date">
+            1年1月1日
+        </date>
+        
+        
+        
+        <div class="post-content">
+            <h2 id="zookeeper">Zookeeper</h2>
+<p>Zookeeper 从设计模式角度来看是一个机遇观察者模式的设计的分布式服务管理框架，负责存储和管理需要关心的数据，接受观察者注册，一旦观察的数据状态发生变化，Zookeeper 将负责将通知已经在 Zookeeper 上注册的那些观察者做出相应的反应。Zookeeper 结构图如下：</p>
+<p><img src="http://img.programya.com/Snipaste_2019-11-08_21-29-52.png" alt="Zookeeper结构图"></p>
+<p><strong>Zookeeper 特点：</strong></p>
+<ol>
+<li>一个领导者和多个跟随着组成的集群。</li>
+<li>集群中只要有半数以上的节点存活， Zookeeper 就能正常服务。</li>
+<li>全局数据一致：每个 Server 保存一份相同的数据副本，客户端无论连接到哪个 Server，数据都是一致的。</li>
+<li>更新请求顺序进行，来自同一个客户端的更新请求按其发送顺序依次执行。</li>
+<li>数据更新具有原子性，一次数据要么成功，要么失败。</li>
+<li>具有实时性，在一定时间范围内， 客户端能读到最新数据。</li>
+</ol>
+<p><strong>Zookeeper 数据结构：</strong></p>
+<p><img src="http://img.programya.com/Snipaste_2019-11-08_21-46-09.png" alt="Zookeeper 数据结构"></p>
+<p>Zookeeper 数据模型的结构与 Unix 文件系统类似，整体上可以看做是一棵树，每个节点乘坐一个 ZNode。每个 Znode 默认能够存储 1MB 的数据，每个 ZNode 都可以通过其路径唯一标识。</p>
+<p><strong>应用场景</strong></p>
+<p>Zookeeper 主要提供统一命名服务，统一配置管理，统一集群管理，服务器节点动态上下线，软负载均衡等等。</p>
+<p><strong>安装</strong></p>
+<p>首先安装 JDK，可以使用 OpenJDK</p>
+<p><code>sudo apt-get install openjdk-8-jdk</code></p>
+<p>设置环境变量路径如下：</p>
+<pre><code class="language-properties" data-lang="properties">JAVA_HOME=/usr/lib/jvm/java-8-openjdk-amd64
+PATH=.:$JAVA_HOME/bin:$PATH
+CLASSPATH=.:$JAVA_HOME/lib/dt.jar:$JAVA_HOME/lib/tools.jar
+export JAVA_HOME
+export PATH
+export CLASSPATH
+</code></pre><p>下载 Zookeeper 并解压</p>
+<div class="highlight"><div style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4">
+<table style="border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">1
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">2
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell">axel -n <span style="color:#099">3</span> https://mirrors.tuna.tsinghua.edu.cn/apache/zookeeper/current/apache-zookeeper-3.5.6-bin.tar.gz
+tar -zxvf apache-zookeeper-3.5.6-bin.tar.gz
+</code></pre></td></tr></table>
+</div>
+</div><p>到 conf 目录中将 zoo.sample.conf 复制一份命名为 zoo.cfg。在 <code>/tmp</code> 中新建 zookeeper 文件夹，最后在 bin 目录中使用 <code>./zkServer.sh start</code> 启动 Zookeeper。使用 <code>jps</code> 或者 <code>./zkServer.sh status</code> 查看是否启动状态。</p>
+<p><img src="http://img.programya.com/Snipaste_2019-11-09_10-41-49.png" alt="Zookeeper 状态"></p>
+<p>Zookeeper 配置如下：</p>
+<pre><code class="language-properties" data-lang="properties"># 心跳帧间隔 2s
+tickTime=2000
+# 通讯正常后最大延迟心跳帧 5 * 2 = 10s
+syncLimit=5
+# 启动时最大延迟心跳帧 10 * 2 = 20s
+initLimit=10
+# 数据目录
+dataDir=/tmp/zookeeper
+# 端口
+clientPort=2181
+</code></pre><p><strong>选举机制</strong></p>
+<p>Zookeeper 是集群中半数以上的集群存活则集群可用，所以适合安装在奇数台的服务器上。虽然 配置文件中并没有指定 Master 和 Slave，但是 Zookeeper 在工作的时候是有一个节点为 Leader 其他节点为 Follower，Leader 是通过内部的选举机制临时产生的。以五台服务器的集群为例：</p>
+<p>首先服务器 1 启动，此时只有一台服务器启动，其发出去的报文没有任何响应，所以其选举状态一直是 Looking 状态。</p>
+<p>然后服务器 2 启动，其余最开始启动的服务器1 进行通讯，互换自己的选举结果，由于二者均没有历史数据，所以 id 较大的服务器 2 胜出，但是由于没有达到超过半数的以上的服务器同意选举，所以服务器 1 和 2 均继续是 Looking 的状态。</p>
+<p>然后服务器 3 启动，此时服务器 3 胜出，成为服务器 1,2,3 中的 Leader。</p>
+<p>然后服务器 4 和 5 分别启动，但是此时服务器 3 已经是 Leader，所以 4 和 5 只能 follower 的角色。</p>
+<p><strong>数据结构</strong></p>
+<p><img src="http://img.programya.com/Snipaste_2019-11-09_11-07-21.png" alt="数据结构"></p>
+<p>Zookeeper 有两种数据类型：持久和临时。</p>
+<p>持久（Persistent）节点：客户端与服务器断开连接之后，创建的节点不删除。</p>
+<p>临时（Ephemeral） 节点：客户端和服务器断开连接之后，创建的节点自己删除。</p>
+<p>在创建 Znode 的时候可以设置一个顺序的标识，znode 名称会附加一个值，顺序号值是一个单调递增的计数器，由父节点维护。在分布式系统中可以被用于为所有事件进行全局排序，客户端就可以通过顺序号推断事件顺序。</p>
+<p>上图中总共有四种类型：</p>
+<ol>
+<li>持久化目录节点：客户端断开后节点仍然存在。</li>
+<li>持久化顺序编号目录节点：客户端断开后，节点依旧存在，只是 Zookeeper 给节点名称进行顺序编号。</li>
+<li>临时目录节点：客户端断开后节点被删除。</li>
+<li>临时顺序编号目录节点：客户端断开连接后，节点被删除，只是 Zookeeper 给节点进行顺序编号。</li>
+</ol>
+<p><strong>Zookeeper 集群搭建</strong></p>
+<p>在 data 目录下新建 myid 为名的文件，写入 id 号，以三台服务器为例，三台分别写入 2,3,4 数字。</p>
+<p>修改各个 Zookeeper 的 conf 文件添加对应的 ip 地址：</p>
+<pre><code class="language-properties" data-lang="properties"># server.id=ip:通讯端口:选举端口
+server.2=192.168.29.128:2888:3888
+server.3=192.168.29.129:2888:3888
+server.4=192.168.29.130:2888:3888
+</code></pre><p>配置完成后直接逐个启动服务即可，可以通过 <code>./zkServer status</code> 查看状态：</p>
+<p><img src="http://img.programya.com/Snipaste_2019-11-09_11-42-37.png" alt="查看集群状态"></p>
+<p><strong>基本客户端 Shell 操作</strong></p>
+<div class="highlight"><div style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4">
+<table style="border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 1
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 2
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 3
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 4
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 5
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 6
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 7
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 8
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 9
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">10
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">11
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">12
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">13
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">14
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">15
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">16
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">17
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">18
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell"><span style="color:#998;font-style:italic"># 帮助</span>
+<span style="color:#0086b3">help</span>
+<span style="color:#998;font-style:italic"># 查看当前 Znode 包含的内容</span>
+ls <span style="color:#000;font-weight:bold">[</span>-s<span style="color:#000;font-weight:bold">]</span> <span style="color:#000;font-weight:bold">[</span>-w<span style="color:#000;font-weight:bold">]</span> <span style="color:#000;font-weight:bold">[</span>-R<span style="color:#000;font-weight:bold">]</span> path
+<span style="color:#998;font-style:italic"># 查看当前节点即更新次数等</span>
+ls2 path <span style="color:#000;font-weight:bold">[</span>watch<span style="color:#000;font-weight:bold">]</span>
+<span style="color:#998;font-style:italic"># 创建 -s 包含序列号。-e 临时节点</span>
+create <span style="color:#000;font-weight:bold">[</span>-s<span style="color:#000;font-weight:bold">]</span> <span style="color:#000;font-weight:bold">[</span>-e<span style="color:#000;font-weight:bold">]</span> <span style="color:#000;font-weight:bold">[</span>-c<span style="color:#000;font-weight:bold">]</span> <span style="color:#000;font-weight:bold">[</span>-t ttl<span style="color:#000;font-weight:bold">]</span> path <span style="color:#000;font-weight:bold">[</span>data<span style="color:#000;font-weight:bold">]</span> <span style="color:#000;font-weight:bold">[</span>acl<span style="color:#000;font-weight:bold">]</span>
+<span style="color:#998;font-style:italic"># 获取节点值</span>
+get <span style="color:#000;font-weight:bold">[</span>-s<span style="color:#000;font-weight:bold">]</span> <span style="color:#000;font-weight:bold">[</span>-w<span style="color:#000;font-weight:bold">]</span> path
+<span style="color:#998;font-style:italic"># 设置节点值</span>
+<span style="color:#0086b3">set</span> <span style="color:#000;font-weight:bold">[</span>-s<span style="color:#000;font-weight:bold">]</span> <span style="color:#000;font-weight:bold">[</span>-v version<span style="color:#000;font-weight:bold">]</span> path data
+<span style="color:#998;font-style:italic"># 查看节点状态</span>
+stat <span style="color:#000;font-weight:bold">[</span>-w<span style="color:#000;font-weight:bold">]</span> path
+<span style="color:#998;font-style:italic"># 删除节点</span>
+delete <span style="color:#000;font-weight:bold">[</span>-v version<span style="color:#000;font-weight:bold">]</span> path
+<span style="color:#998;font-style:italic"># 递归删除节点</span>
+rmr path
+</code></pre></td></tr></table>
+</div>
+</div><p><strong>stat 结构体信息</strong></p>
+<pre><code>czxid: 创建节点的事务zxid
+每次修改ZooKeeper状态都会收到一个zxid形式的时间戳，也就是ZooKeeper事务ID。
+事务ID是ZooKeeper中所有修改总的次序。每个修改都有唯一的zxid，如果zxid1小于zxid2，那么zxid1在zxid2之前发生。
+
+ctime: znode被创建的毫秒数(从1970年开始)
+mzxid: znode最后更新的事务zxid
+mtime: znode最后修改的毫秒数(从1970年开始)
+pZxid: znode最后更新的子节点zxid
+cversion: znode子节点变化号，znode子节点修改次数
+dataversion: znode数据变化号
+aclVersion: znode访问控制列表的变化号
+ephemeralOwner: 如果是临时节点，这个是znode拥有者的session id。如果不是临时节点则是0。
+dataLength: znode的数据长度
+numChildren: znode子节点数量
+</code></pre><p>如下图所示：</p>
+<p><img src="http://img.programya.com/Snipaste_2019-11-09_12-01-57.png" alt="stat 结构"></p>
+<p><strong>监听器原理</strong></p>
+<p>在 main 线程中创建 zookeeper 客户端时会创建两个线程，一个负责网络通讯(connect)，一个负责监听(listener)。通过 connect 线程将注册监听的时间发送个 Zookeeper，在 Zookeeper 的注册监听器列表中将注册监听的事件添加到列表中。Zookeeper 监听到了 数据或者路径的变化后将会将消息发送给 listener 线程，调用 process 方法处理。</p>
+<p><img src="http://img.programya.com/Snipaste_2019-11-09_12-09-14.png" alt="watch 原理"></p>
+<p><strong>写数据的流程</strong></p>
+<ol>
+<li>首先客户端向 Zookeeper 的 Server 发送一个写请求。</li>
+<li>如果 Server 不是 Leader，那么会把这个请求进一步转发给 Leader ，因为每个 Zookeeper 中有一个 Leader 这个 Leader 会将写请求广播给 各个 Server，各个 Server 写成功之后会通知 Leader。</li>
+<li>当 Leader 收到此大多数 Server 写数据成功后，那么就认为数据写成功了。例如三个节点中有两个写成功了那么就认为写成功了。之后 Leader 会告诉 Server 写成功了。</li>
+<li>Server 通知 Client 数据写成功了，写操作就完成了。</li>
+</ol>
+
+        </div>
+
+        
+
+
+        
+
+
+        <div class="post-meta meta-tags">
+            
+            没有标签
+            
+        </div>
+    </article>
+    
+    
+
+    
+    
+</div>
+
+                </div>
+
+                <div id="secondary">
+    <section class="widget">
+        <form id="search" action='//www.google.com/search' method="get" accept-charset="utf-8" target="_blank" _lpchecked="1">
+      
+      <input type="text" name="q" maxlength="20" placeholder="Search">
+      <input type="hidden" name="sitesearch" value="https://sangzhenya.github.io/">
+      <button type="submit" class="submit icon-search"></button>
+</form>
+    </section>
+    
+    <section class="widget">
+        <h3 class="widget-title">最近文章</h3>
+<ul class="widget-list">
+    
+    <li>
+        <a href="https://sangzhenya.github.io/post/Java/jdk8/Java-8-Stream/" title="Java 8 Stream">Java 8 Stream</a>
+    </li>
+    
+    <li>
+        <a href="https://sangzhenya.github.io/post/Java/jdk8/Java-8-Lambda/" title="Java 8 Lambda">Java 8 Lambda</a>
+    </li>
+    
+    <li>
+        <a href="https://sangzhenya.github.io/post/Java/juc/Java-ConcurrentHashMap/" title="Java ConcurrentHashMap">Java ConcurrentHashMap</a>
+    </li>
+    
+    <li>
+        <a href="https://sangzhenya.github.io/post/Java/juc/Java-CAS/" title="Java CAS">Java CAS</a>
+    </li>
+    
+    <li>
+        <a href="https://sangzhenya.github.io/post/Java/juc/Java-volatile/" title="Java volatile">Java volatile</a>
+    </li>
+    
+    <li>
+        <a href="https://sangzhenya.github.io/post/Java/juc/Java-ReentrantLock/" title="Java ReentrantLock">Java ReentrantLock</a>
+    </li>
+    
+    <li>
+        <a href="https://sangzhenya.github.io/post/Java/juc/Java-%E5%B9%B6%E5%8F%91%E6%8E%A7%E5%88%B6/" title="Java 并发控制">Java 并发控制</a>
+    </li>
+    
+    <li>
+        <a href="https://sangzhenya.github.io/post/Java/juc/Java-AQS/" title="Java AQS">Java AQS</a>
+    </li>
+    
+    <li>
+        <a href="https://sangzhenya.github.io/post/DataBase/MyBatis/MyBaits-%E4%B8%8E-Spring-Boot/" title=""></a>
+    </li>
+    
+    <li>
+        <a href="https://sangzhenya.github.io/post/DataBase/MyBatis/SQL-%E6%98%A0%E5%B0%84/" title=""></a>
+    </li>
+    
+</ul>
+    </section>
+
+    
+
+    <section class="widget">
+        <h3 class="widget-title">分类</h3>
+<ul class="widget-list">
+    
+    <li><a href="https://sangzhenya.github.io/categories/Java/">Java (8)</a></li>
+    
+    <li><a href="https://sangzhenya.github.io/categories/%E5%85%B3%E4%BA%8E/">关于 (1)</a></li>
+    
+</ul>
+    </section>
+
+    <section class="widget">
+        <h3 class="widget-title">标签</h3>
+<div class="tagcloud">
+    
+    <a href="https://sangzhenya.github.io/tags/JDK8/">JDK8</a>
+    
+    <a href="https://sangzhenya.github.io/tags/JUC/">JUC</a>
+    
+    <a href="https://sangzhenya.github.io/tags/JVM/">JVM</a>
+    
+    <a href="https://sangzhenya.github.io/tags/java/">java</a>
+    
+    <a href="https://sangzhenya.github.io/tags/%E5%85%B3%E4%BA%8E/">关于</a>
+    
+    <a href="https://sangzhenya.github.io/tags/%E9%9B%86%E5%90%88/">集合</a>
+    
+</div>
+    </section>
+
+    
+
+    <section class="widget">
+        <h3 class="widget-title">其它</h3>
+        <ul class="widget-list">
+            <li><a href="https://sangzhenya.github.io/index.xml">文章 RSS</a></li>
+        </ul>
+    </section>
+</div>
+            </div>
+        </div>
+    </div>
+    <footer id="footer">
+    <div class="container">
+        &copy; 2020 <a href="https://sangzhenya.github.io/">新月的博客 By 新月</a>.
+        Powered by <a rel="nofollow noreferer noopener" href="https://gohugo.io" target="_blank">Hugo</a>.
+        Theme based on <a href="https://github.com/flysnow-org/maupassant-hugo" target="_blank">maupassant</a>.
+        
+    </div>
+</footer>
+
+
+    
+    <script type="text/javascript">
+        window.MathJax = {
+            tex2jax: {
+                inlineMath: [['$', '$']],
+                processEscapes: true
+                }
+            };
+    </script>
+    <script src='https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-MML-AM_CHTML' async></script>
+
+
+<a id="rocket" href="#top"></a>
+<script type="text/javascript" src='https://sangzhenya.github.io/js/totop.js?v=0.0.0' async=""></script>
+
+
+
+
+
+
+</body>
+
+</html>

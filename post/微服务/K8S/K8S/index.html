@@ -1,0 +1,294 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <title> | 新月的博客</title>
+    <meta property="og:title" content=" - 新月的博客">
+    <meta property="og:type" content="article">
+        
+        
+    <meta name="Keywords" content="">
+    <meta name="description" content="">
+        
+    <meta name="author" content="新月">
+    <meta property="og:url" content="https://sangzhenya.github.io/post/%E5%BE%AE%E6%9C%8D%E5%8A%A1/K8S/K8S/">
+    <link rel="shortcut icon" href="https://sangzhenya.github.io/favicon.ico" type="image/x-icon">
+
+    <link rel="stylesheet" href='https://sangzhenya.github.io/css/normalize.css'>
+    <link rel="stylesheet" href='https://sangzhenya.github.io/css/style.css'>
+    <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+
+    
+
+
+    
+    
+</head>
+
+
+<body>
+    <header id="header" class="clearfix">
+    <div class="container">
+        <div class="col-group">
+            <div class="site-name ">
+                
+                    <a id="logo" href="https://sangzhenya.github.io/">
+                        新月的博客
+                    </a>
+                
+                <p class="description">晚来天欲雪，能饮一杯无？</p>
+            </div>
+            <div>
+                <nav id="nav-menu" class="clearfix">
+                    <a class="current" href="https://sangzhenya.github.io/">首页</a>
+                    
+                    <a  href="https://sangzhenya.github.io/archives/" title="归档">归档</a>
+                    
+                    <a  href="https://sangzhenya.github.io/about/" title="关于">关于</a>
+                    
+                </nav>
+            </div>
+        </div>
+    </div>
+</header>
+
+    <div id="body">
+        <div class="container">
+            <div class="col-group">
+
+                <div class="col-8" id="main">
+                    
+<div class="res-cons">
+    
+    <article class="post">
+        <header>
+            <h1 class="post-title"></h1>
+        </header>
+        <date class="post-meta meta-date">
+            1年1月1日
+        </date>
+        
+        
+        
+        <div class="post-content">
+            <h2 id="kubernetes">Kubernetes</h2>
+<p>K8S 是一个工业级的容器编排平台。主要有以下一些特点：轻量级，消耗资源少；弹性伸缩；负载均衡。</p>
+<p>K8S 是基于 Borg 开发的，Borg 的架构如如下图所示：</p>
+<p><img src="http://img.programya.com/20200106233509.png" alt="Borg 架构图"></p>
+<p>首先是 BorgMaster 为了防止单点故障一般情况下都是以集群的形式出现，而且通常应该设置三个以上的奇数个 BorgMaster。Scheduler 调度器，有任务的的时候会写入到 Paxos中，下面的 Borglet 会监听读取 Paxos 内容，发现有自己的任务的时候回去处理。</p>
+<h3 id="基本概念">基本概念</h3>
+<p>下面看一下 K8S 的架构：</p>
+<p><img src="http://img.programya.com/20200107215538.png" alt="K8S 架构"></p>
+<p>Scheduler 还是调度者的角色，会通过 api server 将数据写入到 etcd中。下面的 node 相当于 borglet 的角色真正的去处理任务。其中 replication controller 用于控制容器的副本数。api server 也是所有访问的入口。etcd 的官网将其它定位成一个可信赖的分布式键值存储服务，其能够为整个分布式存储集群存储一些关键数据，写出分布式集群的正常运转。node 中的 kubelet 直接跟容器引擎交互实现容器的生命周期管理。Kube-Proxy 负责写入规则到 IPTABLES，IPVS 实现服务的映射访问的。</p>
+<p>ETCD 结构如下：</p>
+<p><img src="http://img.programya.com/20200107221104.png" alt="ETCD 结构图"></p>
+<p>ETCD 使用 HTTP Server 作为入口，Raft 作为类似于 Paxos 是一个分布式一致性算法，WAL 是记录日志和快照的地方。</p>
+<p>K8S 的常用的几个插件如下：</p>
+<ol>
+<li>CoreDNS：可以为集群中的 SVC 创建一个域名 IP 的对应关系解析</li>
+<li>Ingress Controller： Ingress 可以实现 7层的代理</li>
+<li>Prometheus：可以提供一个可以跨集群中心多 K8S 统一管理功能</li>
+<li>Dashboard：给 K8S 集群提供一个 B/S 结构的访问体系</li>
+<li>Federation：提供 K8S  集群的监控能力</li>
+<li>ELK：提供 K8S 集群日志统一分析接入平台</li>
+</ol>
+<h3 id="pod">POD</h3>
+<p>POD：是 K8S 管理，创建，计划的最小单元，一个共享context的配置组，同一个 POD 上的容器共享网络和存储。</p>
+<p>ReplicationController 用来确保容器应用的副本数始终保持在用户定义的副本数，如果容器异常退出，会自动创建新的 POD 来踢动，而如果异常多出来的容器也会被自动回收。在新版本的 K8S  中建议使用 ReplicaSet 取代 ReplicationController，但是其二者没有本质上的不同，ReplicaSet 支持 集合式的 seletor。虽然 ReplicaSet 支持独立部署，但是还是推荐使用 Deployment 自动部署。</p>
+<p>Horzontal Pod Autoscaling 仅使用与 Deployment 和 ReplicaSet，其支持根据 POD 的CPU 使用率扩缩容，在最新的版本中也支持根据内存和用户自定义的 metric 扩缩容。</p>
+<p>StatefulSet 是为了解决有状态服务的问题，其应用场景主要有以下：</p>
+<ol>
+<li>稳定的持久化存储，即 POD 重新调度后还是能访问相同的持久化数据，基于 PVC 实现</li>
+<li>稳定的网络标志，即 POD 重新调度后其 PODName 和 HostName 不变，基于 Headless Service 实现</li>
+<li>有序部署，有序扩展：即 POD 是有顺序的，在部署或者扩展的时候根据定义的顺序依次进行，即在下一个 POD 运行之前所有之前的 POD 都必须是 Running 和 Ready 状态的，基于 Init Containers 来实现</li>
+<li>有序收缩，有序删除。</li>
+</ol>
+<p>DaemonSet 确保全部或一些 Node 上运行的一个 POD 的副本。当有 Node 加入集群时，也会为其增加一个 POD。当有 Node 从 集群中移除时，这些 POD 也会被回收。删除 DaemonSet 将会删除它创建的所有 POD。通常用法如下：</p>
+<ol>
+<li>运行集群存储 Daemon，例如在每个 Node 上运行 glushterd, ceph</li>
+<li>在每个 Node 上运行日志手机 Daemon，例如 fluentd, logstas</li>
+<li>在每个 Node 上运行监控 Daemon，例如 Prometheus Node Exporter</li>
+</ol>
+<p>Job 负责批处理任务，即仅执行一次任务，其保证批处理任务的一个或多个 POD 成功结束。</p>
+<p>Cron Job 管理基于时间的 Job，即在给定时间点运行一次，周期性的在给定的时间点运行。</p>
+<h3 id="网络通讯模式">网络通讯模式</h3>
+<p>K8S 的网络模型假定了所有 POD 都在一个可以直接连通的扁平化网络空间中，者在 GCE 里面是现成的网络模型， K8S 假定这个网络已经存在，在私有云中搭建 K8S 集群的时候需要自己实现这个网络假设，将不同节点的上的 Docker 容器之间的相互访问先打通，然后运行 K8S。</p>
+<p>同一个 POD 内多个容器之间共享同一个网络命名空间，共享 Linux 协议栈；各 POD 之间的通讯如果在同一个主机上，则由 Docker 网桥直接转发不经过 Flannel，如果在不同主机上则 POD 的 IP 和 Node 的 IP 关联起来，通过这个关联让 POD 之间可以互相访问（通过 Flannel 完成该操作）；POD 与 Service 之间的通讯基于性能考虑全部为 lvs 维护和转发。POD 访问外网，查找路由表转发数据包到宿主主机网卡，宿主主机网卡完成路由选择后，把源 IP 更改我宿主网卡 IP 然后向外网服务器发送请求。外网访问 POD 则通过 Service。</p>
+<p>Flannel 是 CoreOS 团队针对于 K8S 设计的一个网络规划服务，其目的是让集群中的不同节点主机创建的 Docker 都具有全局唯一的虚拟 IP 地址。此外其还能再这些 IP 地址之间建立一个覆盖网络（Overlay Networ），通过这个覆盖网络，将数据包原封不动的传递到目标容器内。原理图如下：</p>
+<p><img src="http://img.programya.com/20200107234926.png" alt="Flannel"></p>
+<p>ECTD 为 Flannel 提供存储管理 Flannel 可分配的 IP 地址段资源，监控 ETCD 中每个 POD 的实际地址，并在内存中建立维护 POD 节点路由表。</p>
+<p>附录：</p>
+<p>IAAS, PAAS 和 SAAS：</p>
+<ol>
+<li>
+<p>IAAS: Infrastructure as a service 基础设置即服务，例如阿里云。</p>
+</li>
+<li>
+<p>PAAS: Platform as a service 平台即服务，例如Google App Engine。</p>
+</li>
+<li>
+<p>SAAS: Software as a service 软件即服务， 例如 Netflix 等</p>
+</li>
+</ol>
+
+        </div>
+
+        
+
+
+        
+
+
+        <div class="post-meta meta-tags">
+            
+            没有标签
+            
+        </div>
+    </article>
+    
+    
+
+    
+    
+</div>
+
+                </div>
+
+                <div id="secondary">
+    <section class="widget">
+        <form id="search" action='//www.google.com/search' method="get" accept-charset="utf-8" target="_blank" _lpchecked="1">
+      
+      <input type="text" name="q" maxlength="20" placeholder="Search">
+      <input type="hidden" name="sitesearch" value="https://sangzhenya.github.io/">
+      <button type="submit" class="submit icon-search"></button>
+</form>
+    </section>
+    
+    <section class="widget">
+        <h3 class="widget-title">最近文章</h3>
+<ul class="widget-list">
+    
+    <li>
+        <a href="https://sangzhenya.github.io/post/Java/jdk8/Java-8-Stream/" title="Java 8 Stream">Java 8 Stream</a>
+    </li>
+    
+    <li>
+        <a href="https://sangzhenya.github.io/post/Java/jdk8/Java-8-Lambda/" title="Java 8 Lambda">Java 8 Lambda</a>
+    </li>
+    
+    <li>
+        <a href="https://sangzhenya.github.io/post/Java/juc/Java-ConcurrentHashMap/" title="Java ConcurrentHashMap">Java ConcurrentHashMap</a>
+    </li>
+    
+    <li>
+        <a href="https://sangzhenya.github.io/post/Java/juc/Java-CAS/" title="Java CAS">Java CAS</a>
+    </li>
+    
+    <li>
+        <a href="https://sangzhenya.github.io/post/Java/juc/Java-volatile/" title="Java volatile">Java volatile</a>
+    </li>
+    
+    <li>
+        <a href="https://sangzhenya.github.io/post/Java/juc/Java-ReentrantLock/" title="Java ReentrantLock">Java ReentrantLock</a>
+    </li>
+    
+    <li>
+        <a href="https://sangzhenya.github.io/post/Java/juc/Java-%E5%B9%B6%E5%8F%91%E6%8E%A7%E5%88%B6/" title="Java 并发控制">Java 并发控制</a>
+    </li>
+    
+    <li>
+        <a href="https://sangzhenya.github.io/post/Java/juc/Java-AQS/" title="Java AQS">Java AQS</a>
+    </li>
+    
+    <li>
+        <a href="https://sangzhenya.github.io/post/DataBase/MyBatis/MyBaits-%E4%B8%8E-Spring-Boot/" title=""></a>
+    </li>
+    
+    <li>
+        <a href="https://sangzhenya.github.io/post/DataBase/MyBatis/SQL-%E6%98%A0%E5%B0%84/" title=""></a>
+    </li>
+    
+</ul>
+    </section>
+
+    
+
+    <section class="widget">
+        <h3 class="widget-title">分类</h3>
+<ul class="widget-list">
+    
+    <li><a href="https://sangzhenya.github.io/categories/Java/">Java (8)</a></li>
+    
+    <li><a href="https://sangzhenya.github.io/categories/%E5%85%B3%E4%BA%8E/">关于 (1)</a></li>
+    
+</ul>
+    </section>
+
+    <section class="widget">
+        <h3 class="widget-title">标签</h3>
+<div class="tagcloud">
+    
+    <a href="https://sangzhenya.github.io/tags/JDK8/">JDK8</a>
+    
+    <a href="https://sangzhenya.github.io/tags/JUC/">JUC</a>
+    
+    <a href="https://sangzhenya.github.io/tags/JVM/">JVM</a>
+    
+    <a href="https://sangzhenya.github.io/tags/java/">java</a>
+    
+    <a href="https://sangzhenya.github.io/tags/%E5%85%B3%E4%BA%8E/">关于</a>
+    
+    <a href="https://sangzhenya.github.io/tags/%E9%9B%86%E5%90%88/">集合</a>
+    
+</div>
+    </section>
+
+    
+
+    <section class="widget">
+        <h3 class="widget-title">其它</h3>
+        <ul class="widget-list">
+            <li><a href="https://sangzhenya.github.io/index.xml">文章 RSS</a></li>
+        </ul>
+    </section>
+</div>
+            </div>
+        </div>
+    </div>
+    <footer id="footer">
+    <div class="container">
+        &copy; 2020 <a href="https://sangzhenya.github.io/">新月的博客 By 新月</a>.
+        Powered by <a rel="nofollow noreferer noopener" href="https://gohugo.io" target="_blank">Hugo</a>.
+        Theme based on <a href="https://github.com/flysnow-org/maupassant-hugo" target="_blank">maupassant</a>.
+        
+    </div>
+</footer>
+
+
+    
+    <script type="text/javascript">
+        window.MathJax = {
+            tex2jax: {
+                inlineMath: [['$', '$']],
+                processEscapes: true
+                }
+            };
+    </script>
+    <script src='https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-MML-AM_CHTML' async></script>
+
+
+<a id="rocket" href="#top"></a>
+<script type="text/javascript" src='https://sangzhenya.github.io/js/totop.js?v=0.0.0' async=""></script>
+
+
+
+
+
+
+</body>
+
+</html>

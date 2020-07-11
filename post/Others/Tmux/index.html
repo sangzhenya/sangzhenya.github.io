@@ -1,0 +1,386 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <title> | 新月的博客</title>
+    <meta property="og:title" content=" - 新月的博客">
+    <meta property="og:type" content="article">
+        
+        
+    <meta name="Keywords" content="">
+    <meta name="description" content="">
+        
+    <meta name="author" content="新月">
+    <meta property="og:url" content="https://sangzhenya.github.io/post/Others/Tmux/">
+    <link rel="shortcut icon" href="https://sangzhenya.github.io/favicon.ico" type="image/x-icon">
+
+    <link rel="stylesheet" href='https://sangzhenya.github.io/css/normalize.css'>
+    <link rel="stylesheet" href='https://sangzhenya.github.io/css/style.css'>
+    <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+
+    
+
+
+    
+    
+</head>
+
+
+<body>
+    <header id="header" class="clearfix">
+    <div class="container">
+        <div class="col-group">
+            <div class="site-name ">
+                
+                    <a id="logo" href="https://sangzhenya.github.io/">
+                        新月的博客
+                    </a>
+                
+                <p class="description">晚来天欲雪，能饮一杯无？</p>
+            </div>
+            <div>
+                <nav id="nav-menu" class="clearfix">
+                    <a class="current" href="https://sangzhenya.github.io/">首页</a>
+                    
+                    <a  href="https://sangzhenya.github.io/archives/" title="归档">归档</a>
+                    
+                    <a  href="https://sangzhenya.github.io/about/" title="关于">关于</a>
+                    
+                </nav>
+            </div>
+        </div>
+    </div>
+</header>
+
+    <div id="body">
+        <div class="container">
+            <div class="col-group">
+
+                <div class="col-8" id="main">
+                    
+<div class="res-cons">
+    
+    <article class="post">
+        <header>
+            <h1 class="post-title"></h1>
+        </header>
+        <date class="post-meta meta-date">
+            1年1月1日
+        </date>
+        
+        
+        
+        <div class="post-content">
+            <h1 id="tmux">Tmux</h1>
+<p>Tmux 是一个终端复用器类自由软件，用户可以通过 tmux 在一个终端内管理多个分离的会话，窗口及面板，对于同时使用多个命令行，或多个任务时非常方便。</p>
+<p>tmux 主要由以下几个模块组成：</p>
+<ol>
+<li>server 服务，tmux 运行的基础服务，以下的模块均依赖此服务</li>
+<li>session 会话，一个服务可以包含多个会话</li>
+<li>window 窗口，一个会话可以包含多个窗口</li>
+<li>panel 面板，一个窗口可以包含多个面板</li>
+</ol>
+<h2 id="配置">配置</h2>
+<p>用户私人配置文件在 <code>~/.tmux.conf</code> 中，全局文件在 <code>/etc/tmux.conf</code> 中。默认前缀快捷键是 <code>Ctrl + b</code>，如果要修改为 <code>Ctrl + a</code> 可以在 <code>.tmux.conf</code> 中配置如下</p>
+<pre><code class="language-conf" data-lang="conf">unbind C-b
+set -g prefix C-a
+bind C-a send-prefix
+</code></pre><p>如果需要使用鼠标，则可以另外添加 <code>set-option -g mouse on</code>。然后使用 <code>tmux source .tmux.conf</code> 重新加载配置即可。</p>
+<h2 id="命令及快捷键">命令及快捷键</h2>
+<h3 id="session">Session</h3>
+<div class="highlight"><div style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4">
+<table style="border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 1
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 2
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 3
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 4
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 5
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 6
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 7
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 8
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 9
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">10
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">11
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">tmux <span style="color:#998;font-style:italic"># 创建一个无名称 session，tmux 会自动分配一个编号</span>
+tmux new -s temp <span style="color:#998;font-style:italic"># 创建命名为 temp 的 session</span>
+tmux rename-session -t <span style="color:#099">0</span> temp <span style="color:#998;font-style:italic"># 重命名一个 session</span>
+&lt;prefix&gt; + d <span style="color:#998;font-style:italic"># 断开当前会话，同 tmux detach 命令</span>
+tmux a <span style="color:#998;font-style:italic"># 进入第一个 session</span>
+tmux a -t temp <span style="color:#998;font-style:italic"># 进入指定名称的 session</span>
+tmux kill-session -t temp <span style="color:#998;font-style:italic"># 关闭名称为 temp 的 session</span>
+tmux kill-server <span style="color:#998;font-style:italic"># 关闭 Server</span>
+&lt;prefix&gt; + s <span style="color:#998;font-style:italic"># 查看所有的 session，也可以使用 tmux ls 命令</span>
+tmux switchc -t temp <span style="color:#998;font-style:italic"># 切换到指定的 session</span>
+&lt;prefix&gt; + $ <span style="color:#998;font-style:italic"># 重命名当前 session</span>
+</code></pre></td></tr></table>
+</div>
+</div><h3 id="window">Window</h3>
+<div class="highlight"><div style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4">
+<table style="border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">1
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">2
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">3
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">4
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">5
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">6
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">7
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">8
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">&lt;prefix&gt; c <span style="color:#998;font-style:italic"># 创建 window</span>
+tmux new-window -n t-win <span style="color:#998;font-style:italic"># 创建一个命名 window</span>
+&lt;prefix&gt; + <span style="color:#000;font-weight:bold">[</span>number<span style="color:#000;font-weight:bold">]</span> <span style="color:#998;font-style:italic"># 选择第 n 个 window</span>
+&lt;prefix&gt; + p/n <span style="color:#998;font-style:italic"># 选择上一个或下一个 window</span>
+&lt;prefix&gt; + &amp; <span style="color:#998;font-style:italic"># 关闭 window 同 exit</span> 
+&lt;prefix&gt; + w <span style="color:#998;font-style:italic"># 列出所有 window 然后进行选择，通过 j/k 前后选择</span>
+&lt;prefix&gt; + f <span style="color:#998;font-style:italic"># 搜索 window</span>
+&lt;prefix&gt; + , <span style="color:#998;font-style:italic"># 重命名当前 window 同 tmux rename-window</span> 
+</code></pre></td></tr></table>
+</div>
+</div><h3 id="panel">Panel</h3>
+<div class="highlight"><div style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4">
+<table style="border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 1
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 2
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 3
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 4
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 5
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 6
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 7
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 8
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 9
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">10
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">&lt;prefix&gt; + % <span style="color:#998;font-style:italic"># 水平分割</span>
+&lt;prefix&gt; + <span style="color:#d14">\&#34;</span> <span style="color:#998;font-style:italic"># 垂直分割</span>
+&lt;prefix&gt; + ; <span style="color:#998;font-style:italic"># 光标移动到上一个 panel</span>
+&lt;prefix&gt; + o <span style="color:#998;font-style:italic"># 光标移动到下一个 panel</span>
+&lt;prefix&gt; + q <span style="color:#998;font-style:italic"># 显示 panel 序号进行切换</span>
+&lt;prefix&gt; + b <span style="color:#998;font-style:italic"># 关闭当前 panel</span>
+&lt;prefix&gt; + ! <span style="color:#998;font-style:italic"># 将当前 panel 移动到新的 window</span>
+&lt;prefix&gt; + <span style="color:#000;font-weight:bold">{</span>/<span style="color:#000;font-weight:bold">}</span> <span style="color:#998;font-style:italic"># 当前 panel 左移/右移</span>
+&lt;prefix&gt; + Ctrl + o <span style="color:#998;font-style:italic"># 当前 panel 上移</span>
+&lt;prefix&gt; + Alt + o <span style="color:#998;font-style:italic"># 当前 panel 下移</span>
+</code></pre></td></tr></table>
+</div>
+</div><h3 id="其他快捷键">其他快捷键</h3>
+<div class="highlight"><div style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4">
+<table style="border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">1
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">2
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">3
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">tmux list-keys <span style="color:#998;font-style:italic"># 列出所有的 keys</span>
+tmux list-commands <span style="color:#998;font-style:italic"># 列出所有的命令</span>
+tmux info <span style="color:#998;font-style:italic"># 当前 session 的信息</span>
+</code></pre></td></tr></table>
+</div>
+</div><h3 id="自定义界面">自定义界面</h3>
+<p>参考：<a href="https://github.com/gpakosz/.tmux">Tmux 美化配置</a></p>
+<p>大概效果如下图：
+<img src="https://i.loli.net/2020/05/10/tIqrijuodyQaORl.png" alt="Tmux"></p>
+<p>注意点：</p>
+<ol>
+<li>要安装正确的字体, 例如带 awesome font 的字体 <a href="https://github.com/ryanoasis/nerd-fonts">Nerd Fonts</a></li>
+<li>使用配置要先 <code>tmux source .tmux.conf</code> 然后 <code>tmux source .tmux.conf.local</code> 启动配置</li>
+</ol>
+<h3 id="保存-tmux-session">保存 Tmux Session</h3>
+<p>需要安装 Tmux Plugin Manager 插件。</p>
+<ol>
+<li>首先 clone tpm 插件仓库到本地：
+<code>git clone https://github.com/tmux-plugins/tpm ~/.tmux/plugins/tpm</code></li>
+<li>配置 TPM Plugin</li>
+</ol>
+<div class="highlight"><div style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4">
+<table style="border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">1
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">2
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">3
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">4
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">5
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">6
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">7
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">8
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash"><span style="color:#998;font-style:italic"># List of plugins</span>
+<span style="color:#0086b3">set</span> -g @tpm_plugins <span style="color:#d14">&#39;          \
+</span><span style="color:#d14">tmux-plugins/tpm             \
+</span><span style="color:#d14">tmux-plugins/tmux-resurrect  \
+</span><span style="color:#d14">&#39;</span>
+
+<span style="color:#998;font-style:italic"># Initialize TMUX plugin manager (keep this line at the very bottom of tmux.conf)</span>
+run <span style="color:#d14">&#39;~/.tmux/plugins/tpm/tpm&#39;</span>
+</code></pre></td></tr></table>
+</div>
+</div><ol start="3">
+<li>配置完成后，先使用 <code>tmux source ~/.tmux.conf</code> 重新加载配置， 然后使用 <!-- raw HTML omitted --> + I 安装插件即可。</li>
+</ol>
+<p>使用方法: 在 tmux 使用 <code>&lt;prefix&gt; + Ctrl-s</code> 保存当前 session 需要恢复的时候只需要在 tmux 使用 <code>&lt;prefix&gt; + Ctrl-r</code> 即可恢复 session。</p>
+<p>参考：<a href="https://www.ruanyifeng.com/blog/2019/10/tmux.html">Tmux 使用教程</a></p>
+
+        </div>
+
+        
+
+
+        
+
+
+        <div class="post-meta meta-tags">
+            
+            没有标签
+            
+        </div>
+    </article>
+    
+    
+
+    
+    
+</div>
+
+                </div>
+
+                <div id="secondary">
+    <section class="widget">
+        <form id="search" action='//www.google.com/search' method="get" accept-charset="utf-8" target="_blank" _lpchecked="1">
+      
+      <input type="text" name="q" maxlength="20" placeholder="Search">
+      <input type="hidden" name="sitesearch" value="https://sangzhenya.github.io/">
+      <button type="submit" class="submit icon-search"></button>
+</form>
+    </section>
+    
+    <section class="widget">
+        <h3 class="widget-title">最近文章</h3>
+<ul class="widget-list">
+    
+    <li>
+        <a href="https://sangzhenya.github.io/post/Java/jdk8/Java-8-Stream/" title="Java 8 Stream">Java 8 Stream</a>
+    </li>
+    
+    <li>
+        <a href="https://sangzhenya.github.io/post/Java/jdk8/Java-8-Lambda/" title="Java 8 Lambda">Java 8 Lambda</a>
+    </li>
+    
+    <li>
+        <a href="https://sangzhenya.github.io/post/Java/juc/Java-ConcurrentHashMap/" title="Java ConcurrentHashMap">Java ConcurrentHashMap</a>
+    </li>
+    
+    <li>
+        <a href="https://sangzhenya.github.io/post/Java/juc/Java-CAS/" title="Java CAS">Java CAS</a>
+    </li>
+    
+    <li>
+        <a href="https://sangzhenya.github.io/post/Java/juc/Java-volatile/" title="Java volatile">Java volatile</a>
+    </li>
+    
+    <li>
+        <a href="https://sangzhenya.github.io/post/Java/juc/Java-ReentrantLock/" title="Java ReentrantLock">Java ReentrantLock</a>
+    </li>
+    
+    <li>
+        <a href="https://sangzhenya.github.io/post/Java/juc/Java-%E5%B9%B6%E5%8F%91%E6%8E%A7%E5%88%B6/" title="Java 并发控制">Java 并发控制</a>
+    </li>
+    
+    <li>
+        <a href="https://sangzhenya.github.io/post/Java/juc/Java-AQS/" title="Java AQS">Java AQS</a>
+    </li>
+    
+    <li>
+        <a href="https://sangzhenya.github.io/post/DataBase/MyBatis/MyBaits-%E4%B8%8E-Spring-Boot/" title=""></a>
+    </li>
+    
+    <li>
+        <a href="https://sangzhenya.github.io/post/DataBase/MyBatis/SQL-%E6%98%A0%E5%B0%84/" title=""></a>
+    </li>
+    
+</ul>
+    </section>
+
+    
+
+    <section class="widget">
+        <h3 class="widget-title">分类</h3>
+<ul class="widget-list">
+    
+    <li><a href="https://sangzhenya.github.io/categories/Java/">Java (8)</a></li>
+    
+    <li><a href="https://sangzhenya.github.io/categories/%E5%85%B3%E4%BA%8E/">关于 (1)</a></li>
+    
+</ul>
+    </section>
+
+    <section class="widget">
+        <h3 class="widget-title">标签</h3>
+<div class="tagcloud">
+    
+    <a href="https://sangzhenya.github.io/tags/JDK8/">JDK8</a>
+    
+    <a href="https://sangzhenya.github.io/tags/JUC/">JUC</a>
+    
+    <a href="https://sangzhenya.github.io/tags/JVM/">JVM</a>
+    
+    <a href="https://sangzhenya.github.io/tags/java/">java</a>
+    
+    <a href="https://sangzhenya.github.io/tags/%E5%85%B3%E4%BA%8E/">关于</a>
+    
+    <a href="https://sangzhenya.github.io/tags/%E9%9B%86%E5%90%88/">集合</a>
+    
+</div>
+    </section>
+
+    
+
+    <section class="widget">
+        <h3 class="widget-title">其它</h3>
+        <ul class="widget-list">
+            <li><a href="https://sangzhenya.github.io/index.xml">文章 RSS</a></li>
+        </ul>
+    </section>
+</div>
+            </div>
+        </div>
+    </div>
+    <footer id="footer">
+    <div class="container">
+        &copy; 2020 <a href="https://sangzhenya.github.io/">新月的博客 By 新月</a>.
+        Powered by <a rel="nofollow noreferer noopener" href="https://gohugo.io" target="_blank">Hugo</a>.
+        Theme based on <a href="https://github.com/flysnow-org/maupassant-hugo" target="_blank">maupassant</a>.
+        
+    </div>
+</footer>
+
+
+    
+    <script type="text/javascript">
+        window.MathJax = {
+            tex2jax: {
+                inlineMath: [['$', '$']],
+                processEscapes: true
+                }
+            };
+    </script>
+    <script src='https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-MML-AM_CHTML' async></script>
+
+
+<a id="rocket" href="#top"></a>
+<script type="text/javascript" src='https://sangzhenya.github.io/js/totop.js?v=0.0.0' async=""></script>
+
+
+
+
+
+
+</body>
+
+</html>

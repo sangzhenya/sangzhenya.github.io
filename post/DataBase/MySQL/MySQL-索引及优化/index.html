@@ -1,0 +1,403 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <title> | 新月的博客</title>
+    <meta property="og:title" content=" - 新月的博客">
+    <meta property="og:type" content="article">
+        
+        
+    <meta name="Keywords" content="">
+    <meta name="description" content="">
+        
+    <meta name="author" content="新月">
+    <meta property="og:url" content="https://sangzhenya.github.io/post/DataBase/MySQL/MySQL-%E7%B4%A2%E5%BC%95%E5%8F%8A%E4%BC%98%E5%8C%96/">
+    <link rel="shortcut icon" href="https://sangzhenya.github.io/favicon.ico" type="image/x-icon">
+
+    <link rel="stylesheet" href='https://sangzhenya.github.io/css/normalize.css'>
+    <link rel="stylesheet" href='https://sangzhenya.github.io/css/style.css'>
+    <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+
+    
+
+
+    
+    
+</head>
+
+
+<body>
+    <header id="header" class="clearfix">
+    <div class="container">
+        <div class="col-group">
+            <div class="site-name ">
+                
+                    <a id="logo" href="https://sangzhenya.github.io/">
+                        新月的博客
+                    </a>
+                
+                <p class="description">晚来天欲雪，能饮一杯无？</p>
+            </div>
+            <div>
+                <nav id="nav-menu" class="clearfix">
+                    <a class="current" href="https://sangzhenya.github.io/">首页</a>
+                    
+                    <a  href="https://sangzhenya.github.io/archives/" title="归档">归档</a>
+                    
+                    <a  href="https://sangzhenya.github.io/about/" title="关于">关于</a>
+                    
+                </nav>
+            </div>
+        </div>
+    </div>
+</header>
+
+    <div id="body">
+        <div class="container">
+            <div class="col-group">
+
+                <div class="col-8" id="main">
+                    
+<div class="res-cons">
+    
+    <article class="post">
+        <header>
+            <h1 class="post-title"></h1>
+        </header>
+        <date class="post-meta meta-date">
+            1年1月1日
+        </date>
+        
+        
+        
+        <div class="post-content">
+            <h2 id="mysql-索引及优化">MySQL 索引及优化</h2>
+<h3 id="索引">索引</h3>
+<p>索引是帮助 MySQL 高效获取数据的数据结构，即本质上就是一种数据结构。数据库在存储数据之外还维护者满足特定查找算法的数据结构，这些数据结构以某种方式引用数据，这样就可以在数据结构上实现高级的查找算法，一种索引方式如下图所示：</p>
+<p><img src="http://img.programya.com/Snipaste_2019-10-13_17-26-48.png" alt="索引"></p>
+<p>一般来说索引文件本身也很大，所以并不会全部存储在内存中，往往以索引文件的形式存储在磁盘上。</p>
+<h3 id="索引分类">索引分类</h3>
+<h4 id="数据结构分类">数据结构分类：</h4>
+<ol>
+<li>B+ 树索引</li>
+<li>Hash 索引</li>
+<li>FullText 索引</li>
+<li>R-Tree 索引</li>
+</ol>
+<h4 id="物理存储分类">物理存储分类：</h4>
+<ol>
+<li>聚集索引</li>
+<li>非聚集索引</li>
+</ol>
+<h4 id="逻辑分类">逻辑分类</h4>
+<ol>
+<li>单值索引：即一个索引仅包含单个列，一个表中可以有多个单值索引。</li>
+<li>唯一索引：索引列的值必须是唯一的，允许有空值。</li>
+<li>复合索引：即一个索引包含多个列。</li>
+</ol>
+<h3 id="索引结构">索引结构</h3>
+<p>平常所说的索引都是指的 B 说结构组织的索引。其中聚集索引、次要索引、覆盖索引、前缀索引和唯一索引默认都是使用 B+ 树索引。此外还有哈希索引等。</p>
+<p>B+ 树是 B 树的一种变形，非叶子节点只保存索引，不保存实际数据，数据都保存在叶子节点。形式如下图所示：</p>
+<p><img src="http://img.programya.com/Snipaste_2019-10-13_17-40-22.png" alt="B+ 树"></p>
+<p>使用 B+ 树的原因主要有以下几点。</p>
+<p>首先是 B+ 树的磁盘读写代价更低，B+ 树的内部节点没有指向关键词具体信息的指针，因此其内部节点相对于 B 树更新，如果把所有同一内部节点的关键字存放在同一盘块中，那么盘块所能容纳的关键字数量也越多，一次性读入内存的需要查找的关键词也就越多，相对 IO 读写次数就降低了。</p>
+<p>其次 B+ 树的查询效率更稳定，由于非终结点并不是指向文件内容节点，而只是叶子节点中关键词字的索引。所以任何关键词查找都会走一条从根节点到叶子节点的路，所有关键词查询的路径长度相同，每一个数据查询效率相当。</p>
+<p>最后 B+ 树的数据存储在叶子结点中，分支节点均为索引，方便入库，只需要扫描一遍叶子结点即可，对于 B 树因为其分支节点同样存储着数据，所以要找到具体的数据需要进行一次树的遍历，所以 B+ 树更适合在区间查询的情况。</p>
+<h3 id="索引的适用场景">索引的适用场景</h3>
+<h4 id="优势">优势</h4>
+<p>提高数据检索效率，降低数据库的 IO 成本。降低数据排序的成本，降低 CPU 的消耗。需要创建索引场景如下：</p>
+<ol>
+<li>主键自动建立唯一索引</li>
+<li>频繁作为查询条件的字段应该创建索引</li>
+<li>查询中与其他表关联的字段，外键关系建立索引</li>
+<li>查询中排序的字段</li>
+<li>查询中统计或者分组字段</li>
+</ol>
+<h4 id="劣势">劣势</h4>
+<p>索引会占据空间的。每次添加或更新索引列的字段，都要更新索引，会降低更新锁的表速度，对大数据量的表需要花时间研究最优索引。不需要创建索引的场景如下：</p>
+<ol>
+<li>频繁更新的字段不适合创建索引</li>
+<li>where 条件中用不到的字段</li>
+<li>表记录太少</li>
+<li>经常增删改的表</li>
+<li>数据重复且分布平均的表字段，因此应该只是为最经常查询和最经常排序的数据列建立索引</li>
+</ol>
+<h3 id="基本使用">基本使用</h3>
+<div class="highlight"><div style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4">
+<table style="border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">1
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">2
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">3
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">4
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">5
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">6
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">7
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">8
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">9
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-mysql" data-lang="mysql"><span style="color:#998;font-style:italic">-- 创建
+</span><span style="color:#998;font-style:italic"></span><span style="color:#000;font-weight:bold">create</span> [<span style="color:#000;font-weight:bold">unique</span>] <span style="color:#000;font-weight:bold">index</span> index_name <span style="color:#000;font-weight:bold">on</span> <span style="color:#900;font-weight:bold">table_name</span>(<span style="color:#900;font-weight:bold">column_name</span>(length));
+<span style="color:#000;font-weight:bold">alter</span> table_name <span style="color:#000;font-weight:bold">add</span> [<span style="color:#000;font-weight:bold">unique</span>] <span style="color:#000;font-weight:bold">index</span> index_name <span style="color:#000;font-weight:bold">on</span> (<span style="color:#900;font-weight:bold">column_name</span>(length));
+
+<span style="color:#998;font-style:italic">-- 删除
+</span><span style="color:#998;font-style:italic"></span><span style="color:#000;font-weight:bold">drop</span> <span style="color:#000;font-weight:bold">index</span> index_name <span style="color:#000;font-weight:bold">on</span> table_name;
+
+<span style="color:#998;font-style:italic">-- 查看
+</span><span style="color:#998;font-style:italic"></span><span style="color:#000;font-weight:bold">show</span> <span style="color:#000;font-weight:bold">index</span> <span style="color:#000;font-weight:bold">from</span> table_name;
+</code></pre></td></tr></table>
+</div>
+</div><h3 id="常见瓶颈">常见瓶颈</h3>
+<p>一般发生在数据装入内存或从磁盘上读取数据的时候可能会出现 CPU 饱和，而 磁盘 IO 瓶颈发生在装入数据远大于内存容量的时候。</p>
+<h3 id="explain-分析">Explain 分析</h3>
+<p>使用 Explain 可以模拟优化器执行 SQL 查询语句，从而知道MySQL 是如何处理 SQL 的，进而分析查询语句或者表结构的性能瓶颈。主要可以查询表的读取顺序，数据读取操作的操作类型，哪些索引可以被使用，哪些索引实际被使用，表之间的引用，每张表有多少行被优化器查询等。主要包含以下内容：</p>
+<p><img src="http://img.programya.com/Snipaste_2019-10-14_22-16-36.png" alt="Explain 查询内容"></p>
+<h4 id="id">id</h4>
+<h5 id="id-相同">id 相同</h5>
+<p>执行顺序由上至下</p>
+<div class="highlight"><div style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4">
+<table style="border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">1
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-mysql" data-lang="mysql"><span style="color:#000;font-weight:bold">explain</span> <span style="color:#000;font-weight:bold">select</span> ce.id, ac.id <span style="color:#000;font-weight:bold">from</span> category ce <span style="color:#000;font-weight:bold">where</span> ce.id <span style="color:#000;font-weight:bold">in</span> (<span style="color:#000;font-weight:bold">select</span> ac.category_id <span style="color:#000;font-weight:bold">from</span> article ac);
+</code></pre></td></tr></table>
+</div>
+</div><p><img src="http://img.programya.com/Snipaste_2019-10-14_22-58-45.png" alt="Explain ID 1"></p>
+<h5 id="id-不同">id 不同</h5>
+<p>如果是子查询，id 的序号递增，值越大优先级越高，越先被执行</p>
+<div class="highlight"><div style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4">
+<table style="border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">1
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-mysql" data-lang="mysql"><span style="color:#000;font-weight:bold">explain</span> <span style="color:#000;font-weight:bold">select</span> ac.title <span style="color:#000;font-weight:bold">from</span> article ac <span style="color:#000;font-weight:bold">where</span> ac.category_id <span style="color:#000;font-weight:bold">=</span> (<span style="color:#000;font-weight:bold">select</span> ce.id <span style="color:#000;font-weight:bold">from</span> category ce <span style="color:#000;font-weight:bold">where</span> ce.id <span style="color:#000;font-weight:bold">=</span> <span style="color:#099">61</span>);
+</code></pre></td></tr></table>
+</div>
+</div><p><img src="http://img.programya.com/Snipaste_2019-10-14_23-07-13.png" alt="id 不同"></p>
+<h5 id="id-不同和相同同时存在">id 不同和相同同时存在</h5>
+<p>id 如果相同则可以认为是一组，从上往下执行；在所有组中，id 值越大，优先级越高，越先被执行。</p>
+<h4 id="select_type">select_type</h4>
+<p>主要有 6 种</p>
+<ol>
+<li>SIMPLE：简单的 select 查询，查询是不包含子查询和 union</li>
+<li>PRIMARY：查询中若包含任何复杂的子部分，最外层查询则被标记为 PRIMARY</li>
+<li>SUBQUERY：在 SELECT 或 WHERE 列表中包含了 子查询</li>
+<li>DERIVED：在 From 列表中包含的子查询被标记为 DERIVED ，MySQL 中递归执行这些子查询，把结果放到临时表中</li>
+<li>UNION：若第二个 SELECT 出现在 UNION 之后则被标记为 UNION，若 UION 包含在 FROM 查询语句的子查询中，外层 SELECT 被标记为 DERIVED</li>
+<li>UNION RESULT 从 UNION 表获取的 SELECT</li>
+</ol>
+<h4 id="table">table</h4>
+<p>关于哪张表的信息</p>
+<h4 id="partitions">partitions</h4>
+<p>如果查询是基于分区表的话，会显示查询将访问的分区。</p>
+<h4 id="type">type</h4>
+<p>访问类型，从好到坏依次如下：</p>
+<ol>
+<li>system：表只有一行数据，等于系统表，是 const 的特例。</li>
+<li>const：表示通过索引依次就找到了，用于比较 primary key 或者 unique 索引。因为只匹配一行数据，所以很快将主键置于 where 表中，mysql 就能将该查询转换为一个常量。</li>
+<li>eq_ref：唯一性索引扫描，每个索引建在表中只有一条与之匹配的记录。常见于固件或唯一索引扫描。</li>
+<li>ref：非唯一性索引扫描，返回匹配每个单独值的所有行，也是一种索引访问，因为是所以匹配值的行，所以属于查找和扫描的混合体。</li>
+<li>range：值检索给定范围的行，使用一个所以来算则行。key 列显示使用了哪个索引，通常是在where语句 的between, &gt;, &lt; in 等查询是出现，这种范围扫描索引比全表扫描好一些，因为它只需要开始于索引的某一点，结束于另一点而不用全表扫描。</li>
+<li>index：Full Index Scan , index 与 All 的区别就是 index 类型只遍历树，这通常比 all 快，因为索引文件通常比数据文件小。</li>
+<li>all：Full Table Scan 遍历全表找到匹配的行。</li>
+</ol>
+<p>一般来讲查询要到 range 级别，最好可以达到 ref。</p>
+<h4 id="possible_keys">possible_keys</h4>
+<p>显示可能应用在这个表中的索引，一个或者多个，查询设计到的字段上若有索引，就会显示出来，但不一定真的被查询用到。</p>
+<h4 id="key">key</h4>
+<p>实际使用的索引，如果是 NULL 则表明没有使用到索引，如果是覆盖索引那么则索引和查询的 select 字段是重叠的。</p>
+<h4 id="key_len">key_len</h4>
+<p>表示索引中使用的字节数，课通过计算查询中的索引的长度，在不损失精确性的情况下，长度越短越好。该列显示的值为索引字段的最大可能长度，并非实际使用长度，即 key_len 是根据表等昆虫计算而来，而不是通过表内检索出来的。</p>
+<h4 id="ref">ref</h4>
+<p>显示索引的哪一列被使用了，一般是整数，哪些列或常量被用于查询索引上的值。</p>
+<h4 id="rows">rows</h4>
+<p>根据表统计信息及索引使用情况，大致估算出找到需要读取的行数。</p>
+<h4 id="filtered">filtered</h4>
+<p>用百分比表示有多少行会被过滤出来去与之前的表关联  rows * filtered / 100 就能得到行数。</p>
+<h4 id="extra">Extra</h4>
+<p>其他重要从信息，主要可能出现以下几种类型：</p>
+<ol>
+<li>Using filesort： 说明 MySQL 会对数据使用一个外部的索引排序，而不是按照表内的索引顺序进行读取。MySQL 中无法利用索引完成的排序操作称为 “文件排序”。</li>
+<li>Using temporary： 使用了临时表保存中间结果， MySQL 在对查询结果排序时使用临时表。常见于排序 order by 和分组查询 group by。</li>
+<li>Using index：表示相应的 色乐天 操作中使用了 覆盖索引，避免访问了表的数据行。如果同时出现 using where 表明索引被用来执行索引键值的查找；如果没有同时出现 using where 则表明索引用来读取数据而非执行查找动作。</li>
+<li>Using where：使用了 where 过滤。</li>
+<li>Using join buffer：使用了连接缓存</li>
+<li>impossible where： where 字句的值总是 false，不能用来获取任何元祖。</li>
+<li>select tables optimized way：在没有 groupby 字句的情况下，基于索引优化的 MIN/MAX 操作或者对于 MyISAM 存储引擎优化 COUNT(*) 操作，不必等到执行阶段在进行计算，查询执行计划生成的阶段即完成优化。</li>
+<li>distinct：优化 distinct 操作，在找到第一匹配的元组后即停止找同样值的动作。</li>
+</ol>
+<h3 id="索引优化">索引优化</h3>
+<ol>
+<li>全值匹配，例如组合索引是 col1 col2 col3, 搜索的时候 where 子句后也应该按照建索引的时候顺序查询。查询从索引的左前列开始并且不要跳过索引中的列。</li>
+<li>不要在索引列上做任何操作，包含计算、函数、自动/手动（数字与字符串）类型转换，操作会导致索引失效而转向全表扫描。</li>
+<li>存储引擎不能使用索引中范围条件右边的列。例如组合索引是 col1, col2, col3。where 索引后 col1=? and col2 &gt; ? and col3 则 col3 这个索引无法使用。</li>
+<li>尽量使用覆盖索引，仅查询索引的列，避免使用 select *。</li>
+<li>MySQL 中使用不等于（!=, &lt;&gt;），is null, is not null, like &lsquo;%col&rsquo;，字符串为加单引号，使用 or 连接的时候无法使用索引。可以使用覆盖索引解决左like 时无法使用索引的问题。</li>
+</ol>
+<p>参考：</p>
+<ol>
+<li><a href="https://blog.csdn.net/xlgen157387/article/details/79450295">为什么MySQL数据库索引选择使用B+树？</a></li>
+</ol>
+
+        </div>
+
+        
+
+
+        
+
+
+        <div class="post-meta meta-tags">
+            
+            没有标签
+            
+        </div>
+    </article>
+    
+    
+
+    
+    
+</div>
+
+                </div>
+
+                <div id="secondary">
+    <section class="widget">
+        <form id="search" action='//www.google.com/search' method="get" accept-charset="utf-8" target="_blank" _lpchecked="1">
+      
+      <input type="text" name="q" maxlength="20" placeholder="Search">
+      <input type="hidden" name="sitesearch" value="https://sangzhenya.github.io/">
+      <button type="submit" class="submit icon-search"></button>
+</form>
+    </section>
+    
+    <section class="widget">
+        <h3 class="widget-title">最近文章</h3>
+<ul class="widget-list">
+    
+    <li>
+        <a href="https://sangzhenya.github.io/post/Java/jdk8/Java-8-Stream/" title="Java 8 Stream">Java 8 Stream</a>
+    </li>
+    
+    <li>
+        <a href="https://sangzhenya.github.io/post/Java/jdk8/Java-8-Lambda/" title="Java 8 Lambda">Java 8 Lambda</a>
+    </li>
+    
+    <li>
+        <a href="https://sangzhenya.github.io/post/Java/juc/Java-ConcurrentHashMap/" title="Java ConcurrentHashMap">Java ConcurrentHashMap</a>
+    </li>
+    
+    <li>
+        <a href="https://sangzhenya.github.io/post/Java/juc/Java-CAS/" title="Java CAS">Java CAS</a>
+    </li>
+    
+    <li>
+        <a href="https://sangzhenya.github.io/post/Java/juc/Java-volatile/" title="Java volatile">Java volatile</a>
+    </li>
+    
+    <li>
+        <a href="https://sangzhenya.github.io/post/Java/juc/Java-ReentrantLock/" title="Java ReentrantLock">Java ReentrantLock</a>
+    </li>
+    
+    <li>
+        <a href="https://sangzhenya.github.io/post/Java/juc/Java-%E5%B9%B6%E5%8F%91%E6%8E%A7%E5%88%B6/" title="Java 并发控制">Java 并发控制</a>
+    </li>
+    
+    <li>
+        <a href="https://sangzhenya.github.io/post/Java/juc/Java-AQS/" title="Java AQS">Java AQS</a>
+    </li>
+    
+    <li>
+        <a href="https://sangzhenya.github.io/post/DataBase/MyBatis/MyBaits-%E4%B8%8E-Spring-Boot/" title=""></a>
+    </li>
+    
+    <li>
+        <a href="https://sangzhenya.github.io/post/DataBase/MyBatis/SQL-%E6%98%A0%E5%B0%84/" title=""></a>
+    </li>
+    
+</ul>
+    </section>
+
+    
+
+    <section class="widget">
+        <h3 class="widget-title">分类</h3>
+<ul class="widget-list">
+    
+    <li><a href="https://sangzhenya.github.io/categories/Java/">Java (8)</a></li>
+    
+    <li><a href="https://sangzhenya.github.io/categories/%E5%85%B3%E4%BA%8E/">关于 (1)</a></li>
+    
+</ul>
+    </section>
+
+    <section class="widget">
+        <h3 class="widget-title">标签</h3>
+<div class="tagcloud">
+    
+    <a href="https://sangzhenya.github.io/tags/JDK8/">JDK8</a>
+    
+    <a href="https://sangzhenya.github.io/tags/JUC/">JUC</a>
+    
+    <a href="https://sangzhenya.github.io/tags/JVM/">JVM</a>
+    
+    <a href="https://sangzhenya.github.io/tags/java/">java</a>
+    
+    <a href="https://sangzhenya.github.io/tags/%E5%85%B3%E4%BA%8E/">关于</a>
+    
+    <a href="https://sangzhenya.github.io/tags/%E9%9B%86%E5%90%88/">集合</a>
+    
+</div>
+    </section>
+
+    
+
+    <section class="widget">
+        <h3 class="widget-title">其它</h3>
+        <ul class="widget-list">
+            <li><a href="https://sangzhenya.github.io/index.xml">文章 RSS</a></li>
+        </ul>
+    </section>
+</div>
+            </div>
+        </div>
+    </div>
+    <footer id="footer">
+    <div class="container">
+        &copy; 2020 <a href="https://sangzhenya.github.io/">新月的博客 By 新月</a>.
+        Powered by <a rel="nofollow noreferer noopener" href="https://gohugo.io" target="_blank">Hugo</a>.
+        Theme based on <a href="https://github.com/flysnow-org/maupassant-hugo" target="_blank">maupassant</a>.
+        
+    </div>
+</footer>
+
+
+    
+    <script type="text/javascript">
+        window.MathJax = {
+            tex2jax: {
+                inlineMath: [['$', '$']],
+                processEscapes: true
+                }
+            };
+    </script>
+    <script src='https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-MML-AM_CHTML' async></script>
+
+
+<a id="rocket" href="#top"></a>
+<script type="text/javascript" src='https://sangzhenya.github.io/js/totop.js?v=0.0.0' async=""></script>
+
+
+
+
+
+
+</body>
+
+</html>

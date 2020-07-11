@@ -1,0 +1,286 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <title> | 新月的博客</title>
+    <meta property="og:title" content=" - 新月的博客">
+    <meta property="og:type" content="article">
+        
+        
+    <meta name="Keywords" content="">
+    <meta name="description" content="">
+        
+    <meta name="author" content="新月">
+    <meta property="og:url" content="https://sangzhenya.github.io/post/%E5%BE%AE%E6%9C%8D%E5%8A%A1/CAP-%E5%8E%9F%E5%88%99-/">
+    <link rel="shortcut icon" href="https://sangzhenya.github.io/favicon.ico" type="image/x-icon">
+
+    <link rel="stylesheet" href='https://sangzhenya.github.io/css/normalize.css'>
+    <link rel="stylesheet" href='https://sangzhenya.github.io/css/style.css'>
+    <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+
+    
+
+
+    
+    
+</head>
+
+
+<body>
+    <header id="header" class="clearfix">
+    <div class="container">
+        <div class="col-group">
+            <div class="site-name ">
+                
+                    <a id="logo" href="https://sangzhenya.github.io/">
+                        新月的博客
+                    </a>
+                
+                <p class="description">晚来天欲雪，能饮一杯无？</p>
+            </div>
+            <div>
+                <nav id="nav-menu" class="clearfix">
+                    <a class="current" href="https://sangzhenya.github.io/">首页</a>
+                    
+                    <a  href="https://sangzhenya.github.io/archives/" title="归档">归档</a>
+                    
+                    <a  href="https://sangzhenya.github.io/about/" title="关于">关于</a>
+                    
+                </nav>
+            </div>
+        </div>
+    </div>
+</header>
+
+    <div id="body">
+        <div class="container">
+            <div class="col-group">
+
+                <div class="col-8" id="main">
+                    
+<div class="res-cons">
+    
+    <article class="post">
+        <header>
+            <h1 class="post-title"></h1>
+        </header>
+        <date class="post-meta meta-date">
+            1年1月1日
+        </date>
+        
+        
+        
+        <div class="post-content">
+            <h2 id="acid-原则-与-cap-原则">ACID 原则 与 CAP 原则</h2>
+<p>[TOC]</p>
+<h3 id="acid-原则"><strong>ACID 原则</strong></h3>
+<ol>
+<li>
+<p>A (Atomicity) 原子性</p>
+<p>原子性即事务里的所有操作要么全部做完，要么都不做。事务成功的条件就是事务里所有操作都成功，任意一个事务失败，则整个事务就是失败，需要回滚。</p>
+</li>
+<li>
+<p>C (Consistency) 一致性</p>
+<p>一致性即数据库要一直处于一致状态，事务的运行不会改变数据库原本的一致性约束。</p>
+</li>
+<li>
+<p>I (Isolation) 独立性</p>
+<p>独立性即并发的事务之间不会相互影响，如果一个事务要访问的数据正在被另外一个事务修改，只要另外一个事务未提交，它访问的数据就不受未提交事务的影响。</p>
+</li>
+<li>
+<p>D (Duarbility) 持久性</p>
+<p>持久性即一旦事务提交后，它做的修改将会永远保存在数据库上，即使出现宕机也不会丢失。</p>
+</li>
+</ol>
+<h3 id="cap-原则"><strong>CAP 原则</strong></h3>
+<ol>
+<li>C (Consistency) 强一致性</li>
+<li>A (Availability) 可用性</li>
+<li>P (Partition tolerance) 区域容错性</li>
+</ol>
+<p>CAP 如下图所示：</p>
+<p><img src="https://i.loli.net/2019/06/19/5d0a19bdd624668869.png" alt="经典 CAP 图"></p>
+<p>CAP 理论的核心是一个分布式系统不可能同时很好的满足一致性，可用性和分区容错性三个需求，因此 根据 CAP 原理可以将 NoSQL 数据库分成了满足 CA 原则、满足 CP 原则和满足 AP 原则的三大类。</p>
+<p>CA - 单点集群，满足一致性，可用性的系统，通常在可扩展性上不太强大。</p>
+<p>CP - 满足一致性，分区容错性，通常性能不是特别高。</p>
+<p>AP - 满足可用性，分区容错性，通常可能对一致性要求低一些。</p>
+<p>上述提到的 CAP 理论表明分布式存储系统中，最多只能实现上面的两点。而由于当前的网络硬件肯定会出现延迟丢包的问题。也就是说分区容错性是必须要实现的，所以只能在一致性和可用性之间进行权衡。</p>
+<h3 id="eureka-和-zookeeper-比较"><strong>Eureka 和 Zookeeper 比较</strong>：</h3>
+<ol>
+<li>
+<p>Zookeeper 保证 CP</p>
+<p>当想注册中心查询服务列表时，需要忍受注册中心返回的是几分钟以前的注册信息，但不能接受服务直接不可用。即服务注册功能对可用性要去高于一致性。但是 ZK 会出现这样的情况，当 mater 节点因为网络故障与其他节点失去联系的时，剩余的节点会重新进行 leader 选举。但是选举 leader 的时间过长， 30 ~ 120s 且选举期间整个 zk 集群都是不可用的，这样会导致选举期间注册服务瘫痪。在云部署的环境下，因网络问题使得 zk 集群失去 mater 节点的是大概率发生的事情，虽然服务能够最终恢复，但是漫长的选举时间导致注册长期不可用是无法忍受的。</p>
+</li>
+<li>
+<p>Eureka 保证 AP</p>
+<p>Eureka 设计优先保证可用性。Eureka 的各个节点都是平等的，几个节点挂断不会影响正常节点的工作，剩余的节点仍旧可以提供注册和查询服务。而 Eureka 的客户端向某个 Eureka 的注册时如果发现连接失败，则自动切换至其他节点，只要有一台 Eureka 还在，就可以保证注册服务的可用性。只不过查询到的信息可能不是最新的。此处之外， Eureka 还有一种自我保护机制，如果 15 内超过 85% 的节点都没有正常心跳，那么 Eureka 就认为客户端与注册中心出现了网络故障，此时会出现一下几种情况：</p>
+<ol>
+<li>Eureka 不再从注册列表中移除因长时间没有收到心跳而应该过期的服务。</li>
+<li>Eureka 仍然能够接受新服务注册和查询，但是不能被同步到其他节点上。</li>
+<li>当网络稳定时，当前示例新的注册信息会被同步到其他节点上。</li>
+</ol>
+<p>所以 Eureka 可以很好的应对因为网络故障导致部分节点失去联系的情况，而不会像 zookeeper 那样整个注册服务瘫痪。</p>
+</li>
+</ol>
+
+        </div>
+
+        
+
+
+        
+
+
+        <div class="post-meta meta-tags">
+            
+            没有标签
+            
+        </div>
+    </article>
+    
+    
+
+    
+    
+</div>
+
+                </div>
+
+                <div id="secondary">
+    <section class="widget">
+        <form id="search" action='//www.google.com/search' method="get" accept-charset="utf-8" target="_blank" _lpchecked="1">
+      
+      <input type="text" name="q" maxlength="20" placeholder="Search">
+      <input type="hidden" name="sitesearch" value="https://sangzhenya.github.io/">
+      <button type="submit" class="submit icon-search"></button>
+</form>
+    </section>
+    
+    <section class="widget">
+        <h3 class="widget-title">最近文章</h3>
+<ul class="widget-list">
+    
+    <li>
+        <a href="https://sangzhenya.github.io/post/Java/jdk8/Java-8-Stream/" title="Java 8 Stream">Java 8 Stream</a>
+    </li>
+    
+    <li>
+        <a href="https://sangzhenya.github.io/post/Java/jdk8/Java-8-Lambda/" title="Java 8 Lambda">Java 8 Lambda</a>
+    </li>
+    
+    <li>
+        <a href="https://sangzhenya.github.io/post/Java/juc/Java-ConcurrentHashMap/" title="Java ConcurrentHashMap">Java ConcurrentHashMap</a>
+    </li>
+    
+    <li>
+        <a href="https://sangzhenya.github.io/post/Java/juc/Java-CAS/" title="Java CAS">Java CAS</a>
+    </li>
+    
+    <li>
+        <a href="https://sangzhenya.github.io/post/Java/juc/Java-volatile/" title="Java volatile">Java volatile</a>
+    </li>
+    
+    <li>
+        <a href="https://sangzhenya.github.io/post/Java/juc/Java-ReentrantLock/" title="Java ReentrantLock">Java ReentrantLock</a>
+    </li>
+    
+    <li>
+        <a href="https://sangzhenya.github.io/post/Java/juc/Java-%E5%B9%B6%E5%8F%91%E6%8E%A7%E5%88%B6/" title="Java 并发控制">Java 并发控制</a>
+    </li>
+    
+    <li>
+        <a href="https://sangzhenya.github.io/post/Java/juc/Java-AQS/" title="Java AQS">Java AQS</a>
+    </li>
+    
+    <li>
+        <a href="https://sangzhenya.github.io/post/DataBase/MyBatis/MyBaits-%E4%B8%8E-Spring-Boot/" title=""></a>
+    </li>
+    
+    <li>
+        <a href="https://sangzhenya.github.io/post/DataBase/MyBatis/SQL-%E6%98%A0%E5%B0%84/" title=""></a>
+    </li>
+    
+</ul>
+    </section>
+
+    
+
+    <section class="widget">
+        <h3 class="widget-title">分类</h3>
+<ul class="widget-list">
+    
+    <li><a href="https://sangzhenya.github.io/categories/Java/">Java (8)</a></li>
+    
+    <li><a href="https://sangzhenya.github.io/categories/%E5%85%B3%E4%BA%8E/">关于 (1)</a></li>
+    
+</ul>
+    </section>
+
+    <section class="widget">
+        <h3 class="widget-title">标签</h3>
+<div class="tagcloud">
+    
+    <a href="https://sangzhenya.github.io/tags/JDK8/">JDK8</a>
+    
+    <a href="https://sangzhenya.github.io/tags/JUC/">JUC</a>
+    
+    <a href="https://sangzhenya.github.io/tags/JVM/">JVM</a>
+    
+    <a href="https://sangzhenya.github.io/tags/java/">java</a>
+    
+    <a href="https://sangzhenya.github.io/tags/%E5%85%B3%E4%BA%8E/">关于</a>
+    
+    <a href="https://sangzhenya.github.io/tags/%E9%9B%86%E5%90%88/">集合</a>
+    
+</div>
+    </section>
+
+    
+
+    <section class="widget">
+        <h3 class="widget-title">其它</h3>
+        <ul class="widget-list">
+            <li><a href="https://sangzhenya.github.io/index.xml">文章 RSS</a></li>
+        </ul>
+    </section>
+</div>
+            </div>
+        </div>
+    </div>
+    <footer id="footer">
+    <div class="container">
+        &copy; 2020 <a href="https://sangzhenya.github.io/">新月的博客 By 新月</a>.
+        Powered by <a rel="nofollow noreferer noopener" href="https://gohugo.io" target="_blank">Hugo</a>.
+        Theme based on <a href="https://github.com/flysnow-org/maupassant-hugo" target="_blank">maupassant</a>.
+        
+    </div>
+</footer>
+
+
+    
+    <script type="text/javascript">
+        window.MathJax = {
+            tex2jax: {
+                inlineMath: [['$', '$']],
+                processEscapes: true
+                }
+            };
+    </script>
+    <script src='https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-MML-AM_CHTML' async></script>
+
+
+<a id="rocket" href="#top"></a>
+<script type="text/javascript" src='https://sangzhenya.github.io/js/totop.js?v=0.0.0' async=""></script>
+
+
+
+
+
+
+</body>
+
+</html>

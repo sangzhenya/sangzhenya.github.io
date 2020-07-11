@@ -1,0 +1,326 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <title> | 新月的博客</title>
+    <meta property="og:title" content=" - 新月的博客">
+    <meta property="og:type" content="article">
+        
+        
+    <meta name="Keywords" content="">
+    <meta name="description" content="">
+        
+    <meta name="author" content="新月">
+    <meta property="og:url" content="https://sangzhenya.github.io/post/Others/Jenkins-%E8%87%AA%E5%8A%A8%E9%83%A8%E7%BD%B2/">
+    <link rel="shortcut icon" href="https://sangzhenya.github.io/favicon.ico" type="image/x-icon">
+
+    <link rel="stylesheet" href='https://sangzhenya.github.io/css/normalize.css'>
+    <link rel="stylesheet" href='https://sangzhenya.github.io/css/style.css'>
+    <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+
+    
+
+
+    
+    
+</head>
+
+
+<body>
+    <header id="header" class="clearfix">
+    <div class="container">
+        <div class="col-group">
+            <div class="site-name ">
+                
+                    <a id="logo" href="https://sangzhenya.github.io/">
+                        新月的博客
+                    </a>
+                
+                <p class="description">晚来天欲雪，能饮一杯无？</p>
+            </div>
+            <div>
+                <nav id="nav-menu" class="clearfix">
+                    <a class="current" href="https://sangzhenya.github.io/">首页</a>
+                    
+                    <a  href="https://sangzhenya.github.io/archives/" title="归档">归档</a>
+                    
+                    <a  href="https://sangzhenya.github.io/about/" title="关于">关于</a>
+                    
+                </nav>
+            </div>
+        </div>
+    </div>
+</header>
+
+    <div id="body">
+        <div class="container">
+            <div class="col-group">
+
+                <div class="col-8" id="main">
+                    
+<div class="res-cons">
+    
+    <article class="post">
+        <header>
+            <h1 class="post-title"></h1>
+        </header>
+        <date class="post-meta meta-date">
+            1年1月1日
+        </date>
+        
+        
+        
+        <div class="post-content">
+            <h1 id="jenkins-自动部署">Jenkins 自动部署</h1>
+<p>博客后台每次 build 之后都需手动放到服务器上，然后停掉原本的服务，重新启动服务。为了简化流程所以使用 Jenkins 进行自动化部署。</p>
+<p>首先项目是基于 Docker 的（至于 Jenkins 和 Docker 的安装非常流程化，这边不赘述）。</p>
+<h2 id="将项目打包成-docker-镜像">将项目打包成 Docker 镜像</h2>
+<p>首先编写 <code>Dockerfile</code> 简单如下，</p>
+<div class="highlight"><div style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4">
+<table style="border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">1
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">2
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">3
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">4
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">5
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">6
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-Dockerfile" data-lang="Dockerfile"><span style="color:#000;font-weight:bold">FROM</span><span style="color:#d14"> openjdk:11.0-jre-slim</span><span style="color:#a61717;background-color:#e3d2d2">
+</span><span style="color:#a61717;background-color:#e3d2d2"></span><span style="color:#000;font-weight:bold">MAINTAINER</span><span style="color:#d14"> xinyue&lt;xinyue@xinyue.com&gt;</span><span style="color:#a61717;background-color:#e3d2d2">
+</span><span style="color:#a61717;background-color:#e3d2d2"></span><span style="color:#000;font-weight:bold">EXPOSE</span><span style="color:#d14"> 8081</span><span style="color:#a61717;background-color:#e3d2d2">
+</span><span style="color:#a61717;background-color:#e3d2d2"></span><span style="color:#000;font-weight:bold">VOLUME</span><span style="color:#d14"> /tmp</span><span style="color:#a61717;background-color:#e3d2d2">
+</span><span style="color:#a61717;background-color:#e3d2d2"></span><span style="color:#000;font-weight:bold">ADD</span> /target/blog-0.0.1-SNAPSHOT.jar app.jar<span style="color:#a61717;background-color:#e3d2d2">
+</span><span style="color:#a61717;background-color:#e3d2d2"></span><span style="color:#000;font-weight:bold">ENTRYPOINT</span> [ <span style="color:#d14">&#34;java&#34;</span>, <span style="color:#d14">&#34;-jar&#34;</span>, <span style="color:#d14">&#34;/app.jar&#34;</span>, <span style="color:#d14">&#34;--spring.profiles.active=prd&#34;</span>]<span style="color:#a61717;background-color:#e3d2d2">
+</span></code></pre></td></tr></table>
+</div>
+</div><p>对于我的项目非常的简单，就是基于 openjdk 11 的镜像，运行一个 jar 包即可。编译，运行分别是以下两个 <code>docker</code> 命令, 相关的命令还会在 Jenkins 的配置中使用。</p>
+<div class="highlight"><div style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4">
+<table style="border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">1
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">2
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">sudo docker build -f Dockerfile -t blog  . <span style="color:#998;font-style:italic"># 根据 Dockerfile 打包 Docker 镜像</span>
+sudo docker run -d -p 8081:8081 --name blog -t blog <span style="color:#998;font-style:italic"># 启动镜像，即根据镜像生成一个 container，启动 container</span>
+</code></pre></td></tr></table>
+</div>
+</div><h2 id="在-github-中的设置">在 GitHub 中的设置</h2>
+<p>在 git 项目中的 setting 中的 WebHooks 中添加一个 payload url，即 Jenkins 部署的地址后加上 <code>/github-webhook/</code></p>
+<p><img src="https://i.loli.net/2020/05/02/ZxjuY7NSw2BdhAV.png" alt="GitHub 中 webhook 设置"></p>
+<p>然后在 Profile - setting - developer settings - Personal access tokens 可以生成一个新的 token 为了 jenkins 访问账户使用（如果没有这一步，在之后第一次打开 jenkins blue ocean 的时候也会自动跳转到该处创建 token）。<strong>创建完成之后会在页面上有一个 code，这个一定要保存下来后续会使用到。</strong></p>
+<p><img src="https://i.loli.net/2020/05/02/QDKO9Ha4qJFT5nS.png" alt="Personal access tokens"></p>
+<h2 id="在-jenkins-中的配置">在 Jenkins 中的配置</h2>
+<p>首先在 Jenkins 中添加凭据，首页 - 凭据 - 系统 - 全局凭据。然后点击 Add Credentials 即可添加凭据，</p>
+<p><img src="https://i.loli.net/2020/05/02/jnb1N5GSQMrqCsa.png" alt="添加凭据"></p>
+<p>添加凭据的时候选择 kind 为 &ldquo;Secret Text&rdquo; 然后 随便起一个 ID，点击 OK Save 即可。</p>
+<p><img src="https://i.loli.net/2020/05/02/5XA9jFnQyxHvYPU.png" alt="添加凭据"></p>
+<p>然后在 Jenkins 中添加 GitHub 服务器的信息，首页 - Manage Jenkins - Configure System 中 找到 GitHub 服务器的配置。</p>
+<p>选择刚才创建的凭据，然后勾选上 “管理 Hook”，然后点击 “连接测试”，测试通过则表明已经创建好。</p>
+<p><img src="https://i.loli.net/2020/05/02/lRfc1rNxVy3ptiT.png" alt="配置 GitHub 服务器"></p>
+<p>在 Jenkins 中使用的 Blue Ocean 插件，如果没有安装，可以先到 Manage Jenkins - Manage Plugins 中安装 Blue Ocean 插件。如果已经安装则登录后直接点击打开 Blue Ocean 即可。</p>
+<p><img src="https://i.loli.net/2020/05/02/yxWAtlPkc31MjEf.png" alt="打开 Blue Ocean"></p>
+<p>会打开流水线面板，如下所示：</p>
+<p><img src="https://i.loli.net/2020/05/02/GwDpVlorgNeSPbz.png" alt="Blue Ocean 首页"></p>
+<p>点击创建流水线，如果没有配置过 GitHub 的信息会提示要先在 GitHub 中生成 Token。</p>
+<p><img src="https://i.loli.net/2020/05/02/Q69lfTbnuJjmM2t.png" alt="需要创建 token"></p>
+<p>如果已经创建过则会显示 GitHub 账户，点击选择账户则会提示需要使用哪个仓库创建流水线。</p>
+<p><img src="https://i.loli.net/2020/05/02/a7loHeDyEnjcLQX.png" alt="选择账户创建流水线"></p>
+<p>创建流水线的界面如下：</p>
+<p><img src="https://i.loli.net/2020/05/02/Z7iFcohSlm8HtBb.png" alt="创建流水线页面"></p>
+<p>按需配置即可，目前我的一个配置如下：</p>
+<pre><code class="language-jenkinsfile" data-lang="jenkinsfile">pipeline {
+  agent any
+  stages {
+    stage('Start') {
+      steps {
+        echo 'Process start'
+      }
+    }
+
+    stage('Build ') {
+      steps {
+        sh 'mvn clean package -Dmaven.test.skip=true'
+      }
+    }
+
+    stage('Docker') {
+      steps {
+        sh 'sudo docker build -f Dockerfile -t blog  .'
+        sh 'sudo docker stop blog || echo &quot;No need stop&quot;'
+        sh 'sudo docker rm blog || echo &quot;No need remove&quot;'
+        sh 'sudo docker run -d -p 8081:8081 --name blog -t blog'
+      }
+    }
+
+    stage('End') {
+      steps {
+        echo 'Process end'
+      }
+    }
+
+  }
+}
+</code></pre><p>完成后，可以尝试本地 push 代码，然后验证一下流水线是否正常运行了。</p>
+
+        </div>
+
+        
+
+
+        
+
+
+        <div class="post-meta meta-tags">
+            
+            没有标签
+            
+        </div>
+    </article>
+    
+    
+
+    
+    
+</div>
+
+                </div>
+
+                <div id="secondary">
+    <section class="widget">
+        <form id="search" action='//www.google.com/search' method="get" accept-charset="utf-8" target="_blank" _lpchecked="1">
+      
+      <input type="text" name="q" maxlength="20" placeholder="Search">
+      <input type="hidden" name="sitesearch" value="https://sangzhenya.github.io/">
+      <button type="submit" class="submit icon-search"></button>
+</form>
+    </section>
+    
+    <section class="widget">
+        <h3 class="widget-title">最近文章</h3>
+<ul class="widget-list">
+    
+    <li>
+        <a href="https://sangzhenya.github.io/post/Java/jdk8/Java-8-Stream/" title="Java 8 Stream">Java 8 Stream</a>
+    </li>
+    
+    <li>
+        <a href="https://sangzhenya.github.io/post/Java/jdk8/Java-8-Lambda/" title="Java 8 Lambda">Java 8 Lambda</a>
+    </li>
+    
+    <li>
+        <a href="https://sangzhenya.github.io/post/Java/juc/Java-ConcurrentHashMap/" title="Java ConcurrentHashMap">Java ConcurrentHashMap</a>
+    </li>
+    
+    <li>
+        <a href="https://sangzhenya.github.io/post/Java/juc/Java-CAS/" title="Java CAS">Java CAS</a>
+    </li>
+    
+    <li>
+        <a href="https://sangzhenya.github.io/post/Java/juc/Java-volatile/" title="Java volatile">Java volatile</a>
+    </li>
+    
+    <li>
+        <a href="https://sangzhenya.github.io/post/Java/juc/Java-ReentrantLock/" title="Java ReentrantLock">Java ReentrantLock</a>
+    </li>
+    
+    <li>
+        <a href="https://sangzhenya.github.io/post/Java/juc/Java-%E5%B9%B6%E5%8F%91%E6%8E%A7%E5%88%B6/" title="Java 并发控制">Java 并发控制</a>
+    </li>
+    
+    <li>
+        <a href="https://sangzhenya.github.io/post/Java/juc/Java-AQS/" title="Java AQS">Java AQS</a>
+    </li>
+    
+    <li>
+        <a href="https://sangzhenya.github.io/post/DataBase/MyBatis/MyBaits-%E4%B8%8E-Spring-Boot/" title=""></a>
+    </li>
+    
+    <li>
+        <a href="https://sangzhenya.github.io/post/DataBase/MyBatis/SQL-%E6%98%A0%E5%B0%84/" title=""></a>
+    </li>
+    
+</ul>
+    </section>
+
+    
+
+    <section class="widget">
+        <h3 class="widget-title">分类</h3>
+<ul class="widget-list">
+    
+    <li><a href="https://sangzhenya.github.io/categories/Java/">Java (8)</a></li>
+    
+    <li><a href="https://sangzhenya.github.io/categories/%E5%85%B3%E4%BA%8E/">关于 (1)</a></li>
+    
+</ul>
+    </section>
+
+    <section class="widget">
+        <h3 class="widget-title">标签</h3>
+<div class="tagcloud">
+    
+    <a href="https://sangzhenya.github.io/tags/JDK8/">JDK8</a>
+    
+    <a href="https://sangzhenya.github.io/tags/JUC/">JUC</a>
+    
+    <a href="https://sangzhenya.github.io/tags/JVM/">JVM</a>
+    
+    <a href="https://sangzhenya.github.io/tags/java/">java</a>
+    
+    <a href="https://sangzhenya.github.io/tags/%E5%85%B3%E4%BA%8E/">关于</a>
+    
+    <a href="https://sangzhenya.github.io/tags/%E9%9B%86%E5%90%88/">集合</a>
+    
+</div>
+    </section>
+
+    
+
+    <section class="widget">
+        <h3 class="widget-title">其它</h3>
+        <ul class="widget-list">
+            <li><a href="https://sangzhenya.github.io/index.xml">文章 RSS</a></li>
+        </ul>
+    </section>
+</div>
+            </div>
+        </div>
+    </div>
+    <footer id="footer">
+    <div class="container">
+        &copy; 2020 <a href="https://sangzhenya.github.io/">新月的博客 By 新月</a>.
+        Powered by <a rel="nofollow noreferer noopener" href="https://gohugo.io" target="_blank">Hugo</a>.
+        Theme based on <a href="https://github.com/flysnow-org/maupassant-hugo" target="_blank">maupassant</a>.
+        
+    </div>
+</footer>
+
+
+    
+    <script type="text/javascript">
+        window.MathJax = {
+            tex2jax: {
+                inlineMath: [['$', '$']],
+                processEscapes: true
+                }
+            };
+    </script>
+    <script src='https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-MML-AM_CHTML' async></script>
+
+
+<a id="rocket" href="#top"></a>
+<script type="text/javascript" src='https://sangzhenya.github.io/js/totop.js?v=0.0.0' async=""></script>
+
+
+
+
+
+
+</body>
+
+</html>

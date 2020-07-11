@@ -1,0 +1,538 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <title> | 新月的博客</title>
+    <meta property="og:title" content=" - 新月的博客">
+    <meta property="og:type" content="article">
+        
+        
+    <meta name="Keywords" content="">
+    <meta name="description" content="">
+        
+    <meta name="author" content="新月">
+    <meta property="og:url" content="https://sangzhenya.github.io/post/Java/JVM/Java-JVM/">
+    <link rel="shortcut icon" href="https://sangzhenya.github.io/favicon.ico" type="image/x-icon">
+
+    <link rel="stylesheet" href='https://sangzhenya.github.io/css/normalize.css'>
+    <link rel="stylesheet" href='https://sangzhenya.github.io/css/style.css'>
+    <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+
+    
+
+
+    
+    
+</head>
+
+
+<body>
+    <header id="header" class="clearfix">
+    <div class="container">
+        <div class="col-group">
+            <div class="site-name ">
+                
+                    <a id="logo" href="https://sangzhenya.github.io/">
+                        新月的博客
+                    </a>
+                
+                <p class="description">晚来天欲雪，能饮一杯无？</p>
+            </div>
+            <div>
+                <nav id="nav-menu" class="clearfix">
+                    <a class="current" href="https://sangzhenya.github.io/">首页</a>
+                    
+                    <a  href="https://sangzhenya.github.io/archives/" title="归档">归档</a>
+                    
+                    <a  href="https://sangzhenya.github.io/about/" title="关于">关于</a>
+                    
+                </nav>
+            </div>
+        </div>
+    </div>
+</header>
+
+    <div id="body">
+        <div class="container">
+            <div class="col-group">
+
+                <div class="col-8" id="main">
+                    
+<div class="res-cons">
+    
+    <article class="post">
+        <header>
+            <h1 class="post-title"></h1>
+        </header>
+        <date class="post-meta meta-date">
+            1年1月1日
+        </date>
+        
+        
+        
+        <div class="post-content">
+            <h2 id="java-jvm">Java JVM</h2>
+<h3 id="minorgc-的过程">MinorGC 的过程</h3>
+<p>复制 &ndash;&gt; 清空 &ndash;&gt; 互换</p>
+<ol>
+<li>
+<p>eden, SurviorFrom 复制到 SurviorTo, 年龄 + 1</p>
+<p>首先 当 Eden 区满的时候回触发一次 GC，把仍然存活的对象复制到 SurviorFrom 区，当 Eden 去再次触发GC的时候会扫描 Eden区和From区域，对这个两个区域进行垃圾回收，经过这次回收后还存活的对象则直接复制到 To 区域（如果对象的年龄已经达到了老年的标准，则复制到 老年代），同时把这些对象的年龄 + 1.</p>
+</li>
+<li>
+<p>清空 eden, SurviorFrom</p>
+<p>然后清空 Eden 和 SurviorFrom区中的对象，也即复制之后有交换，谁空谁是to</p>
+</li>
+<li>
+<p>SurviorTo 和 SurviorFrom 互换</p>
+<p>最后 SurviorFrom 和 SurviorTo 互换，原SurviorTo区域成为下一次 GC 时的 SurviorFrom 区域。部分对象会在 From 和 To 区域中复制来复制去，如此交换 15次，如果仍然存活则放到老年代。该参数由 MaxTenuringThreshold 决定，默认是 15</p>
+</li>
+</ol>
+<h3 id="可达性分析">可达性分析</h3>
+<p>为了解决引用计数法的循环引用的问题，Java 使用了可达性分析的方法。通过 GC Root 遍历引用。所谓的 GC Roots 是一组必须活跃的引用。其基本思路就是通过一系列名为 “GC Roots” 的对象作为起始点，从这个被 成为 GC Roots 的对象开始向下搜索，如果一个对象到 GC Roots 没有任何引用链相连时，则说明此对象不可用。也即给定一个集合的引用作为根出发，通过引用关系遍历对象图，能被遍历到（可达到的）对象就被判定为存活，没有被遍历到的则判断为死亡。</p>
+<p>GC Roots 可以是以下类型的对象：</p>
+<ol>
+<li>虚拟机栈（栈帧中的局部变量区）中引用的对象。</li>
+<li>方法区中的类静态属性引用的对象。</li>
+<li>方法区中常量引用的对象的。</li>
+<li>本地方法栈中 JNI 引用的对象。</li>
+</ol>
+<div class="highlight"><div style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4">
+<table style="border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 1
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 2
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 3
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 4
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 5
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 6
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 7
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 8
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 9
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">10
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">11
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#000;font-weight:bold">public</span> <span style="color:#000;font-weight:bold">class</span> <span style="color:#458;font-weight:bold">GCRootDemo</span> <span style="color:#000;font-weight:bold">{</span>
+    <span style="color:#000;font-weight:bold">private</span> <span style="color:#458;font-weight:bold">byte</span><span style="color:#000;font-weight:bold">[]</span> bytes <span style="color:#000;font-weight:bold">=</span> <span style="color:#000;font-weight:bold">new</span> <span style="color:#458;font-weight:bold">byte</span><span style="color:#000;font-weight:bold">[</span>100 <span style="color:#000;font-weight:bold">*</span> 1024 <span style="color:#000;font-weight:bold">*</span> 1024<span style="color:#000;font-weight:bold">];</span>
+    <span style="color:#000;font-weight:bold">private</span> <span style="color:#000;font-weight:bold">static</span> GCRootDemo2 demo2<span style="color:#000;font-weight:bold">;</span>	<span style="color:#998;font-style:italic">// case 2
+</span><span style="color:#998;font-style:italic"></span>    <span style="color:#000;font-weight:bold">private</span> <span style="color:#000;font-weight:bold">static</span> <span style="color:#000;font-weight:bold">final</span> GCRootDemo3 demo3 <span style="color:#000;font-weight:bold">=</span> <span style="color:#000;font-weight:bold">new</span> GCRootDemo3<span style="color:#000;font-weight:bold">();</span> <span style="color:#998;font-style:italic">// case 3
+</span><span style="color:#998;font-style:italic"></span>   	<span style="color:#000;font-weight:bold">public</span> <span style="color:#000;font-weight:bold">static</span> <span style="color:#458;font-weight:bold">void</span> <span style="color:#900;font-weight:bold">m1</span><span style="color:#000;font-weight:bold">()</span> <span style="color:#000;font-weight:bold">{</span>
+        GCRootDemo1 demo1 <span style="color:#000;font-weight:bold">=</span> <span style="color:#000;font-weight:bold">new</span> GCRootDemo1<span style="color:#000;font-weight:bold">();</span> <span style="color:#998;font-style:italic">// case 1
+</span><span style="color:#998;font-style:italic"></span>    <span style="color:#000;font-weight:bold">}</span>
+    <span style="color:#000;font-weight:bold">public</span> <span style="color:#000;font-weight:bold">static</span> <span style="color:#458;font-weight:bold">void</span> <span style="color:#900;font-weight:bold">main</span><span style="color:#000;font-weight:bold">(</span>String<span style="color:#000;font-weight:bold">[]</span> args<span style="color:#000;font-weight:bold">)</span> <span style="color:#000;font-weight:bold">{</span>
+        m1<span style="color:#000;font-weight:bold">();</span>
+    <span style="color:#000;font-weight:bold">}</span>
+<span style="color:#000;font-weight:bold">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><h3 id="jvm-参数">JVM 参数</h3>
+<h4 id="标配参数">标配参数</h4>
+<div class="highlight"><div style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4">
+<table style="border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">1
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">2
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">3
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell">-version
+-help
+java -showversion
+</code></pre></td></tr></table>
+</div>
+</div><h4 id="x-参数">X 参数</h4>
+<div class="highlight"><div style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4">
+<table style="border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">1
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">2
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">3
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell">-Xint	<span style="color:#998;font-style:italic"># 解释执行</span>
+-Xcomp	<span style="color:#998;font-style:italic"># 第一次使用就变异成本地代码</span>
+-Xmixed	<span style="color:#998;font-style:italic"># 混合模式</span>
+</code></pre></td></tr></table>
+</div>
+</div><h4 id="xx-参数">XX 参数</h4>
+<h5 id="boolean-类型">Boolean 类型</h5>
+<div class="highlight"><div style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4">
+<table style="border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 1
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 2
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 3
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 4
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 5
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 6
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 7
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 8
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 9
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">10
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">11
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">12
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell">-XX: 
+<span style="color:#998;font-style:italic"># + 或者- 某个属性</span>
+<span style="color:#998;font-style:italic"># + 表示开启</span>
+<span style="color:#998;font-style:italic"># - 表示关闭</span>
+
+--XX:+PrintGCDetails  <span style="color:#998;font-style:italic"># 打印 GC 信息</span>
+--XX:+UseSerialGC		<span style="color:#998;font-style:italic"># 使用串行垃圾回收器</span>
+
+<span style="color:#998;font-style:italic">#----</span>
+
+jps -l <span style="color:#998;font-style:italic"># 查看运行的程序</span>
+jinfo -flag &lt;参数名称&gt; &lt;程序进程号&gt;
+</code></pre></td></tr></table>
+</div>
+</div><ul>
+<li>jps 查看当前运行的 Java 程序</li>
+</ul>
+<p><img src="https://i.loli.net/2019/06/15/5d04338a4778c90439.png" alt="查看当前运行的程序"></p>
+<ul>
+<li>
+<p>jinfo 查看 Java 程序信息</p>
+<p><img src="https://i.loli.net/2019/06/15/5d0435fa5cb0a15680.png" alt="Java 程序信息"></p>
+</li>
+<li>
+<p>jmap 内存映像工具</p>
+</li>
+<li>
+<p>jstat 统计信息监视工具</p>
+</li>
+<li>
+<p>jstack 堆栈异常跟踪工具</p>
+</li>
+<li>
+<p>jvisualvm</p>
+</li>
+<li>
+<p>jconsole</p>
+</li>
+</ul>
+<h5 id="kv-设置类型">KV 设置类型</h5>
+<div class="highlight"><div style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4">
+<table style="border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 1
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 2
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 3
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 4
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 5
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 6
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 7
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 8
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 9
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">10
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">11
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">12
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">13
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">14
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">15
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell"><span style="color:#998;font-style:italic"># KV 设值类型</span>
+--XX:MetaspaceSize			<span style="color:#998;font-style:italic"># 元空间大小</span>
+--XX:MaxTenuringThreshold	<span style="color:#998;font-style:italic"># 新生代到老年代年龄限制</span>
+-Xms	<span style="color:#998;font-style:italic"># = -XX:InitialHeapSize	默认是物理内存的 1/64</span>
+-Xmx	<span style="color:#998;font-style:italic"># = -XX:MaxHeapSize		默认是物理内存的 1/4</span>
+
+<span style="color:#998;font-style:italic">#-------------</span>
+jinfo -flags &lt;进程号&gt;	<span style="color:#998;font-style:italic"># 查看 Java 程序的参数设置</span>
+java -XX:+PrintFlagsInital  <span style="color:#998;font-style:italic"># 查看默认参数设置</span>
+java -XX:+PrintFlagsFinal	<span style="color:#998;font-style:italic"># 查看参数最终值</span>
+java -XX:+PrintCommandLineFlags -version <span style="color:#998;font-style:italic"># 查看参数默认设置</span>
+
+<span style="color:#008080">UseAES</span> <span style="color:#000;font-weight:bold">=</span> <span style="color:#0086b3">true</span>
+UseCompressedClassPointers :<span style="color:#000;font-weight:bold">=</span> <span style="color:#0086b3">true</span> <span style="color:#998;font-style:italic"># := 表示被人为或者系统修改过</span>
+
+</code></pre></td></tr></table>
+</div>
+</div><ul>
+<li>查看 Java 程序默认参数</li>
+</ul>
+<p><img src="https://i.loli.net/2019/06/15/5d0436cbe460468773.png" alt="Java 程序默认参数"></p>
+<ul>
+<li>
+<p>查看 Java 全局默认参数</p>
+<p><img src="https://i.loli.net/2019/06/15/5d043868a0b9f71065.png" alt=""></p>
+</li>
+<li>
+<p>查看默认设置</p>
+</li>
+</ul>
+<p><img src="https://i.loli.net/2019/06/15/5d043bb91ce8e64159.png" alt="查看默认参数设置"></p>
+<h4 id="常用的-jvm-参数">常用的 JVM 参数</h4>
+<p>通过程序查看 JVM 的一些信息</p>
+<div class="highlight"><div style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4">
+<table style="border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">1
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">2
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">3
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">4
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#458;font-weight:bold">long</span> totalMemory <span style="color:#000;font-weight:bold">=</span> Runtime<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">getRuntime</span><span style="color:#000;font-weight:bold">().</span><span style="color:#008080">totalMemory</span><span style="color:#000;font-weight:bold">();</span>
+<span style="color:#458;font-weight:bold">long</span> maxMemory <span style="color:#000;font-weight:bold">=</span> Runtime<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">getRuntime</span><span style="color:#000;font-weight:bold">().</span><span style="color:#008080">maxMemory</span><span style="color:#000;font-weight:bold">();</span>
+System<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">out</span><span style="color:#000;font-weight:bold">.</span><span style="color:#008080">println</span><span style="color:#000;font-weight:bold">(</span>totalMemory<span style="color:#000;font-weight:bold">/</span>1024<span style="color:#000;font-weight:bold">/</span>1024<span style="color:#000;font-weight:bold">);</span>
+System<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">out</span><span style="color:#000;font-weight:bold">.</span><span style="color:#008080">println</span><span style="color:#000;font-weight:bold">(</span>maxMemory<span style="color:#000;font-weight:bold">/</span>1024<span style="color:#000;font-weight:bold">/</span>1024<span style="color:#000;font-weight:bold">);</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>常用的参数</p>
+<div class="highlight"><div style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4">
+<table style="border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 1
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 2
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 3
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 4
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 5
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 6
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 7
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 8
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 9
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">10
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">11
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">12
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">13
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">14
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">15
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">16
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">17
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">18
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">19
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">20
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">21
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">22
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">23
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">24
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">25
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">26
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">27
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">28
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">29
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">30
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">31
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">32
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">33
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">34
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">35
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">36
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">37
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">38
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">39
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">40
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">41
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">42
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">43
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">44
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">45
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell">-Xms		<span style="color:#998;font-style:italic"># 初始大小内存 默认为物理内存的 1/64 等价于 -XX:InitialHeapSize</span>
+-Xmx		<span style="color:#998;font-style:italic"># 最大分配内存 默认为物理内存的 1/4 等价于 -XX:MaxHeapSize</span>
+-Xss		<span style="color:#998;font-style:italic"># 设置单个线程栈的大小 默认为 512k ~ 1024k</span> 
+			<span style="color:#998;font-style:italic"># 等价于 -XX:ThreadStackSize  默认值依赖于平台</span>
+-Xmn		<span style="color:#998;font-style:italic"># 新生区内存的大小</span>
+-XX:MetaspaceSzie	<span style="color:#998;font-style:italic"># 设置元空间大小</span>
+-XX:+PrintGCDetails	<span style="color:#998;font-style:italic"># 打印 GC 的详细信息</span>
+-XX:SurviorRatio	<span style="color:#998;font-style:italic"># 设置新生代中 eden 和 s0/s1 空间的比例</span>
+					<span style="color:#998;font-style:italic"># 默认是 -XX:SurvivorRatio=8, Eden:s0:s1=8:1:1</span>
+					<span style="color:#998;font-style:italic"># 假如 -XX:SurvivorRatio=4, Eden:s0:s1=4:1:1</span>
+					<span style="color:#998;font-style:italic"># SurvivorRatio 值就是设置 Eden 区的比例占多少，s0和s1 相同</span>
+-XX:NewRatio		<span style="color:#998;font-style:italic"># 配置年轻代与老年代在堆结构的占比</span>
+					<span style="color:#998;font-style:italic"># 默认 -XX:NewRatio=2 新生代占1，老年代占2，年轻代占整个对的 1/3</span>
+					<span style="color:#998;font-style:italic"># 假如 -XX:NewRatio=4 新生代占1，老年代占4.</span>
+					<span style="color:#998;font-style:italic"># NewRatio 值就是设置老年代的占比，剩下的 1 分给新生代</span>
+-XX:MaxTenuringThreshold	<span style="color:#998;font-style:italic"># 设置垃圾最大年龄</span>
+
+
+<span style="color:#998;font-style:italic">#----</span>
+-Xms128m -Xmx4096m -Xss1024k -XX:Metaspace<span style="color:#000;font-weight:bold">=</span>512m 
+-XX:+PrintCommandLineFlags -XX:+PrintGCDetails -XX:+UseSerialGC
+
+<span style="color:#998;font-style:italic">#---</span>
+YungGC
+<span style="color:#998;font-style:italic"># [GC类型 (状态)</span>   		
+<span style="color:#000;font-weight:bold">[</span>GC <span style="color:#000;font-weight:bold">(</span>Allocation Failure<span style="color:#000;font-weight:bold">)</span> 
+<span style="color:#998;font-style:italic"># [新生代： 回收前内存 -&gt; 回收后内存（总内存）]</span>
+<span style="color:#000;font-weight:bold">[</span>PSYoungGen: 1927K-&gt;496K<span style="color:#000;font-weight:bold">(</span>2560K<span style="color:#000;font-weight:bold">)]</span> 
+<span style="color:#998;font-style:italic"># 回收前 JVM 堆内存 -&gt; 回收后 JVM 堆内存(JVM 堆大小) GC 耗时]</span>
+1927K-&gt;820K<span style="color:#000;font-weight:bold">(</span>9728K<span style="color:#000;font-weight:bold">)</span>, 0.0020666 secs<span style="color:#000;font-weight:bold">]</span> 
+<span style="color:#998;font-style:italic"># [耗时：user=用户耗时 sys=系统耗时, real=实际耗时]</span>
+<span style="color:#000;font-weight:bold">[</span>Times: <span style="color:#008080">user</span><span style="color:#000;font-weight:bold">=</span>0.00 <span style="color:#008080">sys</span><span style="color:#000;font-weight:bold">=</span>0.00, <span style="color:#008080">real</span><span style="color:#000;font-weight:bold">=</span>0.00 secs<span style="color:#000;font-weight:bold">]</span> 
+
+FullGC
+<span style="color:#998;font-style:italic"># [GC 类型（状态） ,</span> 
+<span style="color:#000;font-weight:bold">[</span>Full GC <span style="color:#000;font-weight:bold">(</span>Allocation Failure<span style="color:#000;font-weight:bold">)</span> 
+<span style="color:#998;font-style:italic"># [新生代：回收前内存 -&gt; 回收后内存（总内存）]</span>
+<span style="color:#000;font-weight:bold">[</span>PSYoungGen: 448K-&gt;0K<span style="color:#000;font-weight:bold">(</span>2560K<span style="color:#000;font-weight:bold">)]</span> 
+<span style="color:#998;font-style:italic"># [老年代：回收前内存大小 -&gt; 回收后内存大小] 回收前 JVM 堆内存大小 -&gt; 回收后堆内存大小（JVM 堆大小）</span>
+<span style="color:#000;font-weight:bold">[</span>ParOldGen: 324K-&gt;697K<span style="color:#000;font-weight:bold">(</span>7168K<span style="color:#000;font-weight:bold">)]</span> 772K-&gt;697K<span style="color:#000;font-weight:bold">(</span>9728K<span style="color:#000;font-weight:bold">)</span>, 
+<span style="color:#998;font-style:italic"># [元空间：回收前大小 -&gt; 回收后大小], GC 耗时]</span>
+<span style="color:#000;font-weight:bold">[</span>Metaspace: 3278K-&gt;3278K<span style="color:#000;font-weight:bold">(</span>1056768K<span style="color:#000;font-weight:bold">)]</span>, 0.0066242 secs<span style="color:#000;font-weight:bold">]</span> 
+<span style="color:#998;font-style:italic"># [耗时：user=用户耗时 sys=系统耗时, real=实际耗时]</span>
+<span style="color:#000;font-weight:bold">[</span>Times: <span style="color:#008080">user</span><span style="color:#000;font-weight:bold">=</span>0.11 <span style="color:#008080">sys</span><span style="color:#000;font-weight:bold">=</span>0.00, <span style="color:#008080">real</span><span style="color:#000;font-weight:bold">=</span>0.01 secs<span style="color:#000;font-weight:bold">]</span> 
+
+</code></pre></td></tr></table>
+</div>
+</div><p><img src="https://i.loli.net/2019/06/15/5d044275bff1c67699.png" alt="Java 8 堆栈信息"></p>
+
+        </div>
+
+        
+
+
+        
+
+
+        <div class="post-meta meta-tags">
+            
+            没有标签
+            
+        </div>
+    </article>
+    
+    
+
+    
+    
+</div>
+
+                </div>
+
+                <div id="secondary">
+    <section class="widget">
+        <form id="search" action='//www.google.com/search' method="get" accept-charset="utf-8" target="_blank" _lpchecked="1">
+      
+      <input type="text" name="q" maxlength="20" placeholder="Search">
+      <input type="hidden" name="sitesearch" value="https://sangzhenya.github.io/">
+      <button type="submit" class="submit icon-search"></button>
+</form>
+    </section>
+    
+    <section class="widget">
+        <h3 class="widget-title">最近文章</h3>
+<ul class="widget-list">
+    
+    <li>
+        <a href="https://sangzhenya.github.io/post/Java/jdk8/Java-8-Stream/" title="Java 8 Stream">Java 8 Stream</a>
+    </li>
+    
+    <li>
+        <a href="https://sangzhenya.github.io/post/Java/jdk8/Java-8-Lambda/" title="Java 8 Lambda">Java 8 Lambda</a>
+    </li>
+    
+    <li>
+        <a href="https://sangzhenya.github.io/post/Java/juc/Java-ConcurrentHashMap/" title="Java ConcurrentHashMap">Java ConcurrentHashMap</a>
+    </li>
+    
+    <li>
+        <a href="https://sangzhenya.github.io/post/Java/juc/Java-CAS/" title="Java CAS">Java CAS</a>
+    </li>
+    
+    <li>
+        <a href="https://sangzhenya.github.io/post/Java/juc/Java-volatile/" title="Java volatile">Java volatile</a>
+    </li>
+    
+    <li>
+        <a href="https://sangzhenya.github.io/post/Java/juc/Java-ReentrantLock/" title="Java ReentrantLock">Java ReentrantLock</a>
+    </li>
+    
+    <li>
+        <a href="https://sangzhenya.github.io/post/Java/juc/Java-%E5%B9%B6%E5%8F%91%E6%8E%A7%E5%88%B6/" title="Java 并发控制">Java 并发控制</a>
+    </li>
+    
+    <li>
+        <a href="https://sangzhenya.github.io/post/Java/juc/Java-AQS/" title="Java AQS">Java AQS</a>
+    </li>
+    
+    <li>
+        <a href="https://sangzhenya.github.io/post/DataBase/MyBatis/MyBaits-%E4%B8%8E-Spring-Boot/" title=""></a>
+    </li>
+    
+    <li>
+        <a href="https://sangzhenya.github.io/post/DataBase/MyBatis/SQL-%E6%98%A0%E5%B0%84/" title=""></a>
+    </li>
+    
+</ul>
+    </section>
+
+    
+
+    <section class="widget">
+        <h3 class="widget-title">分类</h3>
+<ul class="widget-list">
+    
+    <li><a href="https://sangzhenya.github.io/categories/Java/">Java (8)</a></li>
+    
+    <li><a href="https://sangzhenya.github.io/categories/%E5%85%B3%E4%BA%8E/">关于 (1)</a></li>
+    
+</ul>
+    </section>
+
+    <section class="widget">
+        <h3 class="widget-title">标签</h3>
+<div class="tagcloud">
+    
+    <a href="https://sangzhenya.github.io/tags/JDK8/">JDK8</a>
+    
+    <a href="https://sangzhenya.github.io/tags/JUC/">JUC</a>
+    
+    <a href="https://sangzhenya.github.io/tags/JVM/">JVM</a>
+    
+    <a href="https://sangzhenya.github.io/tags/java/">java</a>
+    
+    <a href="https://sangzhenya.github.io/tags/%E5%85%B3%E4%BA%8E/">关于</a>
+    
+    <a href="https://sangzhenya.github.io/tags/%E9%9B%86%E5%90%88/">集合</a>
+    
+</div>
+    </section>
+
+    
+
+    <section class="widget">
+        <h3 class="widget-title">其它</h3>
+        <ul class="widget-list">
+            <li><a href="https://sangzhenya.github.io/index.xml">文章 RSS</a></li>
+        </ul>
+    </section>
+</div>
+            </div>
+        </div>
+    </div>
+    <footer id="footer">
+    <div class="container">
+        &copy; 2020 <a href="https://sangzhenya.github.io/">新月的博客 By 新月</a>.
+        Powered by <a rel="nofollow noreferer noopener" href="https://gohugo.io" target="_blank">Hugo</a>.
+        Theme based on <a href="https://github.com/flysnow-org/maupassant-hugo" target="_blank">maupassant</a>.
+        
+    </div>
+</footer>
+
+
+    
+    <script type="text/javascript">
+        window.MathJax = {
+            tex2jax: {
+                inlineMath: [['$', '$']],
+                processEscapes: true
+                }
+            };
+    </script>
+    <script src='https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-MML-AM_CHTML' async></script>
+
+
+<a id="rocket" href="#top"></a>
+<script type="text/javascript" src='https://sangzhenya.github.io/js/totop.js?v=0.0.0' async=""></script>
+
+
+
+
+
+
+</body>
+
+</html>

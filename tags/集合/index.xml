@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>集合 on 新月的博客</title>
+    <link>https://sangzhenya.github.io/tags/%E9%9B%86%E5%90%88/</link>
+    <description>Recent content in 集合 on 新月的博客</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>zh-CN</language>
+    <lastBuildDate>Wed, 02 Jan 2019 10:00:00 +0800</lastBuildDate>
+    
+	<atom:link href="https://sangzhenya.github.io/tags/%E9%9B%86%E5%90%88/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>Java ConcurrentHashMap</title>
+      <link>https://sangzhenya.github.io/post/Java/juc/Java-ConcurrentHashMap/</link>
+      <pubDate>Wed, 02 Jan 2019 10:00:00 +0800</pubDate>
+      
+      <guid>https://sangzhenya.github.io/post/Java/juc/Java-ConcurrentHashMap/</guid>
+      <description>JDK 8 中 ConcurrentHashMap 为什么放弃分段锁 在 Java 8 中 ConcurrentHashMap 放弃了分段锁而是使用 synchronized 加 CAS 的来实现并发控制的。一方面是 JVM 对 synchronized 已经进行了大量的优化措施，例如锁粗化，锁消除，自适应自旋锁，偏向锁等等。另一方面使用分段锁浪费内存空间，且 map 放入时竞争同一个锁的概率很小，分段锁反而可能造成更新操作长时间等待，同时为了提</description>
+    </item>
+    
+  </channel>
+</rss>

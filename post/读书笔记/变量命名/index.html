@@ -1,0 +1,385 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <title> | 新月的博客</title>
+    <meta property="og:title" content=" - 新月的博客">
+    <meta property="og:type" content="article">
+        
+        
+    <meta name="Keywords" content="">
+    <meta name="description" content="">
+        
+    <meta name="author" content="新月">
+    <meta property="og:url" content="https://sangzhenya.github.io/post/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/%E5%8F%98%E9%87%8F%E5%91%BD%E5%90%8D/">
+    <link rel="shortcut icon" href="https://sangzhenya.github.io/favicon.ico" type="image/x-icon">
+
+    <link rel="stylesheet" href='https://sangzhenya.github.io/css/normalize.css'>
+    <link rel="stylesheet" href='https://sangzhenya.github.io/css/style.css'>
+    <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+
+    
+
+
+    
+    
+</head>
+
+
+<body>
+    <header id="header" class="clearfix">
+    <div class="container">
+        <div class="col-group">
+            <div class="site-name ">
+                
+                    <a id="logo" href="https://sangzhenya.github.io/">
+                        新月的博客
+                    </a>
+                
+                <p class="description">晚来天欲雪，能饮一杯无？</p>
+            </div>
+            <div>
+                <nav id="nav-menu" class="clearfix">
+                    <a class="current" href="https://sangzhenya.github.io/">首页</a>
+                    
+                    <a  href="https://sangzhenya.github.io/archives/" title="归档">归档</a>
+                    
+                    <a  href="https://sangzhenya.github.io/about/" title="关于">关于</a>
+                    
+                </nav>
+            </div>
+        </div>
+    </div>
+</header>
+
+    <div id="body">
+        <div class="container">
+            <div class="col-group">
+
+                <div class="col-8" id="main">
+                    
+<div class="res-cons">
+    
+    <article class="post">
+        <header>
+            <h1 class="post-title"></h1>
+        </header>
+        <date class="post-meta meta-date">
+            1年1月1日
+        </date>
+        
+        
+        
+        <div class="post-content">
+            <h2 id="关于变量命名">关于变量命名</h2>
+<p>关键思想是把信息封装到名字中，清晰准确比装可爱好。</p>
+<h3 id="选择专业的词">选择专业的词</h3>
+<p>例如 <code>getPage(url)</code> 中的 get 这个词没能表达更多的信息，无法体现具体是何处得到页面的。如果是从互联网中获取的，则使用更专业的 <code>fetchPage</code> 或者 <code>downloadPage</code> 则更为合适。</p>
+<p>另外例如有一个 Thread 类，如下：</p>
+<div class="highlight"><div style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4">
+<table style="border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">1
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">2
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">3
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#000;font-weight:bold">class</span> <span style="color:#458;font-weight:bold">Thread</span><span style="color:#000;font-weight:bold">{</span>
+    <span style="color:#458;font-weight:bold">void</span> <span style="color:#900;font-weight:bold">stop</span><span style="color:#000;font-weight:bold">();</span>
+<span style="color:#000;font-weight:bold">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>这里的 stop 方法显然可以针对不同的作用更改为更加合适的名字，例如如果是一种重量级操作不能恢复，那么可以使用 kill 来代替。或者如果只是暂时挂起，可以使用 resume 方法恢复，那么显然叫做 pause 更为合适。</p>
+<p>下面是一些例子：</p>
+<table>
+<thead>
+<tr>
+<th>单词</th>
+<th>更多选择</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>send</td>
+<td>deliver, dispatch, announce, distribute, route</td>
+</tr>
+<tr>
+<td>find</td>
+<td>search, extract, locate, recover</td>
+</tr>
+<tr>
+<td>start</td>
+<td>launch, create, begin, open</td>
+</tr>
+<tr>
+<td>make</td>
+<td>create, set, up, build, generate, compose, add, new</td>
+</tr>
+</tbody>
+</table>
+<h3 id="避免泛泛的名字">避免泛泛的名字</h3>
+<p>在使用像 tmp, retval 和 foo 类似的名字的时候，不如选择一个能描述这个实体或者目的的名字。</p>
+<p>例如下面代码中的 retval：</p>
+<div class="highlight"><div style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4">
+<table style="border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">1
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">2
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">3
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">4
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">5
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">6
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">7
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#000;font-weight:bold">private</span> <span style="color:#458;font-weight:bold">double</span> <span style="color:#900;font-weight:bold">euclideanNorm</span><span style="color:#000;font-weight:bold">(</span><span style="color:#458;font-weight:bold">double</span><span style="color:#000;font-weight:bold">[]</span> numbers<span style="color:#000;font-weight:bold">){</span>
+    <span style="color:#458;font-weight:bold">double</span> retval <span style="color:#000;font-weight:bold">=</span> 0d<span style="color:#000;font-weight:bold">;</span>
+    <span style="color:#000;font-weight:bold">for</span> <span style="color:#000;font-weight:bold">(</span><span style="color:#458;font-weight:bold">double</span> i <span style="color:#000;font-weight:bold">=</span> 0<span style="color:#000;font-weight:bold">;</span> i <span style="color:#000;font-weight:bold">&lt;</span> numbers<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">length</span><span style="color:#000;font-weight:bold">;</span> i<span style="color:#000;font-weight:bold">++){</span>
+        retval <span style="color:#000;font-weight:bold">+=</span> numbers<span style="color:#000;font-weight:bold">[</span>i<span style="color:#000;font-weight:bold">]</span> <span style="color:#000;font-weight:bold">*</span> numbers<span style="color:#000;font-weight:bold">[</span>i<span style="color:#000;font-weight:bold">];</span>
+    <span style="color:#000;font-weight:bold">}</span>
+    <span style="color:#000;font-weight:bold">return</span> Math<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">sqrt</span><span style="color:#000;font-weight:bold">(</span>retval<span style="color:#000;font-weight:bold">);</span>
+<span style="color:#000;font-weight:bold">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>上面的例子中 retval 表示的正在累加 number 的平方，所以显然如果命名为 sumSquares 更为合适，也可以尽可能的避免出现 <code>retval += number[i]</code> 的意外。</p>
+<p>对于 tmp 使用的唯一的情况应该是作为临时存储，整个生命周期不应该超过几行代码。例如下面的代码：</p>
+<div class="highlight"><div style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4">
+<table style="border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">1
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">2
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">3
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">4
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">5
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java">String tmp <span style="color:#000;font-weight:bold">=</span> user<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">getName</span><span style="color:#000;font-weight:bold">()</span> <span style="color:#000;font-weight:bold">+</span> <span style="color:#d14">&#34;;&#34;</span><span style="color:#000;font-weight:bold">;</span>
+tmp <span style="color:#000;font-weight:bold">+=</span> user<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">getPhone</span><span style="color:#000;font-weight:bold">()</span> <span style="color:#000;font-weight:bold">+</span> <span style="color:#d14">&#34;;&#34;</span><span style="color:#000;font-weight:bold">;</span>
+tmp <span style="color:#000;font-weight:bold">+=</span> user<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">getEmail</span><span style="color:#000;font-weight:bold">();</span>
+
+template<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">set</span><span style="color:#000;font-weight:bold">(</span><span style="color:#d14">&#34;userInfo&#34;</span><span style="color:#000;font-weight:bold">,</span> userInfo<span style="color:#000;font-weight:bold">);</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>这里的 tmp 重要并不是临时存储，使用 userInfo 这样子的名字则为更加的合适。</p>
+<h3 id="使用具体的名字替代抽象的名字">使用具体的名字替代抽象的名字</h3>
+<p>在给变量，函数命名的时候，要把它描述的更为具体而不是更抽象。</p>
+<p>一个项目中的一个可选的命令行标志叫做 &ndash;run_locally。 此标志控制是否输出额外的调试信息，但性能会变慢，一般用于本地机器上调试。这个名字有几个问题：</p>
+<ol>
+<li>新成员不知道其作用，可能本地使用，但不知道为什么。</li>
+<li>远程调试的时候要输出调试信息，在远端传递此参数让人迷惑。</li>
+<li>本地运行性能测试的时候，不会使用此参数。</li>
+</ol>
+<p>此处的 &ndash;run_locally 是由它所使用的典型环境而得名。如果用 &ndash;extra_logging 这样的名字来代替则更为直接明了。但是如果此标志需要建立本地数据库，则可以使用 &ndash;use_local_database 来替换。</p>
+<h3 id="使用前缀或后缀给名字附带更多的信息">使用前缀或后缀给名字附带更多的信息</h3>
+<p>如果一个变量有什么重要的事情读者必须知道的，那么把额外的词放到名字中是有必要的。例如一个变量包含一个十六进制的字符串。 <code>String id; // eg: &quot;af8a45aadc&quot;</code> 那么这个变量修改为 <code>hexId</code> 则更为合适。</p>
+<p>如果变量是一个度量的话，那么最好把名字上带上它的单位。例如：</p>
+<div class="highlight"><div style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4">
+<table style="border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">1
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">2
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">3
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">4
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">5
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">6
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">7
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-javascript" data-lang="javascript"><span style="color:#998;font-style:italic">// 原始变量
+</span><span style="color:#998;font-style:italic"></span><span style="color:#000;font-weight:bold">var</span> start <span style="color:#000;font-weight:bold">=</span> (<span style="color:#000;font-weight:bold">new</span> <span style="color:#0086b3">Date</span>()).getTime();
+<span style="color:#000;font-weight:bold">var</span> elapsed <span style="color:#000;font-weight:bold">=</span> (<span style="color:#000;font-weight:bold">new</span> <span style="color:#0086b3">Date</span>()).getTime() <span style="color:#000;font-weight:bold">-</span> start;
+
+<span style="color:#998;font-style:italic">// 加上时间后的变量
+</span><span style="color:#998;font-style:italic"></span><span style="color:#000;font-weight:bold">var</span> startMs <span style="color:#000;font-weight:bold">=</span> (<span style="color:#000;font-weight:bold">new</span> <span style="color:#0086b3">Date</span>()).getTime();
+<span style="color:#000;font-weight:bold">var</span> elapsedMs <span style="color:#000;font-weight:bold">=</span> (<span style="color:#000;font-weight:bold">new</span> <span style="color:#0086b3">Date</span>()).getTime();
+</code></pre></td></tr></table>
+</div>
+</div><p>对于这个变量存在危险或者意外的情况同样应该带上附属的信息。例如程序接收到的某些数据还没有处于安全状态，此情况下可以使用 untrustedUrl 或者 unsafeMessageBody 这样的名字。在请查了不安全的输入之后，得到变量名为 trustedUrl 或者 safeMessageBody。</p>
+<h3 id="决定名字的长度">决定名字的长度</h3>
+<p>在小的作用域中可以使用短的名字。因为所有的信息都可以看到，所以可以使用短的名字，例如：</p>
+<div class="highlight"><div style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4">
+<table style="border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">1
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">2
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">3
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">4
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">5
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#000;font-weight:bold">if</span> <span style="color:#000;font-weight:bold">(</span>debug<span style="color:#000;font-weight:bold">)</span> <span style="color:#000;font-weight:bold">{</span>
+    Map<span style="color:#000;font-weight:bold">&lt;</span>String<span style="color:#000;font-weight:bold">,</span> Double<span style="color:#000;font-weight:bold">&gt;</span> m<span style="color:#000;font-weight:bold">;</span>
+    LookUpNamesNumbers<span style="color:#000;font-weight:bold">(</span>m<span style="color:#000;font-weight:bold">);</span>
+    System<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">out</span><span style="color:#000;font-weight:bold">.</span><span style="color:#008080">println</span><span style="color:#000;font-weight:bold">(</span>m<span style="color:#000;font-weight:bold">);</span>
+<span style="color:#000;font-weight:bold">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>尽管 m 这个名字没有包含很多信息，但并不影响，因为读者已经有了需要了解这块代码的所有信息。但如果 m 是一个全局变量，那么这段代码则变得不易读了。</p>
+<p>对于有的情况采用首字母缩写来保持较短的名字，例如将 <code>BackendManager</code> 写作 <code>BEManager</code>， 使用 eval 代替 evaluation. doc 代替 document, str 代替 String。对于第一个而言，团队的新成员很难去理解其含义，一段时间之后其作者也可能会迷惑和费解。但是对于后三种的使用是相当普遍的，所以不会产生疑问。是否采用缩写的原则是一个新人是否能够理解这个变量名称的意义，如果能则没有什么问题。</p>
+<p><strong>总的来说要让读者仅仅读到名字就可以获取大量的信息。</strong></p>
+<h3 id="避免产生误解的名字">避免产生误解的名字</h3>
+<p>多问自己几遍，这个名字是否被别人解读成其他的含义吗？要仔细审视这个名字。</p>
+<ol>
+<li>使用 min 和 max 来表示包含极限</li>
+<li>使用 first 和 last 来表示包含的范围</li>
+<li>使用 begin 和 end 来表示/排除范围</li>
+<li>给布尔值命名的时候加上 is, has, can 和 should 此类的词可以让布尔值变得更为明确，此外不要使用反义名字，例如可以吃使用 <code>bool useSSL = true</code> 来代替 <code>bool disableSSL = false</code>.</li>
+</ol>
+<p>来源：<a href="https://book.douban.com/subject/10773334/">编写可读代码的艺术</a></p>
+
+        </div>
+
+        
+
+
+        
+
+
+        <div class="post-meta meta-tags">
+            
+            没有标签
+            
+        </div>
+    </article>
+    
+    
+
+    
+    
+</div>
+
+                </div>
+
+                <div id="secondary">
+    <section class="widget">
+        <form id="search" action='//www.google.com/search' method="get" accept-charset="utf-8" target="_blank" _lpchecked="1">
+      
+      <input type="text" name="q" maxlength="20" placeholder="Search">
+      <input type="hidden" name="sitesearch" value="https://sangzhenya.github.io/">
+      <button type="submit" class="submit icon-search"></button>
+</form>
+    </section>
+    
+    <section class="widget">
+        <h3 class="widget-title">最近文章</h3>
+<ul class="widget-list">
+    
+    <li>
+        <a href="https://sangzhenya.github.io/post/Java/jdk8/Java-8-Stream/" title="Java 8 Stream">Java 8 Stream</a>
+    </li>
+    
+    <li>
+        <a href="https://sangzhenya.github.io/post/Java/jdk8/Java-8-Lambda/" title="Java 8 Lambda">Java 8 Lambda</a>
+    </li>
+    
+    <li>
+        <a href="https://sangzhenya.github.io/post/Java/juc/Java-ConcurrentHashMap/" title="Java ConcurrentHashMap">Java ConcurrentHashMap</a>
+    </li>
+    
+    <li>
+        <a href="https://sangzhenya.github.io/post/Java/juc/Java-CAS/" title="Java CAS">Java CAS</a>
+    </li>
+    
+    <li>
+        <a href="https://sangzhenya.github.io/post/Java/juc/Java-volatile/" title="Java volatile">Java volatile</a>
+    </li>
+    
+    <li>
+        <a href="https://sangzhenya.github.io/post/Java/juc/Java-ReentrantLock/" title="Java ReentrantLock">Java ReentrantLock</a>
+    </li>
+    
+    <li>
+        <a href="https://sangzhenya.github.io/post/Java/juc/Java-%E5%B9%B6%E5%8F%91%E6%8E%A7%E5%88%B6/" title="Java 并发控制">Java 并发控制</a>
+    </li>
+    
+    <li>
+        <a href="https://sangzhenya.github.io/post/Java/juc/Java-AQS/" title="Java AQS">Java AQS</a>
+    </li>
+    
+    <li>
+        <a href="https://sangzhenya.github.io/post/DataBase/MyBatis/MyBaits-%E4%B8%8E-Spring-Boot/" title=""></a>
+    </li>
+    
+    <li>
+        <a href="https://sangzhenya.github.io/post/DataBase/MyBatis/SQL-%E6%98%A0%E5%B0%84/" title=""></a>
+    </li>
+    
+</ul>
+    </section>
+
+    
+
+    <section class="widget">
+        <h3 class="widget-title">分类</h3>
+<ul class="widget-list">
+    
+    <li><a href="https://sangzhenya.github.io/categories/Java/">Java (8)</a></li>
+    
+    <li><a href="https://sangzhenya.github.io/categories/%E5%85%B3%E4%BA%8E/">关于 (1)</a></li>
+    
+</ul>
+    </section>
+
+    <section class="widget">
+        <h3 class="widget-title">标签</h3>
+<div class="tagcloud">
+    
+    <a href="https://sangzhenya.github.io/tags/JDK8/">JDK8</a>
+    
+    <a href="https://sangzhenya.github.io/tags/JUC/">JUC</a>
+    
+    <a href="https://sangzhenya.github.io/tags/JVM/">JVM</a>
+    
+    <a href="https://sangzhenya.github.io/tags/java/">java</a>
+    
+    <a href="https://sangzhenya.github.io/tags/%E5%85%B3%E4%BA%8E/">关于</a>
+    
+    <a href="https://sangzhenya.github.io/tags/%E9%9B%86%E5%90%88/">集合</a>
+    
+</div>
+    </section>
+
+    
+
+    <section class="widget">
+        <h3 class="widget-title">其它</h3>
+        <ul class="widget-list">
+            <li><a href="https://sangzhenya.github.io/index.xml">文章 RSS</a></li>
+        </ul>
+    </section>
+</div>
+            </div>
+        </div>
+    </div>
+    <footer id="footer">
+    <div class="container">
+        &copy; 2020 <a href="https://sangzhenya.github.io/">新月的博客 By 新月</a>.
+        Powered by <a rel="nofollow noreferer noopener" href="https://gohugo.io" target="_blank">Hugo</a>.
+        Theme based on <a href="https://github.com/flysnow-org/maupassant-hugo" target="_blank">maupassant</a>.
+        
+    </div>
+</footer>
+
+
+    
+    <script type="text/javascript">
+        window.MathJax = {
+            tex2jax: {
+                inlineMath: [['$', '$']],
+                processEscapes: true
+                }
+            };
+    </script>
+    <script src='https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-MML-AM_CHTML' async></script>
+
+
+<a id="rocket" href="#top"></a>
+<script type="text/javascript" src='https://sangzhenya.github.io/js/totop.js?v=0.0.0' async=""></script>
+
+
+
+
+
+
+</body>
+
+</html>

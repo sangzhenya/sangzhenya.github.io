@@ -1,0 +1,494 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <title> | 新月的博客</title>
+    <meta property="og:title" content=" - 新月的博客">
+    <meta property="og:type" content="article">
+        
+        
+    <meta name="Keywords" content="">
+    <meta name="description" content="">
+        
+    <meta name="author" content="新月">
+    <meta property="og:url" content="https://sangzhenya.github.io/post/Spring/Spring-Data/JPA-%E5%9F%BA%E6%9C%AC%E6%B3%A8%E8%A7%A3/">
+    <link rel="shortcut icon" href="https://sangzhenya.github.io/favicon.ico" type="image/x-icon">
+
+    <link rel="stylesheet" href='https://sangzhenya.github.io/css/normalize.css'>
+    <link rel="stylesheet" href='https://sangzhenya.github.io/css/style.css'>
+    <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+
+    
+
+
+    
+    
+</head>
+
+
+<body>
+    <header id="header" class="clearfix">
+    <div class="container">
+        <div class="col-group">
+            <div class="site-name ">
+                
+                    <a id="logo" href="https://sangzhenya.github.io/">
+                        新月的博客
+                    </a>
+                
+                <p class="description">晚来天欲雪，能饮一杯无？</p>
+            </div>
+            <div>
+                <nav id="nav-menu" class="clearfix">
+                    <a class="current" href="https://sangzhenya.github.io/">首页</a>
+                    
+                    <a  href="https://sangzhenya.github.io/archives/" title="归档">归档</a>
+                    
+                    <a  href="https://sangzhenya.github.io/about/" title="关于">关于</a>
+                    
+                </nav>
+            </div>
+        </div>
+    </div>
+</header>
+
+    <div id="body">
+        <div class="container">
+            <div class="col-group">
+
+                <div class="col-8" id="main">
+                    
+<div class="res-cons">
+    
+    <article class="post">
+        <header>
+            <h1 class="post-title"></h1>
+        </header>
+        <date class="post-meta meta-date">
+            1年1月1日
+        </date>
+        
+        
+        
+        <div class="post-content">
+            <h2 id="jpa-基本注解">JPA 基本注解</h2>
+<p>JDBC 是 Sun公司提供了一套访问数据库的接口规范，数据库厂商必须遵守Sun公司的规范，提供访问自己数据库服务器API即驱动；JDBC只是一些接口，需要数据库厂商提供相应的实现类即驱动，如果没有驱动无法连接数据库，更无法操作数据库。</p>
+<p>JPA 即 Java Persistence API，用于对象持久化的 API 是一个规范，Java EE 5.0 平台标准的 ORM 规范使程序以统一的方式访问持久化层。Hibernate，TopLink 和 OpenJPA 等都是 JPA 的一种实现。从功能上来说 JPA 是 Hibernate 功能的一个子集。JPA 有以下的优势：</p>
+<ol>
+<li>标准化，提供相同的 API，保证了基于 JPA 开发的企业应用能够经过少量的修改就能够在同步的 JPA 框架下运行。</li>
+<li>简单易用，集成方便；JPA 主要的目标之一就提供更加简单地编程模型，在 JPA 框架下创建实体和创建 Java 类一样简单。</li>
+<li>查询能力强；JPA 的查询语言是面向对象的， JPA 定义了独特的 JPQL，能够支持批量更新和修改，JOIN，Group By 等高级特性。</li>
+<li>支持面向对象的高级特性；JPA 能够支持例如继承，多态和类之间的复杂关系，最大限度的使用面向对象的模型。</li>
+</ol>
+<p>JPA 包括以下 3 个方面的技术：</p>
+<ol>
+<li>ORM 映射元数据；JPA 支持 XML 和 注解两种元数据形势，元数据描述对象和表之间的映射关系，框架也是根据此将实体对象持久化到数据库中。</li>
+<li>JPA 的 API；用来操作实体对象，执行 CRUD 操作，框架在后台完成的所有事情，开发者可以不用操作繁琐的 JDBC 和 SQL 代码。</li>
+<li>查询语言；是持久化操作中一个很重要的方便，通过面向对象而非面向数据库的查询数据，避免程序和具体的 SQL 的高度耦合。</li>
+</ol>
+<p>使用 JPA 进行持久化对象的步骤主要如下：</p>
+<ol>
+<li>创建 <code>persistence.xml</code> 在这个文件中配置持久化信息；例如执行需要连接的数据库，指定 JPA 使用哪个持久化框架，使用到框架的基本配置属性。</li>
+<li>创建实体类；使用注解来描述实体类和数据库表之间的映射关系。</li>
+<li>使用 JPA API 完成数据增删改查操作；即创建 <code>EntityManagerFactory</code>  和 <code>EntityManager</code>。</li>
+</ol>
+<p>一个简单的基于 Hibernate 的 JPA 项目如下：</p>
+<p>首先是 <code>pom.xml</code> 添加相关的依赖：</p>
+<div class="highlight"><div style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4">
+<table style="border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 1
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 2
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 3
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 4
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 5
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 6
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 7
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 8
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 9
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">10
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">11
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">12
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">13
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">14
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-xml" data-lang="xml"><span style="color:#000080">&lt;dependencies&gt;</span>
+  <span style="color:#998;font-style:italic">&lt;!-- https://mvnrepository.com/artifact/org.hibernate/hibernate-core --&gt;</span>
+  <span style="color:#000080">&lt;dependency&gt;</span>
+    <span style="color:#000080">&lt;groupId&gt;</span>org.hibernate<span style="color:#000080">&lt;/groupId&gt;</span>
+    <span style="color:#000080">&lt;artifactId&gt;</span>hibernate-core<span style="color:#000080">&lt;/artifactId&gt;</span>
+    <span style="color:#000080">&lt;version&gt;</span>5.4.10.Final<span style="color:#000080">&lt;/version&gt;</span>
+  <span style="color:#000080">&lt;/dependency&gt;</span>
+  <span style="color:#998;font-style:italic">&lt;!-- https://mvnrepository.com/artifact/mysql/mysql-connector-java --&gt;</span>
+  <span style="color:#000080">&lt;dependency&gt;</span>
+    <span style="color:#000080">&lt;groupId&gt;</span>mysql<span style="color:#000080">&lt;/groupId&gt;</span>
+    <span style="color:#000080">&lt;artifactId&gt;</span>mysql-connector-java<span style="color:#000080">&lt;/artifactId&gt;</span>
+    <span style="color:#000080">&lt;version&gt;</span>8.0.18<span style="color:#000080">&lt;/version&gt;</span>
+  <span style="color:#000080">&lt;/dependency&gt;</span>
+<span style="color:#000080">&lt;/dependencies&gt;</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>然后再 resource 目录下添加 <code>/META-INF/persistence.xml</code> 文件，配置持久化框架的相关信息：</p>
+<div class="highlight"><div style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4">
+<table style="border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 1
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 2
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 3
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 4
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 5
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 6
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 7
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 8
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 9
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">10
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">11
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">12
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">13
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">14
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">15
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">16
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">17
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-xml" data-lang="xml"><span style="color:#999;font-weight:bold;font-style:italic">&lt;?xml version=&#34;1.0&#34; encoding=&#34;UTF-8&#34;?&gt;</span>
+<span style="color:#000080">&lt;persistence</span> <span style="color:#008080">xmlns=</span><span style="color:#d14">&#34;http://java.sun.com/xml/ns/persistence&#34;</span> <span style="color:#008080">version=</span><span style="color:#d14">&#34;2.0&#34;</span><span style="color:#000080">&gt;</span>
+    <span style="color:#000080">&lt;persistence-unit</span> <span style="color:#008080">name=</span><span style="color:#d14">&#34;NewPersistenceUnit&#34;</span><span style="color:#000080">&gt;</span>
+        <span style="color:#000080">&lt;provider&gt;</span>org.hibernate.jpa.HibernatePersistenceProvider<span style="color:#000080">&lt;/provider&gt;</span>
+        <span style="color:#000080">&lt;class&gt;</span>com.xinyue.myjpa.model.Book<span style="color:#000080">&lt;/class&gt;</span>
+        <span style="color:#000080">&lt;properties&gt;</span>
+            <span style="color:#000080">&lt;property</span> <span style="color:#008080">name=</span><span style="color:#d14">&#34;hibernate.connection.url&#34;</span> <span style="color:#008080">value=</span><span style="color:#d14">&#34;jdbc:mysql:///xinyue&#34;</span><span style="color:#000080">/&gt;</span>
+            <span style="color:#000080">&lt;property</span> <span style="color:#008080">name=</span><span style="color:#d14">&#34;hibernate.connection.driver_class&#34;</span> <span style="color:#008080">value=</span><span style="color:#d14">&#34;com.mysql.jdbc.Driver&#34;</span><span style="color:#000080">/&gt;</span>
+            <span style="color:#000080">&lt;property</span> <span style="color:#008080">name=</span><span style="color:#d14">&#34;hibernate.connection.username&#34;</span> <span style="color:#008080">value=</span><span style="color:#d14">&#34;root&#34;</span><span style="color:#000080">/&gt;</span>
+            <span style="color:#000080">&lt;property</span> <span style="color:#008080">name=</span><span style="color:#d14">&#34;hibernate.connection.password&#34;</span> <span style="color:#008080">value=</span><span style="color:#d14">&#34;123456&#34;</span><span style="color:#000080">/&gt;</span>
+            <span style="color:#000080">&lt;property</span> <span style="color:#008080">name=</span><span style="color:#d14">&#34;hibernate.archive.autodetection&#34;</span> <span style="color:#008080">value=</span><span style="color:#d14">&#34;class&#34;</span><span style="color:#000080">/&gt;</span>
+            <span style="color:#000080">&lt;property</span> <span style="color:#008080">name=</span><span style="color:#d14">&#34;hibernate.show_sql&#34;</span> <span style="color:#008080">value=</span><span style="color:#d14">&#34;true&#34;</span><span style="color:#000080">/&gt;</span>
+            <span style="color:#000080">&lt;property</span> <span style="color:#008080">name=</span><span style="color:#d14">&#34;hibernate.format_sql&#34;</span> <span style="color:#008080">value=</span><span style="color:#d14">&#34;true&#34;</span><span style="color:#000080">/&gt;</span>
+            <span style="color:#000080">&lt;property</span> <span style="color:#008080">name=</span><span style="color:#d14">&#34;hibernate.hbm2ddl.auto&#34;</span> <span style="color:#008080">value=</span><span style="color:#d14">&#34;update&#34;</span><span style="color:#000080">/&gt;</span>
+        <span style="color:#000080">&lt;/properties&gt;</span>
+    <span style="color:#000080">&lt;/persistence-unit&gt;</span>
+<span style="color:#000080">&lt;/persistence&gt;</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>然后创建一个简单地 实体类：</p>
+<div class="highlight"><div style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4">
+<table style="border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 1
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 2
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 3
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 4
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 5
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 6
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 7
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 8
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 9
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">10
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">11
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">12
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">13
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">14
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">15
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">16
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">17
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">18
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">19
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">20
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">21
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">22
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">23
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">24
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">25
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">26
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#3c5d5d;font-weight:bold">@Entity</span><span style="color:#000;font-weight:bold">(</span>name <span style="color:#000;font-weight:bold">=</span> <span style="color:#d14">&#34;jpa_book&#34;</span><span style="color:#000;font-weight:bold">)</span>
+<span style="color:#000;font-weight:bold">public</span> <span style="color:#000;font-weight:bold">class</span> <span style="color:#458;font-weight:bold">Book</span> <span style="color:#000;font-weight:bold">{</span>
+    <span style="color:#000;font-weight:bold">private</span> Integer id<span style="color:#000;font-weight:bold">;</span>
+    <span style="color:#000;font-weight:bold">private</span> String name<span style="color:#000;font-weight:bold">;</span>
+    <span style="color:#000;font-weight:bold">private</span> Double price<span style="color:#000;font-weight:bold">;</span>
+    <span style="color:#3c5d5d;font-weight:bold">@Id</span>
+    <span style="color:#3c5d5d;font-weight:bold">@GeneratedValue</span><span style="color:#000;font-weight:bold">(</span>strategy <span style="color:#000;font-weight:bold">=</span> GenerationType<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">AUTO</span><span style="color:#000;font-weight:bold">)</span>
+    <span style="color:#000;font-weight:bold">public</span> Integer <span style="color:#900;font-weight:bold">getId</span><span style="color:#000;font-weight:bold">()</span> <span style="color:#000;font-weight:bold">{</span>
+        <span style="color:#000;font-weight:bold">return</span> id<span style="color:#000;font-weight:bold">;</span>
+    <span style="color:#000;font-weight:bold">}</span>
+    <span style="color:#000;font-weight:bold">public</span> <span style="color:#458;font-weight:bold">void</span> <span style="color:#900;font-weight:bold">setId</span><span style="color:#000;font-weight:bold">(</span>Integer id<span style="color:#000;font-weight:bold">)</span> <span style="color:#000;font-weight:bold">{</span>
+        <span style="color:#000;font-weight:bold">this</span><span style="color:#000;font-weight:bold">.</span><span style="color:#008080">id</span> <span style="color:#000;font-weight:bold">=</span> id<span style="color:#000;font-weight:bold">;</span>
+    <span style="color:#000;font-weight:bold">}</span>
+    <span style="color:#000;font-weight:bold">public</span> String <span style="color:#900;font-weight:bold">getName</span><span style="color:#000;font-weight:bold">()</span> <span style="color:#000;font-weight:bold">{</span>
+        <span style="color:#000;font-weight:bold">return</span> name<span style="color:#000;font-weight:bold">;</span>
+    <span style="color:#000;font-weight:bold">}</span>
+    <span style="color:#000;font-weight:bold">public</span> <span style="color:#458;font-weight:bold">void</span> <span style="color:#900;font-weight:bold">setName</span><span style="color:#000;font-weight:bold">(</span>String name<span style="color:#000;font-weight:bold">)</span> <span style="color:#000;font-weight:bold">{</span>
+        <span style="color:#000;font-weight:bold">this</span><span style="color:#000;font-weight:bold">.</span><span style="color:#008080">name</span> <span style="color:#000;font-weight:bold">=</span> name<span style="color:#000;font-weight:bold">;</span>
+    <span style="color:#000;font-weight:bold">}</span>
+    <span style="color:#000;font-weight:bold">public</span> Double <span style="color:#900;font-weight:bold">getPrice</span><span style="color:#000;font-weight:bold">()</span> <span style="color:#000;font-weight:bold">{</span>
+        <span style="color:#000;font-weight:bold">return</span> price<span style="color:#000;font-weight:bold">;</span>
+    <span style="color:#000;font-weight:bold">}</span>
+    <span style="color:#000;font-weight:bold">public</span> <span style="color:#458;font-weight:bold">void</span> <span style="color:#900;font-weight:bold">setPrice</span><span style="color:#000;font-weight:bold">(</span>Double price<span style="color:#000;font-weight:bold">)</span> <span style="color:#000;font-weight:bold">{</span>
+        <span style="color:#000;font-weight:bold">this</span><span style="color:#000;font-weight:bold">.</span><span style="color:#008080">price</span> <span style="color:#000;font-weight:bold">=</span> price<span style="color:#000;font-weight:bold">;</span>
+    <span style="color:#000;font-weight:bold">}</span>
+<span style="color:#000;font-weight:bold">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>最后编写 Main 类测试</p>
+<div class="highlight"><div style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4">
+<table style="border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 1
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 2
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 3
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 4
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 5
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 6
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 7
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 8
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 9
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">10
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">11
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">12
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">13
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">14
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">15
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">16
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">17
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">18
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">19
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">20
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#000;font-weight:bold">public</span> <span style="color:#000;font-weight:bold">class</span> <span style="color:#458;font-weight:bold">MyJpa</span> <span style="color:#000;font-weight:bold">{</span>
+    <span style="color:#000;font-weight:bold">public</span> <span style="color:#000;font-weight:bold">static</span> <span style="color:#458;font-weight:bold">void</span> <span style="color:#900;font-weight:bold">main</span><span style="color:#000;font-weight:bold">(</span>String<span style="color:#000;font-weight:bold">[]</span> args<span style="color:#000;font-weight:bold">)</span> <span style="color:#000;font-weight:bold">{</span>
+        EntityManagerFactory factory <span style="color:#000;font-weight:bold">=</span> Persistence<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">createEntityManagerFactory</span><span style="color:#000;font-weight:bold">(</span><span style="color:#d14">&#34;NewPersistenceUnit&#34;</span><span style="color:#000;font-weight:bold">);</span>
+        EntityManager manager <span style="color:#000;font-weight:bold">=</span> factory<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">createEntityManager</span><span style="color:#000;font-weight:bold">();</span>
+        EntityTransaction transaction <span style="color:#000;font-weight:bold">=</span> manager<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">getTransaction</span><span style="color:#000;font-weight:bold">();</span>
+
+        transaction<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">begin</span><span style="color:#000;font-weight:bold">();</span>
+
+        Book book <span style="color:#000;font-weight:bold">=</span> <span style="color:#000;font-weight:bold">new</span> Book<span style="color:#000;font-weight:bold">();</span>
+        book<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">setName</span><span style="color:#000;font-weight:bold">(</span><span style="color:#d14">&#34;Test Book&#34;</span><span style="color:#000;font-weight:bold">);</span>
+        book<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">setPrice</span><span style="color:#000;font-weight:bold">(</span>12<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">5d</span><span style="color:#000;font-weight:bold">);</span>
+
+        manager<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">persist</span><span style="color:#000;font-weight:bold">(</span>book<span style="color:#000;font-weight:bold">);</span>
+
+        transaction<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">commit</span><span style="color:#000;font-weight:bold">();</span>
+
+        manager<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">close</span><span style="color:#000;font-weight:bold">();</span>
+        factory<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">close</span><span style="color:#000;font-weight:bold">();</span>
+    <span style="color:#000;font-weight:bold">}</span>
+<span style="color:#000;font-weight:bold">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>最后打开数据库查看数据已经存储到表中了：</p>
+<p><img src="http://img.programya.com/Snipaste_2019-12-21_10-48-28.png" alt="数据库结果"></p>
+<p>在 Book 这个实体类中可以看到几个相关的注解：</p>
+<p>首先是 <code>@Entity</code> 表明这是一个实体类，如果类名称和表名称不一致，可以通过设置 name 属性来修改该类对应的表名称。</p>
+<p>然后是 <code>@Id</code> 标注用于声明一个实体类的属性映射为数据库的主键列，可以放在 <code>getter</code> 方法上。</p>
+<p>在制定了主键之后需要说明生成主键的策略，使用 <code>@GeneratedValue</code> 方式标注数据生成的方式，通过 <code>strategy</code> 属性制定生成的策略，主要有以下几种：</p>
+<ol>
+<li><code>IDENTITY</code>  采用数据库 ID 自增长的方案。</li>
+<li><code>AUTO</code> 默认选项，JPA 自动生成合适的策略，Oracle 不支持这种方式。</li>
+<li><code>SEQUENCE</code> 通过序列生成主键，通过 <code>@SequenceGenerator</code> 注解制定序列名称，MySQL 不支持这种方式。</li>
+<li><code>TABLE</code> 通过表产生主键，框架借由表模拟序列产生注解，使用该策略时数据库移植更为方便。</li>
+</ol>
+<p>然后是 <code>@Basic</code> 是一个默认注解，表示一个属性到数据库表的字段映射，对于没有任何标注的 getter 方法默认即为 <code>@Basic</code> 注解。其有 <code>fetch</code> 和 <code>optional</code> 两个属性，其中 <code>fetch</code> 表示该属性的读取策略有两种选择 <code>FetchType.EAGER</code> 和 <code>FetchType.LAZY</code> 前者表示及时获取后者表示延时加载。默认是 <code>EAGER</code>。<code>optional</code>注解表示该属性是否可以为 <code>null</code> 默认是  <code>true</code>。</p>
+<p>然后是 <code>@Column</code> 可以通过其 <code>name</code> 属性将类属性 mapping 到数据库字段上。也可以设置 <code>unique</code>， <code>nullable</code>，<code>length</code> 等属性。此外对于 Java 数据类型和 数据库数据类型不一致的情况可以使用 <code>columnDefinition</code> 属性进行指定，例如指定 String 类型字段为 varchar 或者 text，<code>columnDefinition = &quot;text&quot;</code>。</p>
+<p>然后是 <code>@Transient</code> 表示该属性并非一个数据库表字段，ORM 框架忽略该属性。</p>
+<p>然后是 <code>@Temporal</code> 用于区分设置日期和时间的。例如 <code>TemporalType.TIMESTAMP</code>， <code>TemporalType.DATE</code> 等。</p>
+<p>然后是 <code>@TableGenerator</code> 注解，如果主键生成策略时 Table <code>@GeneratedValue(strategy = GenerationType.TABLE, generator = &quot;ID_GENERATOR&quot;)</code> 那么需要设置对应的 Table Generator。</p>
+<div class="highlight"><div style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4">
+<table style="border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 1
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 2
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 3
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 4
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 5
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 6
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 7
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 8
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 9
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">10
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">11
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">12
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">13
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">14
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">15
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">16
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#3c5d5d;font-weight:bold">@TableGenerator</span><span style="color:#000;font-weight:bold">(</span>
+  <span style="color:#998;font-style:italic">// 生成器名称
+</span><span style="color:#998;font-style:italic"></span>  name <span style="color:#000;font-weight:bold">=</span> <span style="color:#d14">&#34;ID_GENERATOR&#34;</span><span style="color:#000;font-weight:bold">,</span>
+  <span style="color:#998;font-style:italic">// 对应的表
+</span><span style="color:#998;font-style:italic"></span>  table <span style="color:#000;font-weight:bold">=</span> <span style="color:#d14">&#34;JPA_ID_GENERATOR&#34;</span><span style="color:#000;font-weight:bold">,</span>
+  <span style="color:#998;font-style:italic">// 每次增长多少
+</span><span style="color:#998;font-style:italic"></span>  allocationSize <span style="color:#000;font-weight:bold">=</span> 1<span style="color:#000;font-weight:bold">,</span>
+  <span style="color:#998;font-style:italic">// 初始值是多少
+</span><span style="color:#998;font-style:italic"></span>  initialValue <span style="color:#000;font-weight:bold">=</span> 1<span style="color:#000;font-weight:bold">,</span>
+  <span style="color:#998;font-style:italic">// 存储序列的列
+</span><span style="color:#998;font-style:italic"></span>  pkColumnName <span style="color:#000;font-weight:bold">=</span> <span style="color:#d14">&#34;PK_NAME&#34;</span><span style="color:#000;font-weight:bold">,</span>
+  <span style="color:#998;font-style:italic">// 存储序列的 value
+</span><span style="color:#998;font-style:italic"></span>  pkColumnValue <span style="color:#000;font-weight:bold">=</span> <span style="color:#d14">&#34;BOOK&#34;</span><span style="color:#000;font-weight:bold">,</span>
+  <span style="color:#998;font-style:italic">// 当前 ID 值的列
+</span><span style="color:#998;font-style:italic"></span>  valueColumnName <span style="color:#000;font-weight:bold">=</span> <span style="color:#d14">&#34;ID_VAL&#34;</span>
+<span style="color:#000;font-weight:bold">)</span>
+</code></pre></td></tr></table>
+</div>
+</div>
+        </div>
+
+        
+
+
+        
+
+
+        <div class="post-meta meta-tags">
+            
+            没有标签
+            
+        </div>
+    </article>
+    
+    
+
+    
+    
+</div>
+
+                </div>
+
+                <div id="secondary">
+    <section class="widget">
+        <form id="search" action='//www.google.com/search' method="get" accept-charset="utf-8" target="_blank" _lpchecked="1">
+      
+      <input type="text" name="q" maxlength="20" placeholder="Search">
+      <input type="hidden" name="sitesearch" value="https://sangzhenya.github.io/">
+      <button type="submit" class="submit icon-search"></button>
+</form>
+    </section>
+    
+    <section class="widget">
+        <h3 class="widget-title">最近文章</h3>
+<ul class="widget-list">
+    
+    <li>
+        <a href="https://sangzhenya.github.io/post/Java/jdk8/Java-8-Stream/" title="Java 8 Stream">Java 8 Stream</a>
+    </li>
+    
+    <li>
+        <a href="https://sangzhenya.github.io/post/Java/jdk8/Java-8-Lambda/" title="Java 8 Lambda">Java 8 Lambda</a>
+    </li>
+    
+    <li>
+        <a href="https://sangzhenya.github.io/post/Java/juc/Java-ConcurrentHashMap/" title="Java ConcurrentHashMap">Java ConcurrentHashMap</a>
+    </li>
+    
+    <li>
+        <a href="https://sangzhenya.github.io/post/Java/juc/Java-CAS/" title="Java CAS">Java CAS</a>
+    </li>
+    
+    <li>
+        <a href="https://sangzhenya.github.io/post/Java/juc/Java-volatile/" title="Java volatile">Java volatile</a>
+    </li>
+    
+    <li>
+        <a href="https://sangzhenya.github.io/post/Java/juc/Java-ReentrantLock/" title="Java ReentrantLock">Java ReentrantLock</a>
+    </li>
+    
+    <li>
+        <a href="https://sangzhenya.github.io/post/Java/juc/Java-%E5%B9%B6%E5%8F%91%E6%8E%A7%E5%88%B6/" title="Java 并发控制">Java 并发控制</a>
+    </li>
+    
+    <li>
+        <a href="https://sangzhenya.github.io/post/Java/juc/Java-AQS/" title="Java AQS">Java AQS</a>
+    </li>
+    
+    <li>
+        <a href="https://sangzhenya.github.io/post/DataBase/MyBatis/MyBaits-%E4%B8%8E-Spring-Boot/" title=""></a>
+    </li>
+    
+    <li>
+        <a href="https://sangzhenya.github.io/post/DataBase/MyBatis/SQL-%E6%98%A0%E5%B0%84/" title=""></a>
+    </li>
+    
+</ul>
+    </section>
+
+    
+
+    <section class="widget">
+        <h3 class="widget-title">分类</h3>
+<ul class="widget-list">
+    
+    <li><a href="https://sangzhenya.github.io/categories/Java/">Java (8)</a></li>
+    
+    <li><a href="https://sangzhenya.github.io/categories/%E5%85%B3%E4%BA%8E/">关于 (1)</a></li>
+    
+</ul>
+    </section>
+
+    <section class="widget">
+        <h3 class="widget-title">标签</h3>
+<div class="tagcloud">
+    
+    <a href="https://sangzhenya.github.io/tags/JDK8/">JDK8</a>
+    
+    <a href="https://sangzhenya.github.io/tags/JUC/">JUC</a>
+    
+    <a href="https://sangzhenya.github.io/tags/JVM/">JVM</a>
+    
+    <a href="https://sangzhenya.github.io/tags/java/">java</a>
+    
+    <a href="https://sangzhenya.github.io/tags/%E5%85%B3%E4%BA%8E/">关于</a>
+    
+    <a href="https://sangzhenya.github.io/tags/%E9%9B%86%E5%90%88/">集合</a>
+    
+</div>
+    </section>
+
+    
+
+    <section class="widget">
+        <h3 class="widget-title">其它</h3>
+        <ul class="widget-list">
+            <li><a href="https://sangzhenya.github.io/index.xml">文章 RSS</a></li>
+        </ul>
+    </section>
+</div>
+            </div>
+        </div>
+    </div>
+    <footer id="footer">
+    <div class="container">
+        &copy; 2020 <a href="https://sangzhenya.github.io/">新月的博客 By 新月</a>.
+        Powered by <a rel="nofollow noreferer noopener" href="https://gohugo.io" target="_blank">Hugo</a>.
+        Theme based on <a href="https://github.com/flysnow-org/maupassant-hugo" target="_blank">maupassant</a>.
+        
+    </div>
+</footer>
+
+
+    
+    <script type="text/javascript">
+        window.MathJax = {
+            tex2jax: {
+                inlineMath: [['$', '$']],
+                processEscapes: true
+                }
+            };
+    </script>
+    <script src='https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-MML-AM_CHTML' async></script>
+
+
+<a id="rocket" href="#top"></a>
+<script type="text/javascript" src='https://sangzhenya.github.io/js/totop.js?v=0.0.0' async=""></script>
+
+
+
+
+
+
+</body>
+
+</html>

@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>JVM on 新月的博客</title>
+    <link>https://sangzhenya.github.io/tags/JVM/</link>
+    <description>Recent content in JVM on 新月的博客</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>zh-CN</language>
+    <lastBuildDate>Wed, 02 Jan 2019 08:00:00 +0800</lastBuildDate>
+    
+	<atom:link href="https://sangzhenya.github.io/tags/JVM/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>Java volatile</title>
+      <link>https://sangzhenya.github.io/post/Java/juc/Java-volatile/</link>
+      <pubDate>Wed, 02 Jan 2019 08:00:00 +0800</pubDate>
+      
+      <guid>https://sangzhenya.github.io/post/Java/juc/Java-volatile/</guid>
+      <description>JMM JVM: Java 虚拟机 JMM: Java 内存模型 Java 内存模型 Java Memory Model 本身是一种抽象的概念并不真实存在，它描述的是一组规则或规范，通过这组规范定义了程序中的各个变量（包括实例字段、静态字段和构成数组对象元素）的访问方式。 JMM 关于同步的规定： 线程解锁前，必须把共享变量的值刷回主内存 线程加锁前，必须读取主内存到自己</description>
+    </item>
+    
+  </channel>
+</rss>

@@ -1,0 +1,841 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <title> | 新月的博客</title>
+    <meta property="og:title" content=" - 新月的博客">
+    <meta property="og:type" content="article">
+        
+        
+    <meta name="Keywords" content="">
+    <meta name="description" content="">
+        
+    <meta name="author" content="新月">
+    <meta property="og:url" content="https://sangzhenya.github.io/post/%E5%BE%AE%E6%9C%8D%E5%8A%A1/Docker/">
+    <link rel="shortcut icon" href="https://sangzhenya.github.io/favicon.ico" type="image/x-icon">
+
+    <link rel="stylesheet" href='https://sangzhenya.github.io/css/normalize.css'>
+    <link rel="stylesheet" href='https://sangzhenya.github.io/css/style.css'>
+    <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+
+    
+
+
+    
+    
+</head>
+
+
+<body>
+    <header id="header" class="clearfix">
+    <div class="container">
+        <div class="col-group">
+            <div class="site-name ">
+                
+                    <a id="logo" href="https://sangzhenya.github.io/">
+                        新月的博客
+                    </a>
+                
+                <p class="description">晚来天欲雪，能饮一杯无？</p>
+            </div>
+            <div>
+                <nav id="nav-menu" class="clearfix">
+                    <a class="current" href="https://sangzhenya.github.io/">首页</a>
+                    
+                    <a  href="https://sangzhenya.github.io/archives/" title="归档">归档</a>
+                    
+                    <a  href="https://sangzhenya.github.io/about/" title="关于">关于</a>
+                    
+                </nav>
+            </div>
+        </div>
+    </div>
+</header>
+
+    <div id="body">
+        <div class="container">
+            <div class="col-group">
+
+                <div class="col-8" id="main">
+                    
+<div class="res-cons">
+    
+    <article class="post">
+        <header>
+            <h1 class="post-title"></h1>
+        </header>
+        <date class="post-meta meta-date">
+            1年1月1日
+        </date>
+        
+        
+        
+        <div class="post-content">
+            <h2 id="docker-入门">Docker 入门</h2>
+<h3 id="基本概念">基本概念</h3>
+<p>Docker <strong>镜像</strong>是一个只读的模板。镜像可以用来创建 Docker <strong>容器</strong>，一个镜像可以创建多个容器。<strong>仓库</strong>是存放镜像文件的地方，仓库注册服务器上存放着多个仓库。</p>
+<blockquote>
+<p>镜像可以类比为 Java 的类，而容器可以类比为对象。</p>
+</blockquote>
+<h3 id="docker-工作原理">Docker 工作原理</h3>
+<p>Docker 是一个 Client-Server 结构的系统，Docker 守护进程运行在主机上，然后通过 Socket 连接客户端访问，守护进程从客户端接受命令并管理运行在主机上的容器，是一个运行时环境。如下图所示：</p>
+<p><img src="https://i.loli.net/2019/06/15/5d04a77399fcc37849.png" alt="Docker 工作原理"></p>
+<h3 id="docker-与虚拟机比较">Docker 与虚拟机比较</h3>
+<ol>
+<li>Docker 有更少的抽象层。不需要 Hypervisor 实现硬件资源虚拟化，运行在 Docker 容器上的程序直接使用物理机上的硬件资源，因此在 CPU、内存利用率上 Docker 都有优势。</li>
+<li>Docker 利用的是宿主机的内核，而不需要 Guest OS。因此新建一个容器时不需要像虚拟机一样重新加载一个操作系统内核。所以 新建一个 Docker 只需要几秒钟的时间。</li>
+</ol>
+<table>
+<thead>
+<tr>
+<th></th>
+<th>Docker 容器</th>
+<th>虚拟机</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>操作系统</td>
+<td>与宿主机共享 OS</td>
+<td>宿主机上运行虚拟机OS</td>
+</tr>
+<tr>
+<td>存储大小</td>
+<td>镜像小，便于存储与传输</td>
+<td>镜像庞大</td>
+</tr>
+<tr>
+<td>运行性能</td>
+<td>几乎无额外性能损失</td>
+<td>操作系统额外的CPU、内存消耗</td>
+</tr>
+<tr>
+<td>移植性</td>
+<td>轻便、灵活、适应于 Linux</td>
+<td>笨重，与虚拟化技术耦合度高</td>
+</tr>
+<tr>
+<td>硬件亲和性</td>
+<td>面向开发者</td>
+<td>面向硬件运维者</td>
+</tr>
+<tr>
+<td>部署速度</td>
+<td>快速，秒级</td>
+<td>较慢，10s 以上</td>
+</tr>
+</tbody>
+</table>
+<h3 id="常用命令">常用命令</h3>
+<h4 id="简单命令">简单命令</h4>
+<div class="highlight"><div style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4">
+<table style="border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">1
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">2
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">3
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell">docker version
+docker info
+docker -help
+</code></pre></td></tr></table>
+</div>
+</div><h4 id="镜像命令">镜像命令</h4>
+<div class="highlight"><div style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4">
+<table style="border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 1
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 2
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 3
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 4
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 5
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 6
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 7
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 8
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 9
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">10
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">11
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">12
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">13
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">14
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">15
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">16
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">17
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">18
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">19
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">20
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">21
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">22
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">23
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">24
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell">docker images	<span style="color:#998;font-style:italic"># 列出本地镜像</span>
+-a	<span style="color:#998;font-style:italic"># 列出所有的本地所有镜像（含中间映像层）</span>
+-q	<span style="color:#998;font-style:italic"># 只显示镜像 ID</span>
+--digests	<span style="color:#998;font-style:italic"># 显示镜像摘要信息</span>
+--no-trunc	<span style="color:#998;font-style:italic"># 显示镜像完整信息</span>
+<span style="color:#998;font-style:italic"># REPOSITORY	镜像的仓库源</span>
+<span style="color:#998;font-style:italic"># TAG 	镜像的标签</span>
+<span style="color:#998;font-style:italic"># IMAGE ID	镜像 ID</span>
+<span style="color:#998;font-style:italic"># CREATED	镜像创建时间</span>
+<span style="color:#998;font-style:italic"># SIZE 镜像大小</span>
+
+<span style="color:#998;font-style:italic">#---</span>
+docker search &lt;镜像名称&gt;	<span style="color:#998;font-style:italic"># 搜索镜像</span>
+--no-trunc	<span style="color:#998;font-style:italic"># 显示完整的镜像描述</span>
+-s	<span style="color:#998;font-style:italic"># 列出收藏数不小于指定值的镜像， replace by --filter=stars=</span>
+-automated	<span style="color:#998;font-style:italic"># 仅显示 automated build 类型的镜像</span>
+
+<span style="color:#998;font-style:italic">#---</span>
+docker pull &lt;镜像名称&gt;	<span style="color:#998;font-style:italic"># 拉取镜像</span>
+
+<span style="color:#998;font-style:italic">#---</span>
+docker rmi &lt;镜像名称/ID&gt;	<span style="color:#998;font-style:italic"># 删除镜像</span>
+-f	<span style="color:#998;font-style:italic"># 强制删除</span>
+docker rmi -f <span style="color:#000;font-weight:bold">$(</span>docker images -qa<span style="color:#000;font-weight:bold">)</span>	<span style="color:#998;font-style:italic"># 强制删除全部</span>
+</code></pre></td></tr></table>
+</div>
+</div><h4 id="容器命令">容器命令</h4>
+<div class="highlight"><div style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4">
+<table style="border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 1
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 2
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 3
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 4
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 5
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 6
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 7
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 8
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 9
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">10
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">11
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">12
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">13
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">14
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">15
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">16
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">17
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">18
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">19
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">20
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">21
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">22
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">23
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">24
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">25
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">26
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">27
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">28
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">29
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">30
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">31
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">32
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">33
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">34
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">35
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">36
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">37
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">38
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">39
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">40
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">41
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">42
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">43
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">44
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">45
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">46
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">47
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">48
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">49
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">50
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">51
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">52
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">53
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">54
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell">docker run <span style="color:#000;font-weight:bold">[</span>options<span style="color:#000;font-weight:bold">]</span> &lt;image&gt; <span style="color:#000;font-weight:bold">[</span>command<span style="color:#000;font-weight:bold">][</span>arg<span style="color:#000;font-weight:bold">]</span>	<span style="color:#998;font-style:italic"># 新建并启动容器</span>
+--name	<span style="color:#998;font-style:italic"># 为容器指定一个名称</span>
+-d	<span style="color:#998;font-style:italic"># 后天运行  启动守护式容器</span>
+-i	<span style="color:#998;font-style:italic"># 以交互模式运行 常与 t 同时使用</span>
+-t	<span style="color:#998;font-style:italic"># 为容器重新分配一个伪终端输入 常与 i 同时使用</span>
+-P	<span style="color:#998;font-style:italic"># 随机端口映射</span>
+-p: 	<span style="color:#998;font-style:italic"># 指定端口映射</span>
+		<span style="color:#998;font-style:italic"># ip:hostPort:containerPort</span>
+		<span style="color:#998;font-style:italic"># ip:containerPort</span>
+		<span style="color:#998;font-style:italic"># hostPort:containerPort</span>
+		<span style="color:#998;font-style:italic"># containerPort</span>
+
+<span style="color:#998;font-style:italic">#---</span>
+docker ps	<span style="color:#998;font-style:italic"># 列出所有运行的容器</span>
+-a	<span style="color:#998;font-style:italic"># 列出当前所有正在运行的容器 + 历史上运行过的容器</span>
+-l	<span style="color:#998;font-style:italic"># 显示最近创建的容器</span>
+-n	<span style="color:#998;font-style:italic"># 显示最近 n 个创建的容器</span>
+-q 	<span style="color:#998;font-style:italic"># 静默模式，只显示容器编号</span>
+--no-trunc	<span style="color:#998;font-style:italic"># 不截断输出</span>
+
+<span style="color:#998;font-style:italic">#---</span>
+<span style="color:#0086b3">exit</span>	<span style="color:#998;font-style:italic"># 退出容器</span>
+ctrl p q	<span style="color:#998;font-style:italic"># 离开容器，容器不关闭</span>
+
+<span style="color:#998;font-style:italic">#---</span>
+docker start &lt;容器名称/ID&gt;	<span style="color:#998;font-style:italic"># 启动容器</span>
+docker restart &lt;容器名称/ID&gt;	<span style="color:#998;font-style:italic"># 重启容器</span>
+docker stop &lt;容器名称/ID&gt;	<span style="color:#998;font-style:italic"># 停止容器</span>
+docker <span style="color:#0086b3">kill</span> &lt;容器名称/ID&gt;	<span style="color:#998;font-style:italic"># 强制停止容器</span>
+docker rm &lt;容器ID&gt;
+-f	<span style="color:#998;font-style:italic"># 强制删除</span>
+
+<span style="color:#998;font-style:italic">#---</span>
+docker logs -f -t --tail &lt;容器ID&gt;	<span style="color:#998;font-style:italic"># 查看容器日志</span>
+-f	<span style="color:#998;font-style:italic"># 跟随最新的日志打印</span>
+-t	<span style="color:#998;font-style:italic"># 假如时间戳</span>
+--tail &lt;数字&gt;	<span style="color:#998;font-style:italic"># 显示最后多少条</span>
+
+<span style="color:#998;font-style:italic"># 后台运行，并打印日志</span>
+docker run -d centos /bin/sh -c <span style="color:#d14">&#34;while true;do echo hello;sleep 2;done&#34;</span>
+
+<span style="color:#998;font-style:italic">#---</span>
+docker top &lt;容器ID&gt;	<span style="color:#998;font-style:italic"># 查看容器内部运行的进程</span>
+docker inspect	&lt;容器ID&gt;	<span style="color:#998;font-style:italic"># 查看容器内部的细节</span>
+
+<span style="color:#998;font-style:italic">#---</span>
+docker <span style="color:#0086b3">exec</span> -it &lt;容器ID&gt; &lt;bashShell&gt;	<span style="color:#998;font-style:italic">#重新进入正在运行的容器	/bin/bash</span>
+docker attach &lt;容器ID&gt;	<span style="color:#998;font-style:italic">#重新进入正在运行的容器</span>
+<span style="color:#998;font-style:italic"># 前者在容器中打开新的终端，并且可以启动新的进程，而且可以直接通过</span>
+<span style="color:#998;font-style:italic"># docker exec -it &lt;容器ID&gt; &lt;bash 命令&gt; 的方式不进入容器，直接拿到执行结果</span>
+<span style="color:#998;font-style:italic"># 后者则直接进入容器的命令终端，不会启动新的进程</span>
+
+<span style="color:#998;font-style:italic">#---</span>
+docker cp &lt;容器ID&gt;:&lt;容器内路径&gt; &lt;目的主机路径&gt;	<span style="color:#998;font-style:italic"># 容器和主机之间复制文件</span>
+</code></pre></td></tr></table>
+</div>
+</div><h4 id="其他命令">其他命令</h4>
+<p><img src="https://i.loli.net/2019/06/15/5d04bab2461bd91179.png" alt="概览"></p>
+<h3 id="镜像的基本概念">镜像的基本概念</h3>
+<p>镜像是一种轻量级的、可执行的独立软件包，用来打包软件运行环境和基于运行环境开发的软件，包含运行某个软件所需的所有内容，包括代码、运行时、库、环境变量和配置文件。</p>
+<blockquote>
+<p><strong>UnionFS</strong>: Union 文件系统是一种分层，轻量级并且高性能的文件系统，它对文件系统的修改作为一次提交来一层层的叠加，同时可以将不同目录挂载到同一虚拟文件系统下。Union 文件系统是 Docker 镜像的基础。镜像可以通过分层来继承，基于基础镜像，可以制作各种具体的应用镜像。特性：一次同时加载多个文件系统，但从外面看起来，只是一个文件系统，联合加载会把各层文件系统叠加起来，这样最终的文件系统会包含所有底层的文件和目录。</p>
+<p>参考：<a href="https://www.jianshu.com/p/3ba255463047">Docker技术原理之Linux UnionFS（容器镜像）</a></p>
+</blockquote>
+<p>Docker 的镜像实际上是由一层一层的文件系统组成，这种层级的文件系统叫做 UnionFS。</p>
+<p>bootfs(Boot file system) 主要包含 bootloader 和 kernel。Bootloader 主要加载 kernel, Linux 刚启动的时候会加载 bootfs 文件系统，在 Docker 镜像的最底层是 bootfs。这一层与我们典型的 Linux/Unix 操作系统是一样的，包含 boot 加载器和内核。当 boot 加载完成之后整个内核的就在都在内存中了，此时内存的使用权已由 bootfs 转交给内核，此时系统也会卸载 bootfs.</p>
+<p>rootfs (Root file system) 在 bootfs 之上。包含典型的 Linux 系统中的 /dev, /proc, /bin, /etc 等标准目录和文件。 rootfs 就是各种不同操作系统的发行版，比如 Ubuntu， Centos 等等。</p>
+<p>对于一个精简的 OS， rootfs 可以只需要包括最基本的命令、工具和程序库就可以了，因为底层直接调用 Host 的 Kernel。由此可见不同  Linux 发行版的 bootfs 基本上一致的，rootfs 会有差别。</p>
+<p>Docker 之所以采用分层镜像，主要是为了共享资源。例如多个镜像都从相同的 base 镜像构建而来，那么宿主机上只需要保存一份 Base 镜像，同时内存中也只需要加载一份 base 镜像，就可以为所有的容器服务了。与此同时，镜像的每一层都可以被共享。分层可以参考下图：</p>
+<p><img src="https://i.loli.net/2019/06/15/5d04e5c566a6a23098.png" alt="分层镜像"></p>
+<p>另外 Docker 镜像都是只读的，当容器启动的时候，一个新的可写层会被加载到镜像顶部。这一层通常被称为 ”容器层“，容器层之下的都叫做镜像层。</p>
+<h3 id="修改镜像">修改镜像</h3>
+<p>可以通过 docker commit 命令提交容器副本使之成为一个新的镜像。</p>
+<div class="highlight"><div style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4">
+<table style="border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 1
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 2
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 3
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 4
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 5
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 6
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 7
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 8
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 9
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">10
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">11
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">12
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">13
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">14
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">15
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">16
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">17
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell"><span style="color:#998;font-style:italic"># 使用 tomcat 为例</span>
+<span style="color:#998;font-style:italic"># 首先下载并启动 Tomcat</span>
+docker -it -p 8888:8000 tomcat
+
+<span style="color:#998;font-style:italic"># 查看运行的容器 ID</span>
+docker ps
+
+<span style="color:#998;font-style:italic"># 打开新的 bash 删除 docs 目录</span>
+docker <span style="color:#0086b3">exec</span> -it 2b26592f2e9b /bin/bash
+&gt; rm -rf /webapps/docs
+
+<span style="color:#998;font-style:italic"># 使用 doc commit 创建新的镜像</span>
+docker commit -a<span style="color:#000;font-weight:bold">=</span><span style="color:#d14">&#34;xinyue&#34;</span> -m<span style="color:#000;font-weight:bold">=</span><span style="color:#d14">&#34;customized tomcat&#34;</span> 2b26592f2e9b xinyue/tomcat:1.2
+
+<span style="color:#998;font-style:italic"># 使用新的镜像启动容器</span>
+docker run -it -p 7777:8080 xinyue/tomcat:1.2
+
+</code></pre></td></tr></table>
+</div>
+</div><h3 id="容器卷">容器卷</h3>
+<h4 id="基本概念-1">基本概念</h4>
+<p>卷就是目录或文件，存在于一个或多个容器中，由 docker 挂载到容器，但不属于联合文件系统，因此可以绕过 UnionFS 提供的一些用于持续存储或共享数据的特性。卷的设计目的就是数据持久化，完全独立于容器的生存周期，因此 Docker 不会在容器删除时删除其挂载的数据卷。</p>
+<ol>
+<li>数据卷可以在容器之间共享或者重用数据。</li>
+<li>卷中的更改可以直接生效。</li>
+<li>数据卷中的更改不会包含在镜像的更新中。</li>
+<li>数据卷的生命周期一直持续到没有容器使用它为止。</li>
+</ol>
+<h4 id="添加数据卷的方法">添加数据卷的方法</h4>
+<h5 id="1-是通过命令的方式添加">1 是通过命令的方式添加</h5>
+<div class="highlight"><div style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4">
+<table style="border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 1
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 2
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 3
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 4
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 5
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 6
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 7
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 8
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 9
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">10
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">11
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">12
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">13
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">14
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell"><span style="color:#998;font-style:italic"># 通过命令添加</span>
+docker run -it -v /宿主机绝对路径目录:/容器内目录 镜像名称
+<span style="color:#998;font-style:italic"># 容器类的目录只可以读取</span>
+docker run -it -v /宿主机绝对路径目录:/容器内目录:ro 镜像名称
+
+<span style="color:#998;font-style:italic">#---</span>
+docker run -it -v /demodemo:/demodemo centos
+
+<span style="color:#998;font-style:italic">#---</span>
+docker volume create my-vol	<span style="color:#998;font-style:italic"># 创建容器卷</span>
+docker volume ls	<span style="color:#998;font-style:italic"># 查看所有容器卷</span>
+docker volume inspect my-vol	<span style="color:#998;font-style:italic"># 查看指定容器卷的信息</span>
+docker volume rm my-vol	<span style="color:#998;font-style:italic"># 删除容器卷</span>
+docker volume prune	<span style="color:#998;font-style:italic"># 清空容器卷</span>
+</code></pre></td></tr></table>
+</div>
+</div><p><em>也可以使用 mount 参数具体可以参考：<a href="https://deepzz.com/post/the-docker-volumes-basic.html">docker volume 容器卷的那些事（一）</a></em></p>
+<h5 id="2-是通过-dockerfile-添加">2 是通过 DockerFile 添加</h5>
+<div class="highlight"><div style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4">
+<table style="border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 1
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 2
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 3
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 4
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 5
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 6
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 7
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 8
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 9
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">10
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">11
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">12
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">13
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell"><span style="color:#998;font-style:italic"># 编写 dockerfile</span>
+<span style="color:#998;font-style:italic"># build docker</span>
+docker build -f dockerfile -t xinyue/centos2 .
+
+<span style="color:#998;font-style:italic"># 启动容器</span>
+docker run -it xinyue/centos2
+<span style="color:#998;font-style:italic"># 会从上一个镜像中同步过来 volumes</span>
+docker run -it --volumes-from admiring_mendel xinyue/centos2
+
+--volumes-from <span style="color:#998;font-style:italic"># 用于容器间传递共享</span>
+
+<span style="color:#998;font-style:italic">#---</span>
+docker <span style="color:#0086b3">history</span> &lt;镜像名称&gt; <span style="color:#998;font-style:italic"># 查看镜像历史</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>挂载结果</p>
+<div class="highlight"><div style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4">
+<table style="border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 1
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 2
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 3
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 4
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 5
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 6
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 7
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 8
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 9
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">10
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">11
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">12
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">13
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">14
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">15
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">16
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">17
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">18
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">19
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">20
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-json" data-lang="json">{                                                                                                                  
+    <span style="color:#000080">&#34;Type&#34;</span>: <span style="color:#d14">&#34;volume&#34;</span>,                                                                                              
+    <span style="color:#000080">&#34;Name&#34;</span>: <span style="color:#d14">&#34;e6e17cca6f7ff2759150a510e4e4f5130fcc26fe684011fdbd74be83b30d6ba6&#34;</span>,                                    
+    <span style="color:#000080">&#34;Source&#34;</span>: <span style="color:#d14">&#34;/var/lib/docker/volumes/e6e17cca6f7ff2759150a510e4e4f5130fcc26fe684011fdbd74be83b30d6ba6/_data&#34;</span>,    
+    <span style="color:#000080">&#34;Destination&#34;</span>: <span style="color:#d14">&#34;/dataVolumeContainer2&#34;</span>,                                                                        
+    <span style="color:#000080">&#34;Driver&#34;</span>: <span style="color:#d14">&#34;local&#34;</span>,                                                                                             
+    <span style="color:#000080">&#34;Mode&#34;</span>: <span style="color:#d14">&#34;&#34;</span>,                                                                                                    
+    <span style="color:#000080">&#34;RW&#34;</span>: <span style="color:#000;font-weight:bold">true</span>,                                                                                                    
+    <span style="color:#000080">&#34;Propagation&#34;</span>: <span style="color:#d14">&#34;&#34;</span>                                                                                              
+}<span style="color:#a61717;background-color:#e3d2d2">,</span>                                                                                                                 
+{                                                                                                                  
+    <span style="color:#000080">&#34;Type&#34;</span>: <span style="color:#d14">&#34;volume&#34;</span>,                                                                                              
+    <span style="color:#000080">&#34;Name&#34;</span>: <span style="color:#d14">&#34;f081f21bb65f5b3effd32bb8844dc84d5bc40ee291aa628ac5c59895592451a6&#34;</span>,                                    
+    <span style="color:#000080">&#34;Source&#34;</span>: <span style="color:#d14">&#34;/var/lib/docker/volumes/f081f21bb65f5b3effd32bb8844dc84d5bc40ee291aa628ac5c59895592451a6/_data&#34;</span>,    
+    <span style="color:#000080">&#34;Destination&#34;</span>: <span style="color:#d14">&#34;/dataVolumeContainer1&#34;</span>,                                                                        
+    <span style="color:#000080">&#34;Driver&#34;</span>: <span style="color:#d14">&#34;local&#34;</span>,                                                                                             
+    <span style="color:#000080">&#34;Mode&#34;</span>: <span style="color:#d14">&#34;&#34;</span>,                                                                                                    
+    <span style="color:#000080">&#34;RW&#34;</span>: <span style="color:#000;font-weight:bold">true</span>,                                                                                                    
+    <span style="color:#000080">&#34;Propagation&#34;</span>: <span style="color:#d14">&#34;&#34;</span>                                                                                              
+}                                                                                                                  
+</code></pre></td></tr></table>
+</div>
+</div><p>dockerfile</p>
+<div class="highlight"><div style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4">
+<table style="border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">1
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">2
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">3
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">4
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">5
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">6
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-dockerfile" data-lang="dockerfile"><span style="color:#998;font-style:italic"># volume test</span><span style="color:#a61717;background-color:#e3d2d2">
+</span><span style="color:#a61717;background-color:#e3d2d2"></span><span style="color:#000;font-weight:bold">FROM</span><span style="color:#d14"> centos</span><span style="color:#a61717;background-color:#e3d2d2">
+</span><span style="color:#a61717;background-color:#e3d2d2"></span><span style="color:#998;font-style:italic"># 创建了两个容器卷</span><span style="color:#a61717;background-color:#e3d2d2">
+</span><span style="color:#a61717;background-color:#e3d2d2"></span><span style="color:#000;font-weight:bold">VOLUME</span> [<span style="color:#d14">&#34;/dataVolumeContainer1&#34;</span>, <span style="color:#d14">&#34;/dataVolumeContainer2&#34;</span>]<span style="color:#a61717;background-color:#e3d2d2">
+</span><span style="color:#a61717;background-color:#e3d2d2"></span><span style="color:#000;font-weight:bold">CMD</span> <span style="color:#0086b3">echo</span> <span style="color:#d14">&#34;Finished --- sucess!&#34;</span><span style="color:#a61717;background-color:#e3d2d2">
+</span><span style="color:#a61717;background-color:#e3d2d2"></span><span style="color:#000;font-weight:bold">CMD</span> /bin/bash<span style="color:#a61717;background-color:#e3d2d2">
+</span></code></pre></td></tr></table>
+</div>
+</div><h3 id="dockerfile">DockerFile</h3>
+<p>用来构建 docker 的文件。下面是一个简单的例子</p>
+<div class="highlight"><div style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4">
+<table style="border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 1
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 2
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 3
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 4
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 5
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 6
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 7
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 8
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 9
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">10
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">11
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">12
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-dockerfile" data-lang="dockerfile"><span style="color:#998;font-style:italic"># scratch 相等于 Object 类</span><span style="color:#a61717;background-color:#e3d2d2">
+</span><span style="color:#a61717;background-color:#e3d2d2"></span><span style="color:#000;font-weight:bold">FROM</span><span style="color:#d14"> scratch</span><span style="color:#a61717;background-color:#e3d2d2">
+</span><span style="color:#a61717;background-color:#e3d2d2"></span><span style="color:#000;font-weight:bold">ADD</span> centos-7-x86_64-docker.tar.xz /<span style="color:#a61717;background-color:#e3d2d2">
+</span><span style="color:#a61717;background-color:#e3d2d2">
+</span><span style="color:#a61717;background-color:#e3d2d2"></span><span style="color:#000;font-weight:bold">LABEL</span> org.label-schema.schema-version<span style="color:#000;font-weight:bold">=</span><span style="color:#d14">&#34;1.0&#34;</span> <span style="color:#d14">\
+</span><span style="color:#d14"></span>    org.label-schema.name<span style="color:#000;font-weight:bold">=</span><span style="color:#d14">&#34;CentOS Base Image&#34;</span> <span style="color:#d14">\
+</span><span style="color:#d14"></span>    org.label-schema.vendor<span style="color:#000;font-weight:bold">=</span><span style="color:#d14">&#34;CentOS&#34;</span> <span style="color:#d14">\
+</span><span style="color:#d14"></span>    org.label-schema.license<span style="color:#000;font-weight:bold">=</span><span style="color:#d14">&#34;GPLv2&#34;</span> <span style="color:#d14">\
+</span><span style="color:#d14"></span>    org.label-schema.build-date<span style="color:#000;font-weight:bold">=</span><span style="color:#d14">&#34;20190305&#34;</span><span style="color:#a61717;background-color:#e3d2d2">
+</span><span style="color:#a61717;background-color:#e3d2d2">
+</span><span style="color:#a61717;background-color:#e3d2d2"></span><span style="color:#998;font-style:italic"># 默认命令</span><span style="color:#a61717;background-color:#e3d2d2">
+</span><span style="color:#a61717;background-color:#e3d2d2"></span><span style="color:#000;font-weight:bold">CMD</span> [<span style="color:#d14">&#34;/bin/bash&#34;</span>]<span style="color:#a61717;background-color:#e3d2d2">
+</span></code></pre></td></tr></table>
+</div>
+</div><h4 id="简单语法规则">简单语法规则</h4>
+<ol>
+<li>每条保留字指令必须为大写字母，且后面至少有一个参数</li>
+<li>指令按照从上到下，允许执行</li>
+<li><code>#</code> 表示注释</li>
+<li>每条指令都会创建一个新的镜像层，并对镜像进行提交</li>
+</ol>
+<h4 id="dockerfile-执行流程如下">DockerFile 执行流程如下</h4>
+<ol>
+<li>docker 从基础镜像运行一个容器</li>
+<li>执行一条指令并对容器作出修改</li>
+<li>指令类似 docker commit 的操作提交一个新的镜像层</li>
+<li>docker 再基于刚提交的镜像运行一个新的容器</li>
+<li>执行 dockerfile 中的下一条指令，直到所有指令执行完成</li>
+</ol>
+<p>简单来讲</p>
+<ol>
+<li>DockFile 相等于软件原材料</li>
+<li>Docker 镜像是软件交付品</li>
+<li>Docker 容器是软件运行态</li>
+</ol>
+<h4 id="保留关键字">保留关键字</h4>
+<div class="highlight"><div style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4">
+<table style="border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 1
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 2
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 3
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 4
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 5
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 6
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 7
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 8
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 9
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">10
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">11
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">12
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">13
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">14
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">15
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">16
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">17
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell">FROM			<span style="color:#998;font-style:italic"># 基础镜像，当前镜像基于哪个镜像</span>
+MAINTAINER		<span style="color:#998;font-style:italic"># 作者 + 作者邮箱</span>
+RUN				<span style="color:#998;font-style:italic"># 容器构建时需要运行的命令</span>
+EXPOSE			<span style="color:#998;font-style:italic"># 暴露出的对外服务的端口号</span>
+WORKDIR			<span style="color:#998;font-style:italic"># 登录后的工作目录</span>
+ENV				<span style="color:#998;font-style:italic"># 用来在构建警醒过程中设置环境变量 eg: ENV I_PATH /usr/demo</span>
+				<span style="color:#998;font-style:italic"># 后续可以通过 $I_PATH 取出该值</span>
+ADD				<span style="color:#998;font-style:italic"># 将宿主机目录下的文件 Copy 到镜像，且会自动处理 URL 和解压缩 tar 压缩包</span>
+COPY			<span style="color:#998;font-style:italic"># 类似ADD，COPY 文件和目录到镜像中</span>
+				<span style="color:#998;font-style:italic"># 将构建上下文目录中 &lt;源路径&gt; 的文件/目录复制到新的一层的镜像内的 &lt;目标路径&gt; 位置</span>
+				<span style="color:#998;font-style:italic"># COPY src dest || COPY [&#34;src&#34;, &#34;dest&#34;]</span>
+VOLUME			<span style="color:#998;font-style:italic"># 容器数据卷，用于数据保存和持久化工作</span>
+CMD				<span style="color:#998;font-style:italic"># 指定一个容器启动时要运行的命令，多个的时候只有一个生效</span>
+				<span style="color:#998;font-style:italic"># CMD 会被 docker run 之后的参数替代</span>
+ENTRYPOINT		<span style="color:#998;font-style:italic"># 同 CMD，但是不会被 docker run 之后的参数替代，而是会追加到原命令末尾</span>
+ONBUILD			<span style="color:#998;font-style:italic"># 当构建一个被继承的 DockerFile 时运行的命令</span>
+				<span style="color:#998;font-style:italic"># 父镜像的这个命令会在子镜像构建的时候执行</span>
+</code></pre></td></tr></table>
+</div>
+</div><h3 id="简单的几个例子">简单的几个例子</h3>
+<div class="highlight"><div style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4">
+<table style="border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">1
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">2
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">3
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">4
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">5
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">6
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">7
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">8
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">9
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-dockerfile" data-lang="dockerfile"><span style="color:#000;font-weight:bold">FROM</span><span style="color:#d14"> centos</span><span style="color:#a61717;background-color:#e3d2d2">
+</span><span style="color:#a61717;background-color:#e3d2d2"></span><span style="color:#000;font-weight:bold">ENV</span> mypath /tmp<span style="color:#a61717;background-color:#e3d2d2">
+</span><span style="color:#a61717;background-color:#e3d2d2"></span><span style="color:#000;font-weight:bold">WORKDIR</span><span style="color:#d14"> $mypath</span><span style="color:#a61717;background-color:#e3d2d2">
+</span><span style="color:#a61717;background-color:#e3d2d2">
+</span><span style="color:#a61717;background-color:#e3d2d2"></span><span style="color:#000;font-weight:bold">RUN</span> yum -y install vim<span style="color:#a61717;background-color:#e3d2d2">
+</span><span style="color:#a61717;background-color:#e3d2d2"></span><span style="color:#000;font-weight:bold">RUN</span> yum -y install net-tools<span style="color:#a61717;background-color:#e3d2d2">
+</span><span style="color:#a61717;background-color:#e3d2d2">
+</span><span style="color:#a61717;background-color:#e3d2d2"></span><span style="color:#000;font-weight:bold">EXPOSE</span><span style="color:#d14"> 80</span><span style="color:#a61717;background-color:#e3d2d2">
+</span><span style="color:#a61717;background-color:#e3d2d2"></span><span style="color:#000;font-weight:bold">CMD</span> /bin/bash<span style="color:#a61717;background-color:#e3d2d2">
+</span></code></pre></td></tr></table>
+</div>
+</div><div class="highlight"><div style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4">
+<table style="border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 1
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 2
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 3
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 4
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 5
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 6
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 7
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 8
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 9
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">10
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">11
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">12
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">13
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">14
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">15
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">16
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">17
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">18
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">19
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">20
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell">FROM centos
+MAINTAINER xinyue&lt;xinyue@xinyue.com&gt;
+COPY c.txt /usr/local/container.txt
+ADD jdk-8u171.tar.gz /usr/local/
+ADD apache-tomcat-9.tar.gz /usr/local/
+
+RUN yum install -y vim
+ENV MYPATH /usr/local
+WORKDIR <span style="color:#008080">$MYPATH</span>
+ENV JAVA_HOME /usr/local/jdk1.8.0.1_171
+ENV CLASSPATH <span style="color:#008080">$JAVA_HOME</span>/lib/dt.jar:<span style="color:#008080">$$</span>JAVA_HOME/lib/tools.jar
+ENV CATALINA_HOME /usr/local/apache-tomcat-9
+ENV CATALINA_BASE /usr/local/apache-tomcat-9
+ENV PATH <span style="color:#008080">$PATH</span>:<span style="color:#008080">$JAVA_HOME</span>/bin:<span style="color:#008080">$CATALINA_HOME</span>/lib:/<span style="color:#008080">$CATALINA_HOME</span>/bin
+EXPOSE <span style="color:#099">8080</span>
+
+<span style="color:#998;font-style:italic"># ENTRYPOINT [&#34;/usr/local/apache-tomcat-9/bin/startup.sh&#34;]</span>
+<span style="color:#998;font-style:italic"># CMD [&#34;/usr/local/appache-tomcat-9/bin/catalna.sh&#34;, &#34;run&#34;]</span>
+CMD /usr/local/apache-tomcat-9/bin.startup.sh <span style="color:#000;font-weight:bold">&amp;&amp;</span> tail -F /usr/local/apache-tomcat-9/bin/logs/catalina.out
+
+</code></pre></td></tr></table>
+</div>
+</div>
+        </div>
+
+        
+
+
+        
+
+
+        <div class="post-meta meta-tags">
+            
+            没有标签
+            
+        </div>
+    </article>
+    
+    
+
+    
+    
+</div>
+
+                </div>
+
+                <div id="secondary">
+    <section class="widget">
+        <form id="search" action='//www.google.com/search' method="get" accept-charset="utf-8" target="_blank" _lpchecked="1">
+      
+      <input type="text" name="q" maxlength="20" placeholder="Search">
+      <input type="hidden" name="sitesearch" value="https://sangzhenya.github.io/">
+      <button type="submit" class="submit icon-search"></button>
+</form>
+    </section>
+    
+    <section class="widget">
+        <h3 class="widget-title">最近文章</h3>
+<ul class="widget-list">
+    
+    <li>
+        <a href="https://sangzhenya.github.io/post/Java/jdk8/Java-8-Stream/" title="Java 8 Stream">Java 8 Stream</a>
+    </li>
+    
+    <li>
+        <a href="https://sangzhenya.github.io/post/Java/jdk8/Java-8-Lambda/" title="Java 8 Lambda">Java 8 Lambda</a>
+    </li>
+    
+    <li>
+        <a href="https://sangzhenya.github.io/post/Java/juc/Java-ConcurrentHashMap/" title="Java ConcurrentHashMap">Java ConcurrentHashMap</a>
+    </li>
+    
+    <li>
+        <a href="https://sangzhenya.github.io/post/Java/juc/Java-CAS/" title="Java CAS">Java CAS</a>
+    </li>
+    
+    <li>
+        <a href="https://sangzhenya.github.io/post/Java/juc/Java-volatile/" title="Java volatile">Java volatile</a>
+    </li>
+    
+    <li>
+        <a href="https://sangzhenya.github.io/post/Java/juc/Java-ReentrantLock/" title="Java ReentrantLock">Java ReentrantLock</a>
+    </li>
+    
+    <li>
+        <a href="https://sangzhenya.github.io/post/Java/juc/Java-%E5%B9%B6%E5%8F%91%E6%8E%A7%E5%88%B6/" title="Java 并发控制">Java 并发控制</a>
+    </li>
+    
+    <li>
+        <a href="https://sangzhenya.github.io/post/Java/juc/Java-AQS/" title="Java AQS">Java AQS</a>
+    </li>
+    
+    <li>
+        <a href="https://sangzhenya.github.io/post/DataBase/MyBatis/MyBaits-%E4%B8%8E-Spring-Boot/" title=""></a>
+    </li>
+    
+    <li>
+        <a href="https://sangzhenya.github.io/post/DataBase/MyBatis/SQL-%E6%98%A0%E5%B0%84/" title=""></a>
+    </li>
+    
+</ul>
+    </section>
+
+    
+
+    <section class="widget">
+        <h3 class="widget-title">分类</h3>
+<ul class="widget-list">
+    
+    <li><a href="https://sangzhenya.github.io/categories/Java/">Java (8)</a></li>
+    
+    <li><a href="https://sangzhenya.github.io/categories/%E5%85%B3%E4%BA%8E/">关于 (1)</a></li>
+    
+</ul>
+    </section>
+
+    <section class="widget">
+        <h3 class="widget-title">标签</h3>
+<div class="tagcloud">
+    
+    <a href="https://sangzhenya.github.io/tags/JDK8/">JDK8</a>
+    
+    <a href="https://sangzhenya.github.io/tags/JUC/">JUC</a>
+    
+    <a href="https://sangzhenya.github.io/tags/JVM/">JVM</a>
+    
+    <a href="https://sangzhenya.github.io/tags/java/">java</a>
+    
+    <a href="https://sangzhenya.github.io/tags/%E5%85%B3%E4%BA%8E/">关于</a>
+    
+    <a href="https://sangzhenya.github.io/tags/%E9%9B%86%E5%90%88/">集合</a>
+    
+</div>
+    </section>
+
+    
+
+    <section class="widget">
+        <h3 class="widget-title">其它</h3>
+        <ul class="widget-list">
+            <li><a href="https://sangzhenya.github.io/index.xml">文章 RSS</a></li>
+        </ul>
+    </section>
+</div>
+            </div>
+        </div>
+    </div>
+    <footer id="footer">
+    <div class="container">
+        &copy; 2020 <a href="https://sangzhenya.github.io/">新月的博客 By 新月</a>.
+        Powered by <a rel="nofollow noreferer noopener" href="https://gohugo.io" target="_blank">Hugo</a>.
+        Theme based on <a href="https://github.com/flysnow-org/maupassant-hugo" target="_blank">maupassant</a>.
+        
+    </div>
+</footer>
+
+
+    
+    <script type="text/javascript">
+        window.MathJax = {
+            tex2jax: {
+                inlineMath: [['$', '$']],
+                processEscapes: true
+                }
+            };
+    </script>
+    <script src='https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-MML-AM_CHTML' async></script>
+
+
+<a id="rocket" href="#top"></a>
+<script type="text/javascript" src='https://sangzhenya.github.io/js/totop.js?v=0.0.0' async=""></script>
+
+
+
+
+
+
+</body>
+
+</html>

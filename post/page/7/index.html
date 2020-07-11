@@ -1,0 +1,468 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <title>Posts | 新月的博客</title>
+    <meta property="og:title" content="Posts - 新月的博客">
+    <meta property="og:type" content="article">
+        
+        
+    <meta name="Keywords" content="">
+    <meta name="description" content="Posts">
+        
+    <meta name="author" content="新月">
+    <meta property="og:url" content="https://sangzhenya.github.io/post/">
+    <link rel="shortcut icon" href="https://sangzhenya.github.io/favicon.ico" type="image/x-icon">
+
+    <link rel="stylesheet" href='https://sangzhenya.github.io/css/normalize.css'>
+    <link rel="stylesheet" href='https://sangzhenya.github.io/css/style.css'>
+    <link rel="alternate" type="application/rss+xml+xml" href="https://sangzhenya.github.io/post/index.xml" title="新月的博客" />
+    <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+
+    
+
+
+    
+    
+</head>
+
+
+<body>
+    <header id="header" class="clearfix">
+    <div class="container">
+        <div class="col-group">
+            <div class="site-name ">
+                
+                    <a id="logo" href="https://sangzhenya.github.io/">
+                        新月的博客
+                    </a>
+                
+                <p class="description">晚来天欲雪，能饮一杯无？</p>
+            </div>
+            <div>
+                <nav id="nav-menu" class="clearfix">
+                    <a class="current" href="https://sangzhenya.github.io/">首页</a>
+                    
+                    <a  href="https://sangzhenya.github.io/archives/" title="归档">归档</a>
+                    
+                    <a  href="https://sangzhenya.github.io/about/" title="关于">关于</a>
+                    
+                </nav>
+            </div>
+        </div>
+    </div>
+</header>
+
+    <div id="body">
+        <div class="container">
+            <div class="col-group">
+
+                <div class="col-8" id="main">
+                    
+<div class="res-cons">
+    
+    
+    <article class="post">
+        <header>
+            <h1 class="post-title">
+                <a href="https://sangzhenya.github.io/post/Spring/Spring-Boot/%E9%94%99%E8%AF%AF%E5%A4%84%E7%90%86%E6%9C%BA%E5%88%B6/" title=""></a>
+            </h1>
+        </header>
+        <date class="post-meta meta-date">
+            1年1月1日
+        </date>
+        
+        <div class="post-content">
+            Spring Boot 错误处理机制 Spring 针对于浏览器访问和客户端访问使用不同的处理逻辑。如果是浏览器则返回一个出错的网页，而如果是客户端则返回 JSON 格式的错误数据。其处理的原理如下： 在 ErrorMvcAutoConfiguration 有对于出错处理的自动配置。其为容器中添加了 DefaultErrorAttributes Bean 在页面中共享信息。 1 2 3 4 5 @Bean @ConditionalOnMissingBean(value = ErrorAttributes.class, search = SearchStrategy.CURRENT) public DefaultErrorAttributes errorAttributes() { return new DefaultErrorAttributes(this.serverProperties.getError().isIncludeException()); } 此外为容器中添加……
+        </div>
+        <p class="readmore"><a href="https://sangzhenya.github.io/post/Spring/Spring-Boot/%E9%94%99%E8%AF%AF%E5%A4%84%E7%90%86%E6%9C%BA%E5%88%B6/">阅读全文</a></p>
+    </article>
+    
+    
+    
+    <article class="post">
+        <header>
+            <h1 class="post-title">
+                <a href="https://sangzhenya.github.io/post/Spring/Spring-Boot/%E9%85%8D%E7%BD%AE%E6%96%87%E4%BB%B6/" title=""></a>
+            </h1>
+        </header>
+        <date class="post-meta meta-date">
+            1年1月1日
+        </date>
+        
+        <div class="post-content">
+            Spring Boot 配置文件 Spring Boot 默认使用 properties 文件来配置属性，也可以使用 YAML 文件进行配置。YAML 以数据为中心，比 json 和 xml 等更适合做配置文件。 基本语法 K:[空格]V 表示一对键值对。以空格的缩进控制层级关系, 属性和值均是大小写敏感的，只要是左对齐的一列数据，都是同一个层级的。 1 2 server:port:8080 普通值 数字 字符串 布尔 字符……
+        </div>
+        <p class="readmore"><a href="https://sangzhenya.github.io/post/Spring/Spring-Boot/%E9%85%8D%E7%BD%AE%E6%96%87%E4%BB%B6/">阅读全文</a></p>
+    </article>
+    
+    
+    
+    <article class="post">
+        <header>
+            <h1 class="post-title">
+                <a href="https://sangzhenya.github.io/post/Spring/Spring-Boot/%E8%87%AA%E5%AE%9A%E4%B9%89-Starter/" title=""></a>
+            </h1>
+        </header>
+        <date class="post-meta meta-date">
+            1年1月1日
+        </date>
+        
+        <div class="post-content">
+            自定义 Starter Starter 只是用来引入自动配置模块，Starter 依赖自动配置，其他人使用的时候只需要引入 Starter 即可。另外对于我们自己实现的 Starter 推荐命名是 xxx-spring-boot-starter。 首先创建一个空项目例如 mystarter, 打开项目创建两个 Module，一个是普通的 Maven 项目，一个是 Spring Boot 项目。如下图所示……
+        </div>
+        <p class="readmore"><a href="https://sangzhenya.github.io/post/Spring/Spring-Boot/%E8%87%AA%E5%AE%9A%E4%B9%89-Starter/">阅读全文</a></p>
+    </article>
+    
+    
+    
+    <article class="post">
+        <header>
+            <h1 class="post-title">
+                <a href="https://sangzhenya.github.io/post/Spring/Spring-Boot/%E8%87%AA%E5%8A%A8%E9%85%8D%E7%BD%AE/" title=""></a>
+            </h1>
+        </header>
+        <date class="post-meta meta-date">
+            1年1月1日
+        </date>
+        
+        <div class="post-content">
+            Spring Boot 自动配置 众所周知 Spring Boot 极大的减少了 Spring 繁琐的配置，采用约定大于配置的策略。也是基于此 Spring Boot 有很多自动配置的逻辑，下面简单理一下相关的代码。 首先对于 Spring Boot 应用主启动类上要标注 @SpringBootApplication 如下所示，那么这个注解为会 Spring Boot 添加哪些配置的呢？下面可以看一下相关的源码。 1 2 3 4 5 6 @SpringBootApplication public class MyMainApplication { public static void main(String[] args) { SpringApplication.run(MyMainApplication.class);……
+        </div>
+        <p class="readmore"><a href="https://sangzhenya.github.io/post/Spring/Spring-Boot/%E8%87%AA%E5%8A%A8%E9%85%8D%E7%BD%AE/">阅读全文</a></p>
+    </article>
+    
+    
+    
+    <article class="post">
+        <header>
+            <h1 class="post-title">
+                <a href="https://sangzhenya.github.io/post/Spring/Spring-Boot/%E7%BC%93%E5%AD%98/" title=""></a>
+            </h1>
+        </header>
+        <date class="post-meta meta-date">
+            1年1月1日
+        </date>
+        
+        <div class="post-content">
+            缓存 [toc] JSR 107 首先 JSR 107 即 JCache API的首个早期草案，在 Java JCache 中定义了 5 个核心内容，即 CachingProvider，CacheMaager，Cache，Entry 和 Expiry。 CachingProvider 中定义了创建、配置、获取、管理和控制多个 CacheManager, 一个应用可以在运行期间访问多个 CahingProvider。 CacheManger 定义了……
+        </div>
+        <p class="readmore"><a href="https://sangzhenya.github.io/post/Spring/Spring-Boot/%E7%BC%93%E5%AD%98/">阅读全文</a></p>
+    </article>
+    
+    
+    
+    <article class="post">
+        <header>
+            <h1 class="post-title">
+                <a href="https://sangzhenya.github.io/post/Spring/Spring-Boot/%E6%97%A5%E5%BF%97%E7%B3%BB%E7%BB%9F/" title=""></a>
+            </h1>
+        </header>
+        <date class="post-meta meta-date">
+            1年1月1日
+        </date>
+        
+        <div class="post-content">
+            Spring Boot 日志 开发用到的框架大概有：JUL、JCL、Jboss-logging、logback、log4j、log4j2、slf4j&hellip;.。其中 JCL， SLF4J， Jboss-logging 是日志门面，log4j, jul, log4j, Logback 是日志的实现. Spring Boot 选用的是 SLF4J 和 Logback 的实现。依赖如下： 在自己的系统中使用 slf4j 的话首先……
+        </div>
+        <p class="readmore"><a href="https://sangzhenya.github.io/post/Spring/Spring-Boot/%E6%97%A5%E5%BF%97%E7%B3%BB%E7%BB%9F/">阅读全文</a></p>
+    </article>
+    
+    
+    
+    <article class="post">
+        <header>
+            <h1 class="post-title">
+                <a href="https://sangzhenya.github.io/post/Spring/Spring-Boot/%E5%B5%8C%E5%85%A5%E5%BC%8F%E5%AE%B9%E5%99%A8/" title=""></a>
+            </h1>
+        </header>
+        <date class="post-meta meta-date">
+            1年1月1日
+        </date>
+        
+        <div class="post-content">
+            嵌入式容器 对于嵌入式容器的配置 Spring 的基本的 Server 的配置都可以在 application.yaml 中通过 server 相关的属性进行配置。 其对应的配置类是 1 2 3 4 5 6 7 8 9 10 11 @ConfigurationProperties(prefix = &#34;server&#34;, ignoreUnknownFields = true) public class ServerProperties { private final Tomcat tomcat = new Tomcat(); public static class Tomcat { private final Accesslog accesslog = new Accesslog(); private String protocolHeader; private String protocolHeaderHttpsValue = &#34;https&#34;; private String portHeader = &#34;X-Forwarded-Port&#34;; } } 其内部类 Tomcat 用户配置 Tomcat 相关的信息。在 ServletWebServerFactoryCustomizer 会使用 其中的配置对 嵌入式容器进行……
+        </div>
+        <p class="readmore"><a href="https://sangzhenya.github.io/post/Spring/Spring-Boot/%E5%B5%8C%E5%85%A5%E5%BC%8F%E5%AE%B9%E5%99%A8/">阅读全文</a></p>
+    </article>
+    
+    
+    
+    <article class="post">
+        <header>
+            <h1 class="post-title">
+                <a href="https://sangzhenya.github.io/post/Spring/Spring-Boot/%E5%90%AF%E5%8A%A8%E5%8E%9F%E7%90%86/" title=""></a>
+            </h1>
+        </header>
+        <date class="post-meta meta-date">
+            1年1月1日
+        </date>
+        
+        <div class="post-content">
+            ……
+        </div>
+        <p class="readmore"><a href="https://sangzhenya.github.io/post/Spring/Spring-Boot/%E5%90%AF%E5%8A%A8%E5%8E%9F%E7%90%86/">阅读全文</a></p>
+    </article>
+    
+    
+    
+    <article class="post">
+        <header>
+            <h1 class="post-title">
+                <a href="https://sangzhenya.github.io/post/Spring/Spring-Boot/%E4%BD%BF%E7%94%A8%E5%A4%96%E9%83%A8-Servlet-%E5%AE%B9%E5%99%A8/" title=""></a>
+            </h1>
+        </header>
+        <date class="post-meta meta-date">
+            1年1月1日
+        </date>
+        
+        <div class="post-content">
+            使用外部容器 基本项目创建 在创建项目的时候使用 war 的方式打包： 其实主要的 pom 文件的配置如下： 1 2 3 4 5 6 7 8 9 10 11 12 &lt;groupId&gt;com.example&lt;/groupId&gt; &lt;artifactId&gt;webwar&lt;/artifactId&gt; &lt;version&gt;0.0.1-SNAPSHOT&lt;/version&gt; &lt;!--打包方式设置为 war--&gt; &lt;packaging&gt;war&lt;/packaging&gt; &lt;!--将内置的 Tomcat 设置为 provided --&gt; &lt;dependency&gt; &lt;groupId&gt;org.springframework.boot&lt;/groupId&gt; &lt;artifactId&gt;spring-boot-starter-tomcat&lt;/artifactId&gt; &lt;scope&gt;provided&lt;/scope&gt; &lt;/dependency&gt; 在主目录下编写 SpringBootServletInitializer 的子类并实现其 configure 方法，样例如下： 1 2 3 4 5 6 7 public class ServletInitializer extends SpringBootServletInitializer { @Override protected SpringApplicationBuilder configure(SpringApplicationBuilder application) { //……
+        </div>
+        <p class="readmore"><a href="https://sangzhenya.github.io/post/Spring/Spring-Boot/%E4%BD%BF%E7%94%A8%E5%A4%96%E9%83%A8-Servlet-%E5%AE%B9%E5%99%A8/">阅读全文</a></p>
+    </article>
+    
+    
+    
+    <article class="post">
+        <header>
+            <h1 class="post-title">
+                <a href="https://sangzhenya.github.io/post/Spring/Spring-Boot/MyBatis-%E5%A4%9A%E6%95%B0%E6%8D%AE%E6%BA%90%E9%85%8D%E7%BD%AE/" title=""></a>
+            </h1>
+        </header>
+        <date class="post-meta meta-date">
+            1年1月1日
+        </date>
+        
+        <div class="post-content">
+            Spring Boot + MyBatis 多数据源配置 主要有两种配置方式：第一种是自定义配置 SqlSessionFactory ，第二种是使用 AbstractRoutingDataSource + AOP 的方式实现 自定义 SqlSessionFactory 首先关闭 Spring Boot 对于 DataSourceAutoConfiguration: 1 2 3 @SpringBootApplication(exclude = { DataSourceAutoConfiguration.class }) 然后配置 DataSourceConfig，例如这边有两个数据库连接： 1 2 3 4 5 6 7 8 9 10 11 12 13 14 @Configuration public class DataSourceConfig { @Bean(name = &#34;db1&#34;) @ConfigurationProperties(prefix = &#34;spring.datasource.db1&#34;) public DataSource db1Source() { return DataSourceBuilder.create().build(); } @Bean(name = &#34;db2&#34;) @ConfigurationProperties(prefix = &#34;spring.datasource.db2&#34;) public DataSource……
+        </div>
+        <p class="readmore"><a href="https://sangzhenya.github.io/post/Spring/Spring-Boot/MyBatis-%E5%A4%9A%E6%95%B0%E6%8D%AE%E6%BA%90%E9%85%8D%E7%BD%AE/">阅读全文</a></p>
+    </article>
+    
+    
+    
+
+
+
+<ol class="page-navigator">
+    
+    <li class="prev">
+        <a href="https://sangzhenya.github.io/post/page/6/">上一页</a>
+    </li>
+    
+
+    
+
+    
+        
+        
+    
+    
+
+    
+        
+        
+        <li >
+            <a href="https://sangzhenya.github.io/post/">1</a>
+        </li>
+        
+    
+        
+        <li>
+            <span>...</span>
+        </li>
+        
+    
+        
+        
+        <li >
+            <a href="https://sangzhenya.github.io/post/page/5/">5</a>
+        </li>
+        
+    
+        
+        
+        <li >
+            <a href="https://sangzhenya.github.io/post/page/6/">6</a>
+        </li>
+        
+    
+        
+        
+        <li  class="current">
+            <a href="https://sangzhenya.github.io/post/page/7/">7</a>
+        </li>
+        
+    
+        
+        
+        <li >
+            <a href="https://sangzhenya.github.io/post/page/8/">8</a>
+        </li>
+        
+    
+        
+        
+        <li >
+            <a href="https://sangzhenya.github.io/post/page/9/">9</a>
+        </li>
+        
+    
+        
+        <li>
+            <span>...</span>
+        </li>
+        
+    
+        
+        
+        <li >
+            <a href="https://sangzhenya.github.io/post/page/13/">13</a>
+        </li>
+        
+    
+
+    
+    
+
+    <li class="next">
+        <a href="https://sangzhenya.github.io/post/page/8/">下一页</a>
+    </li>
+    
+</ol>
+
+
+
+
+</div>
+
+                </div>
+
+                <div id="secondary">
+    <section class="widget">
+        <form id="search" action='//www.google.com/search' method="get" accept-charset="utf-8" target="_blank" _lpchecked="1">
+      
+      <input type="text" name="q" maxlength="20" placeholder="Search">
+      <input type="hidden" name="sitesearch" value="https://sangzhenya.github.io/">
+      <button type="submit" class="submit icon-search"></button>
+</form>
+    </section>
+    
+    <section class="widget">
+        <h3 class="widget-title">最近文章</h3>
+<ul class="widget-list">
+    
+    <li>
+        <a href="https://sangzhenya.github.io/post/Java/jdk8/Java-8-Stream/" title="Java 8 Stream">Java 8 Stream</a>
+    </li>
+    
+    <li>
+        <a href="https://sangzhenya.github.io/post/Java/jdk8/Java-8-Lambda/" title="Java 8 Lambda">Java 8 Lambda</a>
+    </li>
+    
+    <li>
+        <a href="https://sangzhenya.github.io/post/Java/juc/Java-ConcurrentHashMap/" title="Java ConcurrentHashMap">Java ConcurrentHashMap</a>
+    </li>
+    
+    <li>
+        <a href="https://sangzhenya.github.io/post/Java/juc/Java-CAS/" title="Java CAS">Java CAS</a>
+    </li>
+    
+    <li>
+        <a href="https://sangzhenya.github.io/post/Java/juc/Java-volatile/" title="Java volatile">Java volatile</a>
+    </li>
+    
+    <li>
+        <a href="https://sangzhenya.github.io/post/Java/juc/Java-ReentrantLock/" title="Java ReentrantLock">Java ReentrantLock</a>
+    </li>
+    
+    <li>
+        <a href="https://sangzhenya.github.io/post/Java/juc/Java-%E5%B9%B6%E5%8F%91%E6%8E%A7%E5%88%B6/" title="Java 并发控制">Java 并发控制</a>
+    </li>
+    
+    <li>
+        <a href="https://sangzhenya.github.io/post/Java/juc/Java-AQS/" title="Java AQS">Java AQS</a>
+    </li>
+    
+    <li>
+        <a href="https://sangzhenya.github.io/post/DataBase/MyBatis/MyBaits-%E4%B8%8E-Spring-Boot/" title=""></a>
+    </li>
+    
+    <li>
+        <a href="https://sangzhenya.github.io/post/DataBase/MyBatis/SQL-%E6%98%A0%E5%B0%84/" title=""></a>
+    </li>
+    
+</ul>
+    </section>
+
+    
+
+    <section class="widget">
+        <h3 class="widget-title">分类</h3>
+<ul class="widget-list">
+    
+    <li><a href="https://sangzhenya.github.io/categories/Java/">Java (8)</a></li>
+    
+    <li><a href="https://sangzhenya.github.io/categories/%E5%85%B3%E4%BA%8E/">关于 (1)</a></li>
+    
+</ul>
+    </section>
+
+    <section class="widget">
+        <h3 class="widget-title">标签</h3>
+<div class="tagcloud">
+    
+    <a href="https://sangzhenya.github.io/tags/JDK8/">JDK8</a>
+    
+    <a href="https://sangzhenya.github.io/tags/JUC/">JUC</a>
+    
+    <a href="https://sangzhenya.github.io/tags/JVM/">JVM</a>
+    
+    <a href="https://sangzhenya.github.io/tags/java/">java</a>
+    
+    <a href="https://sangzhenya.github.io/tags/%E5%85%B3%E4%BA%8E/">关于</a>
+    
+    <a href="https://sangzhenya.github.io/tags/%E9%9B%86%E5%90%88/">集合</a>
+    
+</div>
+    </section>
+
+    
+
+    <section class="widget">
+        <h3 class="widget-title">其它</h3>
+        <ul class="widget-list">
+            <li><a href="https://sangzhenya.github.io/index.xml">文章 RSS</a></li>
+        </ul>
+    </section>
+</div>
+            </div>
+        </div>
+    </div>
+    <footer id="footer">
+    <div class="container">
+        &copy; 2020 <a href="https://sangzhenya.github.io/">新月的博客 By 新月</a>.
+        Powered by <a rel="nofollow noreferer noopener" href="https://gohugo.io" target="_blank">Hugo</a>.
+        Theme based on <a href="https://github.com/flysnow-org/maupassant-hugo" target="_blank">maupassant</a>.
+        
+    </div>
+</footer>
+
+
+
+<a id="rocket" href="#top"></a>
+<script type="text/javascript" src='https://sangzhenya.github.io/js/totop.js?v=0.0.0' async=""></script>
+
+
+
+
+
+
+</body>
+
+</html>

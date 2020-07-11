@@ -1,0 +1,256 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <title> | 新月的博客</title>
+    <meta property="og:title" content=" - 新月的博客">
+    <meta property="og:type" content="article">
+        
+        
+    <meta name="Keywords" content="">
+    <meta name="description" content="">
+        
+    <meta name="author" content="新月">
+    <meta property="og:url" content="https://sangzhenya.github.io/post/Others/Netty/Netty-%E4%B8%BB%E8%A6%81%E7%BB%84%E4%BB%B6%E5%8F%8A-TCP-%E7%B2%98%E5%8C%85%E5%92%8C%E6%8B%86%E5%8C%85/">
+    <link rel="shortcut icon" href="https://sangzhenya.github.io/favicon.ico" type="image/x-icon">
+
+    <link rel="stylesheet" href='https://sangzhenya.github.io/css/normalize.css'>
+    <link rel="stylesheet" href='https://sangzhenya.github.io/css/style.css'>
+    <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+
+    
+
+
+    
+    
+</head>
+
+
+<body>
+    <header id="header" class="clearfix">
+    <div class="container">
+        <div class="col-group">
+            <div class="site-name ">
+                
+                    <a id="logo" href="https://sangzhenya.github.io/">
+                        新月的博客
+                    </a>
+                
+                <p class="description">晚来天欲雪，能饮一杯无？</p>
+            </div>
+            <div>
+                <nav id="nav-menu" class="clearfix">
+                    <a class="current" href="https://sangzhenya.github.io/">首页</a>
+                    
+                    <a  href="https://sangzhenya.github.io/archives/" title="归档">归档</a>
+                    
+                    <a  href="https://sangzhenya.github.io/about/" title="关于">关于</a>
+                    
+                </nav>
+            </div>
+        </div>
+    </div>
+</header>
+
+    <div id="body">
+        <div class="container">
+            <div class="col-group">
+
+                <div class="col-8" id="main">
+                    
+<div class="res-cons">
+    
+    <article class="post">
+        <header>
+            <h1 class="post-title"></h1>
+        </header>
+        <date class="post-meta meta-date">
+            1年1月1日
+        </date>
+        
+        
+        
+        <div class="post-content">
+            <h2 id="netty">Netty</h2>
+<p>Netty 的主要组件有 Channel， EventLoop，ChannelFuture，ChannelHandler，ChannelPipeline 等。</p>
+<h3 id="channelhandler">ChannelHandler</h3>
+<p>其中 ChannelHandler 是处理出入站数据的业务逻辑容器。例如通过实现 ChannelInboundHandler 接口，就可以接收入站事件和数据。当要给客户端端发送响应的时候，也可以从 ChannelInboundHandler 中写数据。业务逻辑通常写在一个或多个 ChannelInboundHandler 中。ChannelOutboundHanlder 类似，只是其用来处理出站数据的。</p>
+<p>其中 ChannelPipeline 提供了 ChannelHandler  链的容器。以客户端应用为例，如果事件运动方向是从客户端到服务端，那么这个事件成为出站，即客户端发送给服务端的数据会经过 pipeline 中的一系列 ChannelOutboundHanlder，并且被这些 Handler 处理，反之则成为入站。</p>
+<p><img src="http://img.programya.com/20200119232204.png" alt="ChannelPipeline"></p>
+<p>当 Netty 发送或者接收一个消息的时候就会发生一次数据转换。入站消息会被解码，即从字节转换为另外一种格式例如 Java 对象。如果是出站其则会被变成字节。Netty 提供了一系列使用的编解码器，他们都实现了ChannelInboundHandler 或者 ChannelOutboundHandler 接口。这些类中 channelRead 方法都已经被重写，以入站为例，对于每一个从入站 Channel 读取的消息，这个方法都会被调用，随后其将调用解码器所提供的 decode 方法进行解码，并将已经解码的字节转发给 ChannelPipeline 中的下一个 ChannelInboundHandler。</p>
+<p>对于一个 MessageDecoder 来说每次入站都根据规则读取一定的字节数，将其解码成对应的格式。当没有更多的元素的时候，其内容会被发送到下一个 ChannelInboundHandler。</p>
+<p><img src="http://img.programya.com/20200119234045.png" alt="Encoder & Decoder"></p>
+<p>编解码器都要会判断消息类型，只有和待处理的消息类型一致的时候才会调用编解码对应的方法，否则不会执行。此外在解码的时候需要判断缓存中的数据是否足够，否则接收到的结果和期望结果可能不一致。</p>
+<h3 id="tcp-粘包和拆包">TCP 粘包和拆包</h3>
+<p>TCP 是面向连接的，面向流的，提供高可靠性服务。收发两端都要有一一相对的 Socket，因此，发送端为了将多个包更有效的发送给对方，其使用了优化算法（Nagle 算法）。将多次间隔较小且数据量小的数据，合并成一个大的数数据块，然后进行封包。这样做虽然提高了效率，但是接收端就难于分辨出完整的数据包了，因为面向流的通讯是无消息保护边界的。由于 TCP 无信息保护边界，需要在接收端处理消息边界问题，即粘包、拆包的问题。</p>
+<p><img src="http://img.programya.com/20200120220402.png" alt="粘包拆包"></p>
+<p>例如客户端分别发送两个数据包 D1 和 D2 给服务端，由于服务端一次读取到的字节数是不确定的，谷可能存上图中的四种情况。</p>
+<ol>
+<li>服务端分两次读取两个独立的数据包，分别是 D1 和 D2，没有粘包和拆包。</li>
+<li>服务端一次接收两个数据包，D1 和 D2 粘合在一起，称为 TCP 粘包。</li>
+<li>服务端分两次读取到了数据包，地刺读取到了完整的 D1 包和 D2 包的部分内容，第二次读取到了 D2 包剩余的内容，这称之为 TCP 拆包。</li>
+<li>服务端分两次读取到了数据包，第一次读取到 D1 包的部分内容，第二次读取到了 D1 包的剩余内容和 D2 包。</li>
+</ol>
+<p>TCP 的粘包和拆包解决方案即使用自定义协议和编解码器解决，关键是要解决服务端每次读取数据长度的问题，这个问题解决就不会出现服务器多读和少读数据的问题，从而避免 TCP 粘包和拆包。</p>
+
+        </div>
+
+        
+
+
+        
+
+
+        <div class="post-meta meta-tags">
+            
+            没有标签
+            
+        </div>
+    </article>
+    
+    
+
+    
+    
+</div>
+
+                </div>
+
+                <div id="secondary">
+    <section class="widget">
+        <form id="search" action='//www.google.com/search' method="get" accept-charset="utf-8" target="_blank" _lpchecked="1">
+      
+      <input type="text" name="q" maxlength="20" placeholder="Search">
+      <input type="hidden" name="sitesearch" value="https://sangzhenya.github.io/">
+      <button type="submit" class="submit icon-search"></button>
+</form>
+    </section>
+    
+    <section class="widget">
+        <h3 class="widget-title">最近文章</h3>
+<ul class="widget-list">
+    
+    <li>
+        <a href="https://sangzhenya.github.io/post/Java/jdk8/Java-8-Stream/" title="Java 8 Stream">Java 8 Stream</a>
+    </li>
+    
+    <li>
+        <a href="https://sangzhenya.github.io/post/Java/jdk8/Java-8-Lambda/" title="Java 8 Lambda">Java 8 Lambda</a>
+    </li>
+    
+    <li>
+        <a href="https://sangzhenya.github.io/post/Java/juc/Java-ConcurrentHashMap/" title="Java ConcurrentHashMap">Java ConcurrentHashMap</a>
+    </li>
+    
+    <li>
+        <a href="https://sangzhenya.github.io/post/Java/juc/Java-CAS/" title="Java CAS">Java CAS</a>
+    </li>
+    
+    <li>
+        <a href="https://sangzhenya.github.io/post/Java/juc/Java-volatile/" title="Java volatile">Java volatile</a>
+    </li>
+    
+    <li>
+        <a href="https://sangzhenya.github.io/post/Java/juc/Java-ReentrantLock/" title="Java ReentrantLock">Java ReentrantLock</a>
+    </li>
+    
+    <li>
+        <a href="https://sangzhenya.github.io/post/Java/juc/Java-%E5%B9%B6%E5%8F%91%E6%8E%A7%E5%88%B6/" title="Java 并发控制">Java 并发控制</a>
+    </li>
+    
+    <li>
+        <a href="https://sangzhenya.github.io/post/Java/juc/Java-AQS/" title="Java AQS">Java AQS</a>
+    </li>
+    
+    <li>
+        <a href="https://sangzhenya.github.io/post/DataBase/MyBatis/MyBaits-%E4%B8%8E-Spring-Boot/" title=""></a>
+    </li>
+    
+    <li>
+        <a href="https://sangzhenya.github.io/post/DataBase/MyBatis/SQL-%E6%98%A0%E5%B0%84/" title=""></a>
+    </li>
+    
+</ul>
+    </section>
+
+    
+
+    <section class="widget">
+        <h3 class="widget-title">分类</h3>
+<ul class="widget-list">
+    
+    <li><a href="https://sangzhenya.github.io/categories/Java/">Java (8)</a></li>
+    
+    <li><a href="https://sangzhenya.github.io/categories/%E5%85%B3%E4%BA%8E/">关于 (1)</a></li>
+    
+</ul>
+    </section>
+
+    <section class="widget">
+        <h3 class="widget-title">标签</h3>
+<div class="tagcloud">
+    
+    <a href="https://sangzhenya.github.io/tags/JDK8/">JDK8</a>
+    
+    <a href="https://sangzhenya.github.io/tags/JUC/">JUC</a>
+    
+    <a href="https://sangzhenya.github.io/tags/JVM/">JVM</a>
+    
+    <a href="https://sangzhenya.github.io/tags/java/">java</a>
+    
+    <a href="https://sangzhenya.github.io/tags/%E5%85%B3%E4%BA%8E/">关于</a>
+    
+    <a href="https://sangzhenya.github.io/tags/%E9%9B%86%E5%90%88/">集合</a>
+    
+</div>
+    </section>
+
+    
+
+    <section class="widget">
+        <h3 class="widget-title">其它</h3>
+        <ul class="widget-list">
+            <li><a href="https://sangzhenya.github.io/index.xml">文章 RSS</a></li>
+        </ul>
+    </section>
+</div>
+            </div>
+        </div>
+    </div>
+    <footer id="footer">
+    <div class="container">
+        &copy; 2020 <a href="https://sangzhenya.github.io/">新月的博客 By 新月</a>.
+        Powered by <a rel="nofollow noreferer noopener" href="https://gohugo.io" target="_blank">Hugo</a>.
+        Theme based on <a href="https://github.com/flysnow-org/maupassant-hugo" target="_blank">maupassant</a>.
+        
+    </div>
+</footer>
+
+
+    
+    <script type="text/javascript">
+        window.MathJax = {
+            tex2jax: {
+                inlineMath: [['$', '$']],
+                processEscapes: true
+                }
+            };
+    </script>
+    <script src='https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-MML-AM_CHTML' async></script>
+
+
+<a id="rocket" href="#top"></a>
+<script type="text/javascript" src='https://sangzhenya.github.io/js/totop.js?v=0.0.0' async=""></script>
+
+
+
+
+
+
+</body>
+
+</html>

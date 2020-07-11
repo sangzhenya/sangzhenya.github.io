@@ -1,0 +1,480 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <title> | 新月的博客</title>
+    <meta property="og:title" content=" - 新月的博客">
+    <meta property="og:type" content="article">
+        
+        
+    <meta name="Keywords" content="">
+    <meta name="description" content="">
+        
+    <meta name="author" content="新月">
+    <meta property="og:url" content="https://sangzhenya.github.io/post/Others/Git-%E5%9F%BA%E7%A1%80/">
+    <link rel="shortcut icon" href="https://sangzhenya.github.io/favicon.ico" type="image/x-icon">
+
+    <link rel="stylesheet" href='https://sangzhenya.github.io/css/normalize.css'>
+    <link rel="stylesheet" href='https://sangzhenya.github.io/css/style.css'>
+    <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+
+    
+
+
+    
+    
+</head>
+
+
+<body>
+    <header id="header" class="clearfix">
+    <div class="container">
+        <div class="col-group">
+            <div class="site-name ">
+                
+                    <a id="logo" href="https://sangzhenya.github.io/">
+                        新月的博客
+                    </a>
+                
+                <p class="description">晚来天欲雪，能饮一杯无？</p>
+            </div>
+            <div>
+                <nav id="nav-menu" class="clearfix">
+                    <a class="current" href="https://sangzhenya.github.io/">首页</a>
+                    
+                    <a  href="https://sangzhenya.github.io/archives/" title="归档">归档</a>
+                    
+                    <a  href="https://sangzhenya.github.io/about/" title="关于">关于</a>
+                    
+                </nav>
+            </div>
+        </div>
+    </div>
+</header>
+
+    <div id="body">
+        <div class="container">
+            <div class="col-group">
+
+                <div class="col-8" id="main">
+                    
+<div class="res-cons">
+    
+    <article class="post">
+        <header>
+            <h1 class="post-title"></h1>
+        </header>
+        <date class="post-meta meta-date">
+            1年1月1日
+        </date>
+        
+        
+        
+        <div class="post-content">
+            <h1 id="git-基础">Git 基础</h1>
+<p>Git 是一个开源的分布式版本控制系统，Git 主要分为三个区域：工作区，暂存区和版本库</p>
+<p><img src="https://i.loli.net/2020/05/01/wDuvC83x7r94tX2.png" alt="Git 三个分区"></p>
+<p>上图中左侧为工作区域，右侧为版本库。在版本库中标记为 index 的区域是暂存区，标记 master 的是代表 master 分支锁代表的目录树。</p>
+<h2 id="git-常用命令">Git 常用命令</h2>
+<h3 id="git-配置命令">Git 配置命令</h3>
+<div class="highlight"><div style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4">
+<table style="border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">1
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">2
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">3
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">git config --list 列出所有的配置信息
+git config --global user.name <span style="color:#d14">&#34;User Name&#34;</span>
+git config --global user.email <span style="color:#d14">&#34;User Email&#34;</span>
+</code></pre></td></tr></table>
+</div>
+</div><h3 id="git-基本命令">Git 基本命令</h3>
+<div class="highlight"><div style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4">
+<table style="border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 1
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 2
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 3
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 4
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 5
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 6
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 7
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 8
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 9
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">10
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">11
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">12
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">13
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">14
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">15
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">16
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">17
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">18
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">19
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">20
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">21
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">22
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">23
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">24
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">25
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">26
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">27
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">28
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">29
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">30
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">31
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">32
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">33
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">34
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">35
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">36
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">37
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">38
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">39
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">40
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">git init <span style="color:#998;font-style:italic"># 把当前目录变成 git 管理的版本库</span>
+git status <span style="color:#998;font-style:italic"># 查看当前 git 版本仓库的状态</span>
+git add &lt;file&gt; <span style="color:#998;font-style:italic"># 添加文件到暂存区</span>
+git commit -m <span style="color:#d14">&#34;desc&#34;</span> <span style="color:#998;font-style:italic"># 将暂存区的文件添加到版本库</span>
+git commit -a -m <span style="color:#d14">&#34;desc&#34;</span> <span style="color:#998;font-style:italic"># 将修改文件添加到版本库</span>
+git commit --amend <span style="color:#998;font-style:italic"># 撤销和修改最后一次提交</span>
+
+git diff &lt;file&gt; <span style="color:#998;font-style:italic"># 查看工作区和暂存区的区别</span>
+git reset --hard e7a8a <span style="color:#998;font-style:italic"># 回退到指定的版本</span>
+git reset --hard HEAD^ <span style="color:#998;font-style:italic"># 回退到上一个版本 HEAD 表示当前版本，HEAD^ 表示上一个版本，HEAD^^ 表示上上一个版本</span>
+<span style="color:#998;font-style:italic"># reset 三个选项</span>
+<span style="color:#998;font-style:italic"># --soft 移动 HEAD 指针，不会修改index和working tree，本地文件的内容并没有发生变化，而index中仍然有最近一次提交的修改</span>
+<span style="color:#998;font-style:italic"># --mixed  与--soft的不同之处在于，--mixed修改了index，使其与第二个版本匹配。index中给定commit之后的修改被unstaged。</span>
+<span style="color:#998;font-style:italic"># --hard  那么最后一次提交的修改，包括本地文件的修改都会被清除，彻底还原到上一次提交的状态且无法找回。</span>
+git checkout – &lt;file&gt; <span style="color:#998;font-style:italic"># 撤销修改的文件(如果文件加入到了暂存区，则回退到暂存区的，如果文件加入到了版本库，则还原至加入版本库之后的状态)</span>
+git reset HEAD &lt;file&gt; <span style="color:#998;font-style:italic"># 撤回暂存区的文件修改到工作区</span>
+git revert  <span style="color:#998;font-style:italic"># 回退一次提交</span>
+
+git restore &lt;file&gt; <span style="color:#998;font-style:italic"># 丢弃工作区中的改动，使用暂存区的覆盖工作区</span>
+git restore --staged &lt;file&gt; <span style="color:#998;font-style:italic"># 取消暂存</span>
+
+git log <span style="color:#998;font-style:italic"># 看到 git 提交的记录</span>
+git reflog <span style="color:#998;font-style:italic"># 记录每一次的 git 命令</span>
+git show &lt;commitId&gt; <span style="color:#998;font-style:italic"># 查看某次提交的具体内容</span>
+
+git rm &lt;file&gt; <span style="color:#998;font-style:italic"># 从版本库中删除文件</span>
+git rm -f &lt;file&gt; <span style="color:#998;font-style:italic"># 同时从工作区和暂存区删除指定的文件</span>
+git rm &lt;-r&gt; --cached &lt;file&gt; <span style="color:#998;font-style:italic"># 从暂存区删除指定的文件, 删除已经跟踪的文件</span>
+git update-index –assume-unchanged &lt;file&gt; <span style="color:#998;font-style:italic"># 忽略单个文件</span>
+git update-index –no-assume-unchanged &lt;file&gt; <span style="color:#998;font-style:italic"># 取消忽略单个文件</span> 
+
+git remote add origin &lt;远程仓库地址&gt; <span style="color:#998;font-style:italic"># 添加远程仓库地址，origin 就是远程库</span>
+git clone &lt;远程仓库地址&gt;  <span style="color:#998;font-style:italic"># 从远程地址 clone 仓库</span>
+
+git fetch <span style="color:#998;font-style:italic"># 从远程仓库拉数据</span>
+git pull <span style="color:#998;font-style:italic"># 从远程仓库拉数据，比 git fetch 多了 merge 操作</span>
+git push origin master <span style="color:#998;font-style:italic"># 将修改提交到远程仓库</span>
+git checkout -b dev origin/dev <span style="color:#998;font-style:italic"># 从远程仓库 checkout branch</span>
+
+git check-ignore -v &lt;file&gt; <span style="color:#998;font-style:italic"># 查看忽略规则</span>
+</code></pre></td></tr></table>
+</div>
+</div><h3 id="git-分支">Git 分支</h3>
+<div class="highlight"><div style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4">
+<table style="border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 1
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 2
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 3
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 4
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 5
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 6
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 7
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 8
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 9
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">10
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">11
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">12
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">13
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">14
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">15
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">16
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">17
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">18
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">19
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">20
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">21
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">22
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">23
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">24
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">25
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">26
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">27
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">28
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">29
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">git branch <span style="color:#998;font-style:italic"># 查看当前分支</span>
+git checkout -b dev <span style="color:#998;font-style:italic"># 创建分支</span>
+git checkout master <span style="color:#998;font-style:italic"># 切换分支</span>
+git switch -c dev <span style="color:#998;font-style:italic"># 创建分支</span>
+git switch master <span style="color:#998;font-style:italic"># 切换分支</span>
+
+git branch -v <span style="color:#998;font-style:italic"># 查看所有分支的最后一次操作</span>
+git branch -vv <span style="color:#998;font-style:italic"># 查看当前分支</span>
+git brabch -b <span style="color:#998;font-style:italic"># 分支名 origin/分支名 创建远程分支到本地</span>
+git branch –merged <span style="color:#998;font-style:italic"># 查看别的分支和当前分支合并过的分支</span>
+git branch –no-merged <span style="color:#998;font-style:italic"># 查看未与当前分支合并的分支</span>
+
+git merge dev <span style="color:#998;font-style:italic"># 合并分支</span>
+git branch -d dev <span style="color:#998;font-style:italic"># 删除分支</span>
+git push origin –delete dev <span style="color:#998;font-style:italic"># 删除远处仓库分支</span>
+git push –set-upstream origin dev <span style="color:#998;font-style:italic"># 将本地分支推送到远程仓库</span>
+git checkout -b dev origin/dev <span style="color:#998;font-style:italic"># 下载远程仓库分支到本地</span>
+git push origin dev <span style="color:#998;font-style:italic"># 将本地分支推送到远程仓库</span>
+git log --graph <span style="color:#998;font-style:italic"># 分支合并图</span>
+
+git stash <span style="color:#998;font-style:italic"># 暂存工作中的内容</span>
+git stash list <span style="color:#998;font-style:italic"># 查看所有的 stash</span>
+git stash pop <span style="color:#998;font-style:italic"># 弹出 stash 中的内容并删除</span>
+git stash apply &lt;stash@<span style="color:#000;font-weight:bold">{</span>0<span style="color:#000;font-weight:bold">}</span>&gt; <span style="color:#998;font-style:italic"># 应用 stash 中内容但是不删除</span>
+git stash drop &lt;stash@<span style="color:#000;font-weight:bold">{</span>0<span style="color:#000;font-weight:bold">}</span>&gt; <span style="color:#998;font-style:italic"># 删除 stash 中内容</span>
+
+git cherry-pick b7235ae <span style="color:#998;font-style:italic"># 将某次提交从另外一个 branch 拉倒当前 branch 上</span>
+
+git rebase <span style="color:#998;font-style:italic"># 变基</span>
+</code></pre></td></tr></table>
+</div>
+</div><h3 id="git-标签">Git 标签</h3>
+<div class="highlight"><div style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4">
+<table style="border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">1
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">2
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">3
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">4
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">5
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">6
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">7
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">git tag v1.0 &lt;commit id&gt; <span style="color:#998;font-style:italic"># 创建标签</span>
+git show v1.0 <span style="color:#998;font-style:italic"># 打印 tag 信息</span>
+git tag -a &lt;tagname&gt; -m &lt;desc&gt; <span style="color:#998;font-style:italic"># 创建新标签并增加备注</span>
+git tag -d v1.0 <span style="color:#998;font-style:italic"># 删除一个标签</span>
+git push origin master &lt;tagname&gt; <span style="color:#998;font-style:italic"># 将一个标签提交到远程仓库</span>
+git push origin master --tags <span style="color:#998;font-style:italic"># 将所有标签提交到远程仓库</span>
+git push origin :refs/tags/v1.0 <span style="color:#998;font-style:italic"># 删除远程仓库的 tag</span>
+</code></pre></td></tr></table>
+</div>
+</div><p><em>几个缩写</em></p>
+<div class="highlight"><div style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4">
+<table style="border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">1
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">2
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">3
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">4
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash"><span style="color:#998;font-style:italic"># type gaa 查看缩写</span>
+gaa <span style="color:#998;font-style:italic"># git add --all</span>
+gcmsg <span style="color:#998;font-style:italic"># git commit -m</span>
+gp <span style="color:#998;font-style:italic"># git push</span>
+</code></pre></td></tr></table>
+</div>
+</div><h2 id="git-其他操作">Git 其他操作</h2>
+<h3 id="git-忽略文件">Git 忽略文件</h3>
+<p>可以需要忽略的文件或文件夹配置在 <code>.gitignore</code> 中文件中或 <code>.git/info/exclude</code>，区别是前者是会提交到远程仓库，多人共享的。后者则是本地的不会提交到版本仓库中。且者两个都只能排除未入库的文件。如果要排除已经入库的文件则可以使用命令  <code>git update-index --no-assume-unchanged FILENAME</code> 忽略。</p>
+<p><code>.gitignore</code> 文件格式</p>
+<ol>
+<li>以斜杠&rdquo;/&ldquo;开头表示目录；&quot;/&ldquo;结束的模式只匹配文件夹以及在该文件夹路径下的内容，但是不匹配该文件；&quot;/&ldquo;开始的模式匹配项目跟目录；如果一个模式不包含斜杠，则它匹配相对于当前 .gitignore 文件路径的内容，如果该模式不在 .gitignore 文件中，则相对于项目根目录</li>
+<li>以星号&rdquo;*&ldquo;通配多个字符，即匹配多个任意字符；使用两个星号&rdquo;**&rdquo; 表示匹配任意中间目录，比如<code>a/**/z</code>可以匹配 a/z, a/b/z 或 a/b/c/z等</li>
+<li>以问号&rdquo;?&ldquo;通配单个字符，即匹配一个任意字符</li>
+<li>以方括号&rdquo;[]&ldquo;包含单个字符的匹配列表，即匹配任何一个列在方括号中的字符。比如[abc]表示要么匹配一个a，要么匹配一个b，要么匹配一个c；如果在方括号中使用短划线分隔两个字符，表示所有在这两个字符范围内的都可以匹配。比如[0-9]表示匹配所有0到9的数字，[a-z]表示匹配任意的小写字母）</li>
+<li>以叹号&rdquo;!&ldquo;表示不忽略(跟踪)匹配到的文件或目录，即要忽略指定模式以外的文件或目录，可以在模式前加上惊叹号（!）取反</li>
+</ol>
+<div class="highlight"><div style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4">
+<table style="border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 1
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 2
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 3
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 4
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 5
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 6
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 7
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 8
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 9
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">10
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">11
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">*.idea          <span style="color:#998;font-style:italic"># 所有以 &#39;.idea&#39; 为后缀的文件都屏蔽掉</span>
+dist.zip        <span style="color:#998;font-style:italic"># 仓库中所有名为 dist.zip 的文件都屏蔽</span>
+*prd*.*         <span style="color:#998;font-style:italic"># 仓库中所有包含 prd 的文件都屏蔽</span>
+/TODO           <span style="color:#998;font-style:italic"># 表示仅仅忽略项目根目录下的 TODO 文件，不包括 subdir/TODO</span>
+build/          <span style="color:#998;font-style:italic"># 表示忽略 build/目录下的所有文件，过滤整个build文件夹；</span>
+log/*           <span style="color:#998;font-style:italic"># 屏蔽目录 log 下的所有文件，但不屏蔽 log 目录本身</span>
+/dist.zip       <span style="color:#998;font-style:italic"># 只屏蔽根目录下的 dist.zip  文件，其他目录中的不屏蔽</span>
+readme.md       <span style="color:#998;font-style:italic"># 屏蔽所有名为 readme.md 的文件</span>
+!/readme.md     <span style="color:#998;font-style:italic"># 在上一条屏蔽规则的条件下，不屏蔽根目录下的 readme.md 文件</span>
+**/foo:         <span style="color:#998;font-style:italic"># 表示忽略/foo,a/foo,a/b/foo等</span>
+a/**/b:         <span style="color:#998;font-style:italic"># 表示忽略a/b, a/x/b,a/x/y/b等</span>
+</code></pre></td></tr></table>
+</div>
+</div>
+        </div>
+
+        
+
+
+        
+
+
+        <div class="post-meta meta-tags">
+            
+            没有标签
+            
+        </div>
+    </article>
+    
+    
+
+    
+    
+</div>
+
+                </div>
+
+                <div id="secondary">
+    <section class="widget">
+        <form id="search" action='//www.google.com/search' method="get" accept-charset="utf-8" target="_blank" _lpchecked="1">
+      
+      <input type="text" name="q" maxlength="20" placeholder="Search">
+      <input type="hidden" name="sitesearch" value="https://sangzhenya.github.io/">
+      <button type="submit" class="submit icon-search"></button>
+</form>
+    </section>
+    
+    <section class="widget">
+        <h3 class="widget-title">最近文章</h3>
+<ul class="widget-list">
+    
+    <li>
+        <a href="https://sangzhenya.github.io/post/Java/jdk8/Java-8-Stream/" title="Java 8 Stream">Java 8 Stream</a>
+    </li>
+    
+    <li>
+        <a href="https://sangzhenya.github.io/post/Java/jdk8/Java-8-Lambda/" title="Java 8 Lambda">Java 8 Lambda</a>
+    </li>
+    
+    <li>
+        <a href="https://sangzhenya.github.io/post/Java/juc/Java-ConcurrentHashMap/" title="Java ConcurrentHashMap">Java ConcurrentHashMap</a>
+    </li>
+    
+    <li>
+        <a href="https://sangzhenya.github.io/post/Java/juc/Java-CAS/" title="Java CAS">Java CAS</a>
+    </li>
+    
+    <li>
+        <a href="https://sangzhenya.github.io/post/Java/juc/Java-volatile/" title="Java volatile">Java volatile</a>
+    </li>
+    
+    <li>
+        <a href="https://sangzhenya.github.io/post/Java/juc/Java-ReentrantLock/" title="Java ReentrantLock">Java ReentrantLock</a>
+    </li>
+    
+    <li>
+        <a href="https://sangzhenya.github.io/post/Java/juc/Java-%E5%B9%B6%E5%8F%91%E6%8E%A7%E5%88%B6/" title="Java 并发控制">Java 并发控制</a>
+    </li>
+    
+    <li>
+        <a href="https://sangzhenya.github.io/post/Java/juc/Java-AQS/" title="Java AQS">Java AQS</a>
+    </li>
+    
+    <li>
+        <a href="https://sangzhenya.github.io/post/DataBase/MyBatis/MyBaits-%E4%B8%8E-Spring-Boot/" title=""></a>
+    </li>
+    
+    <li>
+        <a href="https://sangzhenya.github.io/post/DataBase/MyBatis/SQL-%E6%98%A0%E5%B0%84/" title=""></a>
+    </li>
+    
+</ul>
+    </section>
+
+    
+
+    <section class="widget">
+        <h3 class="widget-title">分类</h3>
+<ul class="widget-list">
+    
+    <li><a href="https://sangzhenya.github.io/categories/Java/">Java (8)</a></li>
+    
+    <li><a href="https://sangzhenya.github.io/categories/%E5%85%B3%E4%BA%8E/">关于 (1)</a></li>
+    
+</ul>
+    </section>
+
+    <section class="widget">
+        <h3 class="widget-title">标签</h3>
+<div class="tagcloud">
+    
+    <a href="https://sangzhenya.github.io/tags/JDK8/">JDK8</a>
+    
+    <a href="https://sangzhenya.github.io/tags/JUC/">JUC</a>
+    
+    <a href="https://sangzhenya.github.io/tags/JVM/">JVM</a>
+    
+    <a href="https://sangzhenya.github.io/tags/java/">java</a>
+    
+    <a href="https://sangzhenya.github.io/tags/%E5%85%B3%E4%BA%8E/">关于</a>
+    
+    <a href="https://sangzhenya.github.io/tags/%E9%9B%86%E5%90%88/">集合</a>
+    
+</div>
+    </section>
+
+    
+
+    <section class="widget">
+        <h3 class="widget-title">其它</h3>
+        <ul class="widget-list">
+            <li><a href="https://sangzhenya.github.io/index.xml">文章 RSS</a></li>
+        </ul>
+    </section>
+</div>
+            </div>
+        </div>
+    </div>
+    <footer id="footer">
+    <div class="container">
+        &copy; 2020 <a href="https://sangzhenya.github.io/">新月的博客 By 新月</a>.
+        Powered by <a rel="nofollow noreferer noopener" href="https://gohugo.io" target="_blank">Hugo</a>.
+        Theme based on <a href="https://github.com/flysnow-org/maupassant-hugo" target="_blank">maupassant</a>.
+        
+    </div>
+</footer>
+
+
+    
+    <script type="text/javascript">
+        window.MathJax = {
+            tex2jax: {
+                inlineMath: [['$', '$']],
+                processEscapes: true
+                }
+            };
+    </script>
+    <script src='https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-MML-AM_CHTML' async></script>
+
+
+<a id="rocket" href="#top"></a>
+<script type="text/javascript" src='https://sangzhenya.github.io/js/totop.js?v=0.0.0' async=""></script>
+
+
+
+
+
+
+</body>
+
+</html>

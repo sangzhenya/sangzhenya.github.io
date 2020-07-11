@@ -1,0 +1,515 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <title> | 新月的博客</title>
+    <meta property="og:title" content=" - 新月的博客">
+    <meta property="og:type" content="article">
+        
+        
+    <meta name="Keywords" content="">
+    <meta name="description" content="">
+        
+    <meta name="author" content="新月">
+    <meta property="og:url" content="https://sangzhenya.github.io/post/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/%E7%BC%96%E5%86%99%E5%8F%AF%E8%AF%BB%E4%BB%A3%E7%A0%81%E7%9A%84%E8%89%BA%E6%9C%AF%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/">
+    <link rel="shortcut icon" href="https://sangzhenya.github.io/favicon.ico" type="image/x-icon">
+
+    <link rel="stylesheet" href='https://sangzhenya.github.io/css/normalize.css'>
+    <link rel="stylesheet" href='https://sangzhenya.github.io/css/style.css'>
+    <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+
+    
+
+
+    
+    
+</head>
+
+
+<body>
+    <header id="header" class="clearfix">
+    <div class="container">
+        <div class="col-group">
+            <div class="site-name ">
+                
+                    <a id="logo" href="https://sangzhenya.github.io/">
+                        新月的博客
+                    </a>
+                
+                <p class="description">晚来天欲雪，能饮一杯无？</p>
+            </div>
+            <div>
+                <nav id="nav-menu" class="clearfix">
+                    <a class="current" href="https://sangzhenya.github.io/">首页</a>
+                    
+                    <a  href="https://sangzhenya.github.io/archives/" title="归档">归档</a>
+                    
+                    <a  href="https://sangzhenya.github.io/about/" title="关于">关于</a>
+                    
+                </nav>
+            </div>
+        </div>
+    </div>
+</header>
+
+    <div id="body">
+        <div class="container">
+            <div class="col-group">
+
+                <div class="col-8" id="main">
+                    
+<div class="res-cons">
+    
+    <article class="post">
+        <header>
+            <h1 class="post-title"></h1>
+        </header>
+        <date class="post-meta meta-date">
+            1年1月1日
+        </date>
+        
+        
+        
+        <div class="post-content">
+            <h2 id="编写可读代码的艺术读书笔记">《编写可读代码的艺术》读书笔记</h2>
+<p><strong>可读性基本定理</strong>，关键思想是代码的写法应当使别人理解它需要的时间最小化。其中的 <strong>理解</strong> 表示其他人能够改动它，找出缺陷并明白它如何与其他部分代码交互的。</p>
+<h3 id="审美">审美</h3>
+<p>让源代码看上去养眼的三条原则：</p>
+<ol>
+<li>使用一致的布局，让读者很快就习惯这种风格</li>
+<li>让相似的代码看上去相思</li>
+<li>把相关的代码分组，形成代码块</li>
+</ol>
+<p><strong>重新安排换行来保持一致和紧凑</strong>：把代码的格式进行调整达到易读又紧凑的目的。</p>
+<p><strong>用方法来整理不规则的东西</strong>：相似的代码合并成为一个函数，给外部提供一个简洁的方法调用。</p>
+<p><strong>选择一个有意义的顺序，始终一致的使用它</strong>：对于多个变量的情况，不要使随机的排序，而是按照有意义的方式排序，下面是一些参考：</p>
+<ol>
+<li>让变量的顺序与对应 HTML 表单中的字段顺序一致</li>
+<li>从最重要到最不重要排序</li>
+<li>按字母顺序排序
+无论使用何种排序方式都应当在代码中始终保持这一顺序。</li>
+</ol>
+<p><strong>把声明按快块组织起来</strong>：相似的声明放在一起组织。</p>
+<p><strong>把代码分成段落</strong>：相似的想法放在一起和其它想法分开。利用空行把大块的代码分成逻辑上的段落。</p>
+<h3 id="把控制流变得易读">把控制流变得易读</h3>
+<p>关键思想是把条件，循环以及其他对控制流的改变做的越自然越好，运用一种方式让读者不用停下来重读你的代码。</p>
+<p><strong>条件语句中参数的顺序</strong>：一般而言毕竟的左侧是被问询的表达式，更侵向于不断变化; 而比较的右侧用来做比较的表达式，其值更倾向于常量。</p>
+<p><strong>if/else 语句块控制</strong>：可以参考一下几点：</p>
+<pre><code>1. 首先应该处理正逻辑而不是负逻辑。
+2. 先处理简单的情况，让 if 和 else 在屏幕内可见。
+3. 先处理有趣的或者可疑的情况。
+</code></pre>
+<p>三元表达式仅在最简单的情况使用。</p>
+<p><strong>最小化嵌套</strong>：当修改代码的时候，应该从全新的角度审视它，把它作为一个整体看待。可以通过提前返回(卫语句)来减少嵌套。</p>
+<h3 id="拆分超长的表达式">拆分超长的表达式</h3>
+<p>关键思想是把超长的表达式拆分成更容易理解的小块。</p>
+<ol>
+<li>
+<p>引入用作解释的变量</p>
+</li>
+<li>
+<p>引入总结变量</p>
+</li>
+</ol>
+<h3 id="变量和可读性">变量和可读性</h3>
+<p>对于变量的运用会有以下三个问题：
+1. 变量越多，就越难全部跟踪它们的动向。
+2. 变量的作用域越大，就需要跟踪它的动向越久。
+3. 变量的改变越频繁，就越难以跟踪它的当前值。</p>
+<p><strong>减少没有价值的临时变量</strong>：没有价值的临时变量表示其没有拆分任何复杂的表达式；也没有做更多的澄清；也没有被多次使用。</p>
+<p><strong>减少中间结果</strong>，<strong>减少控制变量</strong></p>
+<p><strong>缩小变量的作用域</strong>：让变量对尽可能少的代码可见。</p>
+<p><strong>把定义下移</strong>：可以把每个变量的定义移到对它的使用之前。</p>
+<p><strong>仅写一次变量更好</strong>：操作变量的地方越多，越南确定它的当前值。</p>
+<h3 id="抽取不相关的子问题">抽取不相关的子问题</h3>
+<p>积极地发现并抽取不相关的子逻辑：</p>
+<ol>
+<li>
+<p>看看某个函数或代码块，思考这块代码高层次目标是什么？</p>
+</li>
+<li>
+<p>对于每一行代码，思考它是直接为了目标而工作吗？此段代码的高层次目标是什么？</p>
+</li>
+<li>
+<p>如果足够的行数在解决不相关的子问题，则可以抽取到独立的函数中。但不要过分的追求抽取，导致函数琐碎以至于阅读的时候需要跳来跳去不利于阅读。</p>
+</li>
+</ol>
+<h3 id="一次只做一件事">一次只做一件事</h3>
+<p>关键思想是应该把代码组织的只做一件事情。</p>
+<p>其流程如下：</p>
+<pre><code>1. 列出代码所做的所有任务，这里的任务没有严格的定义，可以小得如确保这个对象是有效的，或者含糊得如遍历树中的所有节点。
+2. 尽量把这个任务拆分到不同的函数中，或者至少是不同的段落中。
+</code></pre>
+<p><strong>任务可以很小</strong>：</p>
+<div class="highlight"><div style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4">
+<table style="border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 1
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 2
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 3
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 4
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 5
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 6
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 7
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 8
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 9
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">10
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">11
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">12
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">13
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">14
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">15
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">16
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">17
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">18
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">19
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">20
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">21
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">22
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">23
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">24
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">25
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">26
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">27
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">28
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">29
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">30
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">31
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">32
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">33
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">34
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">35
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">36
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-javascript" data-lang="javascript"><span style="color:#998;font-style:italic">// 投票程序，用户按一个按钮，会调用以下代码
+</span><span style="color:#998;font-style:italic"></span>vote_changed(old_vote, new_vote); <span style="color:#998;font-style:italic">// vote in (&#39;Up&#39;, &#39;Down&#39;, &#39;&#39;);
+</span><span style="color:#998;font-style:italic"></span>
+<span style="color:#000;font-weight:bold">var</span> vote_changed <span style="color:#000;font-weight:bold">=</span> <span style="color:#000;font-weight:bold">function</span> (old_vote, new_vote){
+    <span style="color:#000;font-weight:bold">var</span> score <span style="color:#000;font-weight:bold">=</span> get_score();
+    <span style="color:#000;font-weight:bold">if</span> (new_vote <span style="color:#000;font-weight:bold">!==</span> old_vote){
+        <span style="color:#000;font-weight:bold">if</span> (new_vote <span style="color:#000;font-weight:bold">===</span> <span style="color:#d14">&#39;Up&#39;</span>){
+            score <span style="color:#000;font-weight:bold">+=</span> (old_vote <span style="color:#000;font-weight:bold">===</span> <span style="color:#d14">&#39;Down&#39;</span> <span style="color:#000;font-weight:bold">?</span> <span style="color:#099">2</span> <span style="color:#000;font-weight:bold">:</span> <span style="color:#099">1</span>);
+        } <span style="color:#000;font-weight:bold">else</span> <span style="color:#000;font-weight:bold">if</span> (new_vote <span style="color:#000;font-weight:bold">==-</span> <span style="color:#d14">&#39;Down&#39;</span>){
+            score <span style="color:#000;font-weight:bold">+=</span> (old_vote <span style="color:#000;font-weight:bold">===</span> <span style="color:#d14">&#39;Up&#39;</span> <span style="color:#000;font-weight:bold">?</span> <span style="color:#099">2</span> <span style="color:#000;font-weight:bold">:</span> <span style="color:#099">1</span>);
+        } <span style="color:#000;font-weight:bold">else</span> <span style="color:#000;font-weight:bold">if</span> (new_vote <span style="color:#000;font-weight:bold">===</span> <span style="color:#d14">&#39;&#39;</span>){
+            score <span style="color:#000;font-weight:bold">+=</span> (old_vote <span style="color:#000;font-weight:bold">===</span> <span style="color:#d14">&#39;Up&#39;</span> <span style="color:#000;font-weight:bold">?</span> <span style="color:#000;font-weight:bold">-</span><span style="color:#099">1</span> <span style="color:#000;font-weight:bold">:</span> <span style="color:#099">1</span>);
+        }
+    }
+    set_score(score);
+}
+
+<span style="color:#998;font-style:italic">// 可以分解为如下代码
+</span><span style="color:#998;font-style:italic"></span><span style="color:#000;font-weight:bold">var</span> vote_value <span style="color:#000;font-weight:bold">=</span> <span style="color:#000;font-weight:bold">function</span>(vote){
+    <span style="color:#000;font-weight:bold">if</span> (vote <span style="color:#000;font-weight:bold">===</span> <span style="color:#d14">&#39;Up&#39;</span>){
+        <span style="color:#000;font-weight:bold">return</span> <span style="color:#099">1</span>;
+    }
+    <span style="color:#000;font-weight:bold">if</span> (vote <span style="color:#000;font-weight:bold">===</span> <span style="color:#d14">&#39;Down&#39;</span>){
+        <span style="color:#000;font-weight:bold">return</span> <span style="color:#000;font-weight:bold">-</span><span style="color:#099">1</span>;
+    }
+    <span style="color:#000;font-weight:bold">return</span> <span style="color:#099">0</span>;
+}
+
+<span style="color:#000;font-weight:bold">var</span> vote_change <span style="color:#000;font-weight:bold">=</span> <span style="color:#000;font-weight:bold">function</span>(old_vote, new_vote){
+    <span style="color:#000;font-weight:bold">var</span> score <span style="color:#000;font-weight:bold">=</span> get_score();
+    
+    score <span style="color:#000;font-weight:bold">-=</span> vote_value(old_value); <span style="color:#998;font-style:italic">// remove the old value
+</span><span style="color:#998;font-style:italic"></span>    score <span style="color:#000;font-weight:bold">+=</span> vote_value(new_value); <span style="color:#998;font-style:italic">// add the new value
+</span><span style="color:#998;font-style:italic"></span>    
+    set_score(score);
+}
+</code></pre></td></tr></table>
+</div>
+</div><p><strong>从对象中抽取值</strong></p>
+<div class="highlight"><div style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4">
+<table style="border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 1
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 2
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 3
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 4
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 5
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 6
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 7
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 8
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 9
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">10
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">11
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">12
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">13
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">14
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">15
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">16
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">17
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">18
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">19
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">20
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">21
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">22
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">23
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">24
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">25
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">26
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">27
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">28
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">29
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">30
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">31
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">32
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">33
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">34
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">35
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">36
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">37
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">38
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">39
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">40
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">41
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">42
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">43
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">44
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">45
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">46
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-javascript" data-lang="javascript"><span style="color:#998;font-style:italic">// 任务：将位置进行格式化
+</span><span style="color:#998;font-style:italic"></span>
+<span style="color:#998;font-style:italic">// 原始版本实现
+</span><span style="color:#998;font-style:italic"></span><span style="color:#000;font-weight:bold">var</span> place <span style="color:#000;font-weight:bold">=</span> location_info[<span style="color:#d14">&#39;LocalityName&#39;</span>];
+<span style="color:#000;font-weight:bold">if</span> (<span style="color:#000;font-weight:bold">!</span>place){
+    place <span style="color:#000;font-weight:bold">=</span> location_info[<span style="color:#d14">&#39;SubAdministrativeAreaName&#39;</span>];
+}
+<span style="color:#000;font-weight:bold">if</span> (<span style="color:#000;font-weight:bold">!</span>place){
+    place <span style="color:#000;font-weight:bold">=</span> location_info[<span style="color:#d14">&#39;AdministrativeAreaName&#39;</span>];
+}
+<span style="color:#000;font-weight:bold">if</span> (<span style="color:#000;font-weight:bold">!</span>place){
+    place <span style="color:#000;font-weight:bold">=</span> <span style="color:#d14">&#39;Middle-of-Nowhere&#39;</span>;
+}
+<span style="color:#000;font-weight:bold">if</span> (location_info[<span style="color:#d14">&#39;CountryName&#39;</span>]){
+    place <span style="color:#000;font-weight:bold">+=</span> <span style="color:#d14">&#39;,&#39;</span> <span style="color:#000;font-weight:bold">+</span> location_info[<span style="color:#d14">&#39;CountryName&#39;</span>];
+} <span style="color:#000;font-weight:bold">else</span> {
+    place <span style="color:#000;font-weight:bold">+=</span> <span style="color:#d14">&#39;, Planet Earth&#39;</span>;
+}
+
+
+<span style="color:#998;font-style:italic">// 改进方案
+</span><span style="color:#998;font-style:italic"></span><span style="color:#000;font-weight:bold">var</span> town <span style="color:#000;font-weight:bold">=</span> location_info[<span style="color:#d14">&#39;LocalityName&#39;</span>];
+<span style="color:#000;font-weight:bold">var</span> city <span style="color:#000;font-weight:bold">=</span> location_info[<span style="color:#d14">&#39;SubAdministrativeAreaName&#39;</span>];
+<span style="color:#000;font-weight:bold">var</span> state <span style="color:#000;font-weight:bold">=</span> location_info[<span style="color:#d14">&#39;AdministrativeAreaName&#39;</span>];
+<span style="color:#000;font-weight:bold">var</span> country <span style="color:#000;font-weight:bold">=</span> location_info[<span style="color:#d14">&#39;CountyName&#39;</span>];
+
+<span style="color:#000;font-weight:bold">var</span> first_half <span style="color:#000;font-weight:bold">=</span> <span style="color:#d14">&#39;Middle-of-Nowhere&#39;</span>;
+<span style="color:#000;font-weight:bold">if</span> (state <span style="color:#000;font-weight:bold">&amp;&amp;</span> country <span style="color:#000;font-weight:bold">!===</span> <span style="color:#d14">&#39;USA&#39;</span>){
+    first_half <span style="color:#000;font-weight:bold">=</span> state;
+}
+<span style="color:#000;font-weight:bold">if</span> (city) {
+    first_half <span style="color:#000;font-weight:bold">=</span> city;
+}
+<span style="color:#000;font-weight:bold">if</span> (town) {
+    first_half <span style="color:#000;font-weight:bold">=</span> town;
+}
+
+<span style="color:#000;font-weight:bold">var</span> second_half <span style="color:#000;font-weight:bold">=</span> <span style="color:#d14">&#39;Planet Earth&#39;</span>;
+<span style="color:#000;font-weight:bold">if</span> (country){
+    second_half <span style="color:#000;font-weight:bold">=</span> country;
+}
+<span style="color:#000;font-weight:bold">if</span> (state <span style="color:#000;font-weight:bold">&amp;&amp;</span> country <span style="color:#000;font-weight:bold">===</span> <span style="color:#d14">&#39;USA&#39;</span>){
+    second_half <span style="color:#000;font-weight:bold">=</span> state;
+}
+
+<span style="color:#000;font-weight:bold">return</span> first_half <span style="color:#000;font-weight:bold">+</span> <span style="color:#d14">&#39;,&#39;</span> <span style="color:#000;font-weight:bold">+</span> second_half;
+</code></pre></td></tr></table>
+</div>
+</div><h3 id="把想法变成代码">把想法变成代码</h3>
+<p><strong>清晰的描述逻辑：</strong> 将代码使用自然语言描述出来，然后根据自然语言重写函数。</p>
+<p><strong>了解函数库：</strong> 避免重复造轮子。</p>
+<h3 id="少写代码">少写代码</h3>
+<p>关键思想是最好读的代码是没有代码。</p>
+<p><strong>质疑和拆分你的需求：</strong> 有些功能不必去实现，因为根本就不会使用。并不是所有的程序都需要运行的非常快，100% 准确，并且可以处理所有输入。</p>
+<p>**删除无用的代码：**保持较小的代码库。</p>
+<h3 id="测试与可读性">测试与可读性</h3>
+<p>关键思想是测试应当具有可读性，以便其他程序员可以舒服的改变或者增加测试。</p>
+<p><strong>使代码更可读：</strong> 对使用者隐去不重要的细节，以便更重要的细节更突出。提取测试函数。</p>
+<p><strong>选择好的测试输入：</strong> 应当选择一组最简单的输入，能够完整的使用被测试的代码。</p>
+<p><strong>一个功能多个测试：</strong> 使用多个小的测试代替一个 “完美的” 测试输入。</p>
+<p><strong>测试函数也需要一个好的名字</strong></p>
+<p><strong>可测试性差的代码特征</strong></p>
+<ol>
+<li>使用全局变量。</li>
+<li>对外部组件有大量依赖的代码。</li>
+<li>代码有不确定的行为。</li>
+</ol>
+<p><strong>可测试性好的代码特征</strong></p>
+<ol>
+<li>类中只有少数或者没有内部状态。</li>
+<li>类/函数只做一件事。</li>
+<li>每个类对别的类依赖很低，低耦合。</li>
+<li>函数接口简单，定义明确。</li>
+</ol>
+<p><strong>同时需要避免</strong></p>
+<ol>
+<li>牺牲真实代码的可读性，只是为了使能测试。</li>
+<li>着迷于 100% 的测试覆盖率。</li>
+<li>让测试成功产品开发的阻碍。</li>
+</ol>
+<p>参考：<a href="https://book.douban.com/subject/10797189/">编写可读代码的艺术</a></p>
+
+        </div>
+
+        
+
+
+        
+
+
+        <div class="post-meta meta-tags">
+            
+            没有标签
+            
+        </div>
+    </article>
+    
+    
+
+    
+    
+</div>
+
+                </div>
+
+                <div id="secondary">
+    <section class="widget">
+        <form id="search" action='//www.google.com/search' method="get" accept-charset="utf-8" target="_blank" _lpchecked="1">
+      
+      <input type="text" name="q" maxlength="20" placeholder="Search">
+      <input type="hidden" name="sitesearch" value="https://sangzhenya.github.io/">
+      <button type="submit" class="submit icon-search"></button>
+</form>
+    </section>
+    
+    <section class="widget">
+        <h3 class="widget-title">最近文章</h3>
+<ul class="widget-list">
+    
+    <li>
+        <a href="https://sangzhenya.github.io/post/Java/jdk8/Java-8-Stream/" title="Java 8 Stream">Java 8 Stream</a>
+    </li>
+    
+    <li>
+        <a href="https://sangzhenya.github.io/post/Java/jdk8/Java-8-Lambda/" title="Java 8 Lambda">Java 8 Lambda</a>
+    </li>
+    
+    <li>
+        <a href="https://sangzhenya.github.io/post/Java/juc/Java-ConcurrentHashMap/" title="Java ConcurrentHashMap">Java ConcurrentHashMap</a>
+    </li>
+    
+    <li>
+        <a href="https://sangzhenya.github.io/post/Java/juc/Java-CAS/" title="Java CAS">Java CAS</a>
+    </li>
+    
+    <li>
+        <a href="https://sangzhenya.github.io/post/Java/juc/Java-volatile/" title="Java volatile">Java volatile</a>
+    </li>
+    
+    <li>
+        <a href="https://sangzhenya.github.io/post/Java/juc/Java-ReentrantLock/" title="Java ReentrantLock">Java ReentrantLock</a>
+    </li>
+    
+    <li>
+        <a href="https://sangzhenya.github.io/post/Java/juc/Java-%E5%B9%B6%E5%8F%91%E6%8E%A7%E5%88%B6/" title="Java 并发控制">Java 并发控制</a>
+    </li>
+    
+    <li>
+        <a href="https://sangzhenya.github.io/post/Java/juc/Java-AQS/" title="Java AQS">Java AQS</a>
+    </li>
+    
+    <li>
+        <a href="https://sangzhenya.github.io/post/DataBase/MyBatis/MyBaits-%E4%B8%8E-Spring-Boot/" title=""></a>
+    </li>
+    
+    <li>
+        <a href="https://sangzhenya.github.io/post/DataBase/MyBatis/SQL-%E6%98%A0%E5%B0%84/" title=""></a>
+    </li>
+    
+</ul>
+    </section>
+
+    
+
+    <section class="widget">
+        <h3 class="widget-title">分类</h3>
+<ul class="widget-list">
+    
+    <li><a href="https://sangzhenya.github.io/categories/Java/">Java (8)</a></li>
+    
+    <li><a href="https://sangzhenya.github.io/categories/%E5%85%B3%E4%BA%8E/">关于 (1)</a></li>
+    
+</ul>
+    </section>
+
+    <section class="widget">
+        <h3 class="widget-title">标签</h3>
+<div class="tagcloud">
+    
+    <a href="https://sangzhenya.github.io/tags/JDK8/">JDK8</a>
+    
+    <a href="https://sangzhenya.github.io/tags/JUC/">JUC</a>
+    
+    <a href="https://sangzhenya.github.io/tags/JVM/">JVM</a>
+    
+    <a href="https://sangzhenya.github.io/tags/java/">java</a>
+    
+    <a href="https://sangzhenya.github.io/tags/%E5%85%B3%E4%BA%8E/">关于</a>
+    
+    <a href="https://sangzhenya.github.io/tags/%E9%9B%86%E5%90%88/">集合</a>
+    
+</div>
+    </section>
+
+    
+
+    <section class="widget">
+        <h3 class="widget-title">其它</h3>
+        <ul class="widget-list">
+            <li><a href="https://sangzhenya.github.io/index.xml">文章 RSS</a></li>
+        </ul>
+    </section>
+</div>
+            </div>
+        </div>
+    </div>
+    <footer id="footer">
+    <div class="container">
+        &copy; 2020 <a href="https://sangzhenya.github.io/">新月的博客 By 新月</a>.
+        Powered by <a rel="nofollow noreferer noopener" href="https://gohugo.io" target="_blank">Hugo</a>.
+        Theme based on <a href="https://github.com/flysnow-org/maupassant-hugo" target="_blank">maupassant</a>.
+        
+    </div>
+</footer>
+
+
+    
+    <script type="text/javascript">
+        window.MathJax = {
+            tex2jax: {
+                inlineMath: [['$', '$']],
+                processEscapes: true
+                }
+            };
+    </script>
+    <script src='https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-MML-AM_CHTML' async></script>
+
+
+<a id="rocket" href="#top"></a>
+<script type="text/javascript" src='https://sangzhenya.github.io/js/totop.js?v=0.0.0' async=""></script>
+
+
+
+
+
+
+</body>
+
+</html>

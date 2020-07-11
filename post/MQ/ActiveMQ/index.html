@@ -1,0 +1,1712 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <title> | 新月的博客</title>
+    <meta property="og:title" content=" - 新月的博客">
+    <meta property="og:type" content="article">
+        
+        
+    <meta name="Keywords" content="">
+    <meta name="description" content="">
+        
+    <meta name="author" content="新月">
+    <meta property="og:url" content="https://sangzhenya.github.io/post/MQ/ActiveMQ/">
+    <link rel="shortcut icon" href="https://sangzhenya.github.io/favicon.ico" type="image/x-icon">
+
+    <link rel="stylesheet" href='https://sangzhenya.github.io/css/normalize.css'>
+    <link rel="stylesheet" href='https://sangzhenya.github.io/css/style.css'>
+    <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+
+    
+
+
+    
+    
+</head>
+
+
+<body>
+    <header id="header" class="clearfix">
+    <div class="container">
+        <div class="col-group">
+            <div class="site-name ">
+                
+                    <a id="logo" href="https://sangzhenya.github.io/">
+                        新月的博客
+                    </a>
+                
+                <p class="description">晚来天欲雪，能饮一杯无？</p>
+            </div>
+            <div>
+                <nav id="nav-menu" class="clearfix">
+                    <a class="current" href="https://sangzhenya.github.io/">首页</a>
+                    
+                    <a  href="https://sangzhenya.github.io/archives/" title="归档">归档</a>
+                    
+                    <a  href="https://sangzhenya.github.io/about/" title="关于">关于</a>
+                    
+                </nav>
+            </div>
+        </div>
+    </div>
+</header>
+
+    <div id="body">
+        <div class="container">
+            <div class="col-group">
+
+                <div class="col-8" id="main">
+                    
+<div class="res-cons">
+    
+    <article class="post">
+        <header>
+            <h1 class="post-title"></h1>
+        </header>
+        <date class="post-meta meta-date">
+            1年1月1日
+        </date>
+        
+        
+        
+        <div class="post-content">
+            <h2 id="active-mq">Active MQ</h2>
+<p>[toc]</p>
+<p>面向消息的中间件 是指利用高效可靠的消息机制进行平台的数据交流，并给予数据通信进行分布式系统的集成。通过提供消息传递和消息排列模型在分布式环境下提供应用解耦、弹性伸缩、冗余存储、流量削风、异步通信、数据同步等功能。简单来说就是解耦，削峰，异步。通用的流程如下：</p>
+<p>生产者将消息发送到消息服务器，消息服务器将消息存放在若干队列和主题中，在合适的时候，消息服务器会将消息转发给接受者。在这个过程中，发送和接收是异步的，即发送无需等待，而且发送者和接收者的生命周期也没有必然联系。在发布等于模式下，也可以处完成一对多的通讯。整个过程都是异步的，生产者和消费者不必了解对方，不必同时在线，只需要确认消息即可，。</p>
+<h3 id="安装查看">安装查看</h3>
+<p>可以从官网 <a href="https://activemq.apache.org/">ActiveMQ</a> 下, 解压缩后进入到 bin 目录下，运行 <code>activemq.bat start</code> 运行 ActiveMQ，默认进程端口是 61616，默认控制台地址是  http://localhost:8161/index.html，打开控制台地址显示下图则表明已经安装成功了。</p>
+<p><img src="http://img.programya.com/Snipaste_2019-10-22_20-41-08.png" alt="控制台"></p>
+<p>使用默认的用户名和密码 <code>admin/admin</code> 进入控制台，显示如下：</p>
+<p><img src="http://img.programya.com/Snipaste_2019-10-22_20-43-29.png" alt="控制台"></p>
+<h3 id="java-编码实现">Java 编码实现</h3>
+<p>通用开发步骤</p>
+<p><img src="http://img.programya.com/Snipaste_2019-10-22_21-20-48.png" alt="JMS"></p>
+<ol>
+<li>创建一个 connection factory</li>
+<li>通过 connect factory 来创建 JMS connection</li>
+<li>启动 JMS connection</li>
+<li>通过 connection  创建 JMS Session</li>
+<li>创建 JMS destination</li>
+<li>创建 JMS producer 或者创建 JMS Message 并设置 destination</li>
+<li>创建 JMS consumer 或者注册一个 JMS message listener</li>
+<li>发送或者接收 JMS Message</li>
+<li>关闭所有 JMS 资源</li>
+</ol>
+<h4 id="queue">Queue</h4>
+<p><img src="http://img.programya.com/Snipaste_2019-10-22_21-54-15.png" alt="Queue"></p>
+<p>每个消息只能有一个消费者，一对一的关系，消息生产者和消费者之间上没有相关性，无论消费者在生产者发送消息的是否在线，消费者都可以提取消息。消息被消费后不会再存储，所以消费者不会消费已经被消费的消息。</p>
+<h5 id="producer">Producer</h5>
+<div class="highlight"><div style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4">
+<table style="border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 1
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 2
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 3
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 4
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 5
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 6
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 7
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 8
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 9
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">10
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">11
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">12
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">13
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">14
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">15
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">16
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">17
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">18
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">19
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#000;font-weight:bold">public</span> <span style="color:#000;font-weight:bold">class</span> <span style="color:#458;font-weight:bold">QProducer</span> <span style="color:#000;font-weight:bold">{</span>
+    <span style="color:#000;font-weight:bold">private</span> <span style="color:#000;font-weight:bold">static</span> <span style="color:#000;font-weight:bold">final</span> String URL <span style="color:#000;font-weight:bold">=</span> <span style="color:#d14">&#34;tcp://localhost:61616&#34;</span><span style="color:#000;font-weight:bold">;</span>
+    <span style="color:#000;font-weight:bold">private</span> <span style="color:#000;font-weight:bold">static</span> <span style="color:#000;font-weight:bold">final</span> String QUEUE_NAME <span style="color:#000;font-weight:bold">=</span> <span style="color:#d14">&#34;DEMO.QUEUE.TEST001&#34;</span><span style="color:#000;font-weight:bold">;</span>
+    <span style="color:#000;font-weight:bold">public</span> <span style="color:#000;font-weight:bold">static</span> <span style="color:#458;font-weight:bold">void</span> <span style="color:#900;font-weight:bold">main</span><span style="color:#000;font-weight:bold">(</span>String<span style="color:#000;font-weight:bold">[]</span> args<span style="color:#000;font-weight:bold">)</span> <span style="color:#000;font-weight:bold">throws</span> JMSException<span style="color:#000;font-weight:bold">,</span> IOException <span style="color:#000;font-weight:bold">{</span>
+        ActiveMQConnectionFactory connectionFactory <span style="color:#000;font-weight:bold">=</span> <span style="color:#000;font-weight:bold">new</span> ActiveMQConnectionFactory<span style="color:#000;font-weight:bold">(</span>URL<span style="color:#000;font-weight:bold">);</span>
+        Connection connection <span style="color:#000;font-weight:bold">=</span> connectionFactory<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">createConnection</span><span style="color:#000;font-weight:bold">();</span>
+        connection<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">start</span><span style="color:#000;font-weight:bold">();</span>
+        Session session <span style="color:#000;font-weight:bold">=</span> connection<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">createSession</span><span style="color:#000;font-weight:bold">(</span><span style="color:#000;font-weight:bold">false</span><span style="color:#000;font-weight:bold">,</span> Session<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">AUTO_ACKNOWLEDGE</span><span style="color:#000;font-weight:bold">);</span>
+        Destination destination <span style="color:#000;font-weight:bold">=</span> session<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">createQueue</span><span style="color:#000;font-weight:bold">(</span>QUEUE_NAME<span style="color:#000;font-weight:bold">);</span>
+        MessageProducer producer <span style="color:#000;font-weight:bold">=</span> session<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">createProducer</span><span style="color:#000;font-weight:bold">(</span>destination<span style="color:#000;font-weight:bold">);</span>
+        <span style="color:#000;font-weight:bold">for</span> <span style="color:#000;font-weight:bold">(</span><span style="color:#458;font-weight:bold">int</span> i <span style="color:#000;font-weight:bold">=</span> 0<span style="color:#000;font-weight:bold">;</span> i <span style="color:#000;font-weight:bold">&lt;</span> 3<span style="color:#000;font-weight:bold">;</span> i<span style="color:#000;font-weight:bold">++)</span> <span style="color:#000;font-weight:bold">{</span>
+            Message textMessage <span style="color:#000;font-weight:bold">=</span> session<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">createTextMessage</span><span style="color:#000;font-weight:bold">(</span><span style="color:#d14">&#34;Hello &#34;</span> <span style="color:#000;font-weight:bold">+</span> i<span style="color:#000;font-weight:bold">);</span>
+            producer<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">send</span><span style="color:#000;font-weight:bold">(</span>textMessage<span style="color:#000;font-weight:bold">);</span>
+        <span style="color:#000;font-weight:bold">}</span>
+        producer<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">close</span><span style="color:#000;font-weight:bold">();</span>
+        session<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">close</span><span style="color:#000;font-weight:bold">();</span>
+        connection<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">close</span><span style="color:#000;font-weight:bold">();</span>
+    <span style="color:#000;font-weight:bold">}</span>
+<span style="color:#000;font-weight:bold">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><h5 id="consumer">Consumer</h5>
+<div class="highlight"><div style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4">
+<table style="border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 1
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 2
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 3
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 4
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 5
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 6
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 7
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 8
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 9
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">10
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">11
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">12
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">13
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">14
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">15
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">16
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">17
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">18
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">19
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">20
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">21
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">22
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">23
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">24
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">25
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">26
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">27
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">28
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#000;font-weight:bold">public</span> <span style="color:#000;font-weight:bold">class</span> <span style="color:#458;font-weight:bold">QConsumer</span> <span style="color:#000;font-weight:bold">{</span>
+    <span style="color:#000;font-weight:bold">private</span> <span style="color:#000;font-weight:bold">static</span> <span style="color:#000;font-weight:bold">final</span> String URL <span style="color:#000;font-weight:bold">=</span> <span style="color:#d14">&#34;tcp://localhost:61616&#34;</span><span style="color:#000;font-weight:bold">;</span>
+    <span style="color:#000;font-weight:bold">private</span> <span style="color:#000;font-weight:bold">static</span> <span style="color:#000;font-weight:bold">final</span> String QUEUE_NAME <span style="color:#000;font-weight:bold">=</span> <span style="color:#d14">&#34;DEMO.QUEUE.TEST001&#34;</span><span style="color:#000;font-weight:bold">;</span>
+    <span style="color:#000;font-weight:bold">public</span> <span style="color:#000;font-weight:bold">static</span> <span style="color:#458;font-weight:bold">void</span> <span style="color:#900;font-weight:bold">main</span><span style="color:#000;font-weight:bold">(</span>String<span style="color:#000;font-weight:bold">[]</span> args<span style="color:#000;font-weight:bold">)</span> <span style="color:#000;font-weight:bold">throws</span> JMSException<span style="color:#000;font-weight:bold">,</span> IOException <span style="color:#000;font-weight:bold">{</span>
+        ActiveMQConnectionFactory connectionFactory <span style="color:#000;font-weight:bold">=</span> <span style="color:#000;font-weight:bold">new</span> ActiveMQConnectionFactory<span style="color:#000;font-weight:bold">(</span>URL<span style="color:#000;font-weight:bold">);</span>
+        Connection connection <span style="color:#000;font-weight:bold">=</span> connectionFactory<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">createConnection</span><span style="color:#000;font-weight:bold">();</span>
+        connection<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">start</span><span style="color:#000;font-weight:bold">();</span>
+        Session session <span style="color:#000;font-weight:bold">=</span> connection<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">createSession</span><span style="color:#000;font-weight:bold">(</span><span style="color:#000;font-weight:bold">false</span><span style="color:#000;font-weight:bold">,</span> Session<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">AUTO_ACKNOWLEDGE</span><span style="color:#000;font-weight:bold">);</span>
+        Destination destination <span style="color:#000;font-weight:bold">=</span> session<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">createQueue</span><span style="color:#000;font-weight:bold">(</span>QUEUE_NAME<span style="color:#000;font-weight:bold">);</span>
+        MessageConsumer consumer <span style="color:#000;font-weight:bold">=</span> session<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">createConsumer</span><span style="color:#000;font-weight:bold">(</span>destination<span style="color:#000;font-weight:bold">);</span>
+        <span style="color:#998;font-style:italic">/*
+</span><span style="color:#998;font-style:italic">        // 同步阻塞式
+</span><span style="color:#998;font-style:italic">        while (true) {
+</span><span style="color:#998;font-style:italic">            TextMessage textMessage = (TextMessage) consumer.receive(4000);
+</span><span style="color:#998;font-style:italic">            if (null != textMessage) {
+</span><span style="color:#998;font-style:italic">                System.out.println(&#34;Receive Message...&#34; + textMessage);
+</span><span style="color:#998;font-style:italic">            } else {
+</span><span style="color:#998;font-style:italic">                break;
+</span><span style="color:#998;font-style:italic">            }
+</span><span style="color:#998;font-style:italic">        }*/</span>
+        <span style="color:#998;font-style:italic">// 异步非阻塞式
+</span><span style="color:#998;font-style:italic"></span>        consumer<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">setMessageListener</span><span style="color:#000;font-weight:bold">(</span>message <span style="color:#000;font-weight:bold">-&gt;</span> System<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">out</span><span style="color:#000;font-weight:bold">.</span><span style="color:#008080">println</span><span style="color:#000;font-weight:bold">(</span><span style="color:#d14">&#34;Receive Message...&#34;</span> <span style="color:#000;font-weight:bold">+</span> message<span style="color:#000;font-weight:bold">));</span>
+        System<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">in</span><span style="color:#000;font-weight:bold">.</span><span style="color:#008080">read</span><span style="color:#000;font-weight:bold">();</span>
+        consumer<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">close</span><span style="color:#000;font-weight:bold">();</span>
+        session<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">close</span><span style="color:#000;font-weight:bold">();</span>
+        connection<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">close</span><span style="color:#000;font-weight:bold">();</span>
+    <span style="color:#000;font-weight:bold">}</span>
+<span style="color:#000;font-weight:bold">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><h4 id="topic">Topic</h4>
+<p><img src="http://img.programya.com/Snipaste_2019-10-22_21-55-45.png" alt="Topic"></p>
+<h5 id="producer-1">Producer</h5>
+<div class="highlight"><div style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4">
+<table style="border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 1
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 2
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 3
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 4
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 5
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 6
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 7
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 8
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 9
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">10
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">11
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">12
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">13
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">14
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">15
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">16
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">17
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">18
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">19
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#000;font-weight:bold">public</span> <span style="color:#000;font-weight:bold">class</span> <span style="color:#458;font-weight:bold">TProducer</span> <span style="color:#000;font-weight:bold">{</span>
+    <span style="color:#000;font-weight:bold">private</span> <span style="color:#000;font-weight:bold">static</span> <span style="color:#000;font-weight:bold">final</span> String URL <span style="color:#000;font-weight:bold">=</span> <span style="color:#d14">&#34;tcp://localhost:61616&#34;</span><span style="color:#000;font-weight:bold">;</span>
+    <span style="color:#000;font-weight:bold">private</span> <span style="color:#000;font-weight:bold">static</span> <span style="color:#000;font-weight:bold">final</span> String TOPIC_NAME <span style="color:#000;font-weight:bold">=</span> <span style="color:#d14">&#34;DEMO.QUEUE.TEST001&#34;</span><span style="color:#000;font-weight:bold">;</span>
+    <span style="color:#000;font-weight:bold">public</span> <span style="color:#000;font-weight:bold">static</span> <span style="color:#458;font-weight:bold">void</span> <span style="color:#900;font-weight:bold">main</span><span style="color:#000;font-weight:bold">(</span>String<span style="color:#000;font-weight:bold">[]</span> args<span style="color:#000;font-weight:bold">)</span> <span style="color:#000;font-weight:bold">throws</span> JMSException<span style="color:#000;font-weight:bold">,</span> IOException <span style="color:#000;font-weight:bold">{</span>
+        ActiveMQConnectionFactory connectionFactory <span style="color:#000;font-weight:bold">=</span> <span style="color:#000;font-weight:bold">new</span> ActiveMQConnectionFactory<span style="color:#000;font-weight:bold">(</span>URL<span style="color:#000;font-weight:bold">);</span>
+        Connection connection <span style="color:#000;font-weight:bold">=</span> connectionFactory<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">createConnection</span><span style="color:#000;font-weight:bold">();</span>
+        connection<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">start</span><span style="color:#000;font-weight:bold">();</span>
+        Session session <span style="color:#000;font-weight:bold">=</span> connection<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">createSession</span><span style="color:#000;font-weight:bold">(</span><span style="color:#000;font-weight:bold">false</span><span style="color:#000;font-weight:bold">,</span> Session<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">AUTO_ACKNOWLEDGE</span><span style="color:#000;font-weight:bold">);</span>
+        Destination destination <span style="color:#000;font-weight:bold">=</span> session<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">createTopic</span><span style="color:#000;font-weight:bold">(</span>TOPIC_NAME<span style="color:#000;font-weight:bold">);</span>
+        MessageProducer producer <span style="color:#000;font-weight:bold">=</span> session<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">createProducer</span><span style="color:#000;font-weight:bold">(</span>destination<span style="color:#000;font-weight:bold">);</span>
+        <span style="color:#000;font-weight:bold">for</span> <span style="color:#000;font-weight:bold">(</span><span style="color:#458;font-weight:bold">int</span> i <span style="color:#000;font-weight:bold">=</span> 0<span style="color:#000;font-weight:bold">;</span> i <span style="color:#000;font-weight:bold">&lt;</span> 3<span style="color:#000;font-weight:bold">;</span> i<span style="color:#000;font-weight:bold">++)</span> <span style="color:#000;font-weight:bold">{</span>
+            Message textMessage <span style="color:#000;font-weight:bold">=</span> session<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">createTextMessage</span><span style="color:#000;font-weight:bold">(</span><span style="color:#d14">&#34;Hello &#34;</span> <span style="color:#000;font-weight:bold">+</span> i<span style="color:#000;font-weight:bold">);</span>
+            producer<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">send</span><span style="color:#000;font-weight:bold">(</span>textMessage<span style="color:#000;font-weight:bold">);</span>
+        <span style="color:#000;font-weight:bold">}</span>
+        producer<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">close</span><span style="color:#000;font-weight:bold">();</span>
+        session<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">close</span><span style="color:#000;font-weight:bold">();</span>
+        connection<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">close</span><span style="color:#000;font-weight:bold">();</span>
+    <span style="color:#000;font-weight:bold">}</span>
+<span style="color:#000;font-weight:bold">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><h5 id="consumer-1">Consumer</h5>
+<div class="highlight"><div style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4">
+<table style="border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 1
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 2
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 3
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 4
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 5
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 6
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 7
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 8
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 9
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">10
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">11
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">12
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">13
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">14
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">15
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">16
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">17
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">18
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">19
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">20
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">21
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">22
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">23
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">24
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">25
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">26
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">27
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">28
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#000;font-weight:bold">public</span> <span style="color:#000;font-weight:bold">class</span> <span style="color:#458;font-weight:bold">TConsumer</span> <span style="color:#000;font-weight:bold">{</span>
+    <span style="color:#000;font-weight:bold">private</span> <span style="color:#000;font-weight:bold">static</span> <span style="color:#000;font-weight:bold">final</span> String URL <span style="color:#000;font-weight:bold">=</span> <span style="color:#d14">&#34;tcp://localhost:61616&#34;</span><span style="color:#000;font-weight:bold">;</span>
+    <span style="color:#000;font-weight:bold">private</span> <span style="color:#000;font-weight:bold">static</span> <span style="color:#000;font-weight:bold">final</span> String TOPIC_NAME <span style="color:#000;font-weight:bold">=</span> <span style="color:#d14">&#34;DEMO.QUEUE.TEST001&#34;</span><span style="color:#000;font-weight:bold">;</span>
+    <span style="color:#000;font-weight:bold">public</span> <span style="color:#000;font-weight:bold">static</span> <span style="color:#458;font-weight:bold">void</span> <span style="color:#900;font-weight:bold">main</span><span style="color:#000;font-weight:bold">(</span>String<span style="color:#000;font-weight:bold">[]</span> args<span style="color:#000;font-weight:bold">)</span> <span style="color:#000;font-weight:bold">throws</span> JMSException<span style="color:#000;font-weight:bold">,</span> IOException <span style="color:#000;font-weight:bold">{</span>
+        ActiveMQConnectionFactory connectionFactory <span style="color:#000;font-weight:bold">=</span> <span style="color:#000;font-weight:bold">new</span> ActiveMQConnectionFactory<span style="color:#000;font-weight:bold">(</span>URL<span style="color:#000;font-weight:bold">);</span>
+        Connection connection <span style="color:#000;font-weight:bold">=</span> connectionFactory<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">createConnection</span><span style="color:#000;font-weight:bold">();</span>
+        connection<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">start</span><span style="color:#000;font-weight:bold">();</span>
+        Session session <span style="color:#000;font-weight:bold">=</span> connection<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">createSession</span><span style="color:#000;font-weight:bold">(</span><span style="color:#000;font-weight:bold">false</span><span style="color:#000;font-weight:bold">,</span> Session<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">AUTO_ACKNOWLEDGE</span><span style="color:#000;font-weight:bold">);</span>
+        Destination destination <span style="color:#000;font-weight:bold">=</span> session<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">createTopic</span><span style="color:#000;font-weight:bold">(</span>TOPIC_NAME<span style="color:#000;font-weight:bold">);</span>
+        MessageConsumer consumer <span style="color:#000;font-weight:bold">=</span> session<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">createConsumer</span><span style="color:#000;font-weight:bold">(</span>destination<span style="color:#000;font-weight:bold">);</span>
+        <span style="color:#998;font-style:italic">/*
+</span><span style="color:#998;font-style:italic">        // 同步阻塞式
+</span><span style="color:#998;font-style:italic">        while (true) {
+</span><span style="color:#998;font-style:italic">            TextMessage textMessage = (TextMessage) consumer.receive(4000);
+</span><span style="color:#998;font-style:italic">            if (null != textMessage) {
+</span><span style="color:#998;font-style:italic">                System.out.println(&#34;Receive Message...&#34; + textMessage);
+</span><span style="color:#998;font-style:italic">            } else {
+</span><span style="color:#998;font-style:italic">                break;
+</span><span style="color:#998;font-style:italic">            }
+</span><span style="color:#998;font-style:italic">        }*/</span>
+        <span style="color:#998;font-style:italic">// 异步非阻塞式
+</span><span style="color:#998;font-style:italic"></span>        consumer<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">setMessageListener</span><span style="color:#000;font-weight:bold">(</span>message <span style="color:#000;font-weight:bold">-&gt;</span> System<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">out</span><span style="color:#000;font-weight:bold">.</span><span style="color:#008080">println</span><span style="color:#000;font-weight:bold">(</span><span style="color:#d14">&#34;Receive Message...&#34;</span> <span style="color:#000;font-weight:bold">+</span> message<span style="color:#000;font-weight:bold">));</span>
+        System<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">in</span><span style="color:#000;font-weight:bold">.</span><span style="color:#008080">read</span><span style="color:#000;font-weight:bold">();</span>
+        consumer<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">close</span><span style="color:#000;font-weight:bold">();</span>
+        session<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">close</span><span style="color:#000;font-weight:bold">();</span>
+        connection<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">close</span><span style="color:#000;font-weight:bold">();</span>
+    <span style="color:#000;font-weight:bold">}</span>
+<span style="color:#000;font-weight:bold">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>生产者将消息发布到 Topic 中，每个消息可以有多个消费者，属于 1对 N 的关系。生产者和消费者之间有时间上的相关性。订阅了某个主题的消费者只能消费自其订阅之后发布的消息。生产者生产时，topic 不保存消息其实无状态的。此外 JMS 规范中允许创建持久订阅，这在一定程度上放松了时间上的相关性要求。持久订阅允许消费者消费它处于未激活状态时发送的消息。</p>
+<h4 id="queue-和-topic-比较">Queue 和 Topic 比较</h4>
+<table>
+<thead>
+<tr>
+<th>比较项目</th>
+<th>Topic</th>
+<th>Queue</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>工作模式</td>
+<td>订阅发布模式，如果当前没有订阅者，消息将会被丢弃，如果有多个订阅者，那么这些订阅者都会收到消息</td>
+<td>负载均衡模式，如果当前没有消费者，消息也不会丢弃，如果有多个消费者那么一条消息只会发送给其中一个消费者，并且要求消费者 ack 消息</td>
+</tr>
+<tr>
+<td>有无状态</td>
+<td>无状态</td>
+<td>Queue 数据默认会在 mq 服务器上以文件形式保存，比如 ActiveMQ 一般保存在 ￥AMQ_HOME\data\kr-store\data 下面。也可以配置在 DB 中存储</td>
+</tr>
+<tr>
+<td>传递完整性</td>
+<td>如果没有订阅者，消息会被丢弃</td>
+<td>消息不会丢弃</td>
+</tr>
+<tr>
+<td>处理效率</td>
+<td>由于消息要按照订阅者的数量进行复制，所以处理性能会随着订阅者的增加而明显降低，并且还要结合不同消息协议自身的性能差异</td>
+<td>由于一条消息只发送给一个消费者，所以消费者多不会导致性能下降，不过不同消息协议的具体性能有差异。</td>
+</tr>
+</tbody>
+</table>
+<h3 id="jms">JMS</h3>
+<h4 id="概要">概要</h4>
+<p>Java 消息服务， 是 JavaEE 中的一个技术。指的是两个应用程序直接进行异步通讯的 API，它为标准消息协议和消息服务提供了一组通用的接口，包括创建，发送，读取消息等，用于支持 Java 应用程序的开发。在 JavaEE 中当两个应用程序使用 JMS 进行通讯时，它们直接并不是直接相连的，而是通过一个共同的消息收发服务组件关联起来以达到解耦，异步，削峰的效果。</p>
+<h4 id="重要组成">重要组成</h4>
+<ol>
+<li>
+<p>JMS Provider： 实现 JMS 接口和规范的消息中间件，即 MQ 服务器。</p>
+</li>
+<li>
+<p>JMS Producer：消息生产者，创建和发送 JMS 消息的客户端应用</p>
+</li>
+<li>
+<p>JMS Consumer：消息消费者，接收和处理 JMS 消息的客户端应用</p>
+</li>
+<li>
+<p>JMS Message：</p>
+<ol>
+<li>
+<p>消息头：</p>
+<p>JMS Destination：目的地</p>
+<p>JMS Delivery Mode：持久与非持久</p>
+<p>JMS Expiration：过期时间，默认永不过期</p>
+<p>JMS Priority：优先级， 0-4 普通，5-9 加急，默认是 4</p>
+<p>JMS Message ID： 永不重复的 ID</p>
+</li>
+<li>
+<p>消息体</p>
+<p>TestMessage：普通字符串消息</p>
+<p>MapMessage：Map 类型消息，key 为 String 类型，值为 Java 基本类型</p>
+<p>BytesMessage：二进制消息，包含一个 byte[]</p>
+<p>StreamMessage：Java 数据流消息，用标准流操作来顺序填充和读取</p>
+<p>ObjectMessage：对象消息，包含一个可序列化的 Java  对象</p>
+</li>
+<li>
+<p>消息属性</p>
+<p>以属性名和属性值的形式指定的键值对，是消息头的扩展，指定一些附加信息。例如 <code>message.setStringProperty(&quot;auth&quot;, &quot;Key)</code></p>
+</li>
+</ol>
+</li>
+</ol>
+<h4 id="jms-持久性事务签收">JMS 持久性/事务/签收</h4>
+<h5 id="持久性">持久性</h5>
+<p>非持久性时（<code>DeliveryMode.NON_PERSISTENT</code>）当服务器宕机，消息不存在；持久性时（<code>DeliveryMode.PERSISTENT</code>），服务器宕机，消息仍然存在。</p>
+<p>Queue 上的消息默认是持久性的。</p>
+<p>Topic  的持久性设置如下：</p>
+<p><strong>Producer</strong></p>
+<div class="highlight"><div style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4">
+<table style="border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 1
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 2
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 3
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 4
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 5
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 6
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 7
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 8
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 9
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">10
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">11
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">12
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">13
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">14
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">15
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">16
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">17
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">18
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">19
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">20
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#000;font-weight:bold">public</span> <span style="color:#000;font-weight:bold">class</span> <span style="color:#458;font-weight:bold">TProducerPersistent</span> <span style="color:#000;font-weight:bold">{</span>
+    <span style="color:#000;font-weight:bold">private</span> <span style="color:#000;font-weight:bold">static</span> <span style="color:#000;font-weight:bold">final</span> String URL <span style="color:#000;font-weight:bold">=</span> <span style="color:#d14">&#34;tcp://localhost:61616&#34;</span><span style="color:#000;font-weight:bold">;</span>
+    <span style="color:#000;font-weight:bold">private</span> <span style="color:#000;font-weight:bold">static</span> <span style="color:#000;font-weight:bold">final</span> String TOPIC_NAME <span style="color:#000;font-weight:bold">=</span> <span style="color:#d14">&#34;DEMO.QUEUE.TEST.PERSISTENT001&#34;</span><span style="color:#000;font-weight:bold">;</span>
+    <span style="color:#000;font-weight:bold">public</span> <span style="color:#000;font-weight:bold">static</span> <span style="color:#458;font-weight:bold">void</span> <span style="color:#900;font-weight:bold">main</span><span style="color:#000;font-weight:bold">(</span>String<span style="color:#000;font-weight:bold">[]</span> args<span style="color:#000;font-weight:bold">)</span> <span style="color:#000;font-weight:bold">throws</span> JMSException<span style="color:#000;font-weight:bold">,</span> IOException <span style="color:#000;font-weight:bold">{</span>
+        ActiveMQConnectionFactory connectionFactory <span style="color:#000;font-weight:bold">=</span> <span style="color:#000;font-weight:bold">new</span> ActiveMQConnectionFactory<span style="color:#000;font-weight:bold">(</span>URL<span style="color:#000;font-weight:bold">);</span>
+        Connection connection <span style="color:#000;font-weight:bold">=</span> connectionFactory<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">createConnection</span><span style="color:#000;font-weight:bold">();</span>
+        Session session <span style="color:#000;font-weight:bold">=</span> connection<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">createSession</span><span style="color:#000;font-weight:bold">(</span><span style="color:#000;font-weight:bold">false</span><span style="color:#000;font-weight:bold">,</span> Session<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">AUTO_ACKNOWLEDGE</span><span style="color:#000;font-weight:bold">);</span>
+        Destination destination <span style="color:#000;font-weight:bold">=</span> session<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">createTopic</span><span style="color:#000;font-weight:bold">(</span>TOPIC_NAME<span style="color:#000;font-weight:bold">);</span>
+        MessageProducer producer <span style="color:#000;font-weight:bold">=</span> session<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">createProducer</span><span style="color:#000;font-weight:bold">(</span>destination<span style="color:#000;font-weight:bold">);</span>
+        producer<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">setDeliveryMode</span><span style="color:#000;font-weight:bold">(</span>DeliveryMode<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">PERSISTENT</span><span style="color:#000;font-weight:bold">);</span>
+        connection<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">start</span><span style="color:#000;font-weight:bold">();</span>
+        <span style="color:#000;font-weight:bold">for</span> <span style="color:#000;font-weight:bold">(</span><span style="color:#458;font-weight:bold">int</span> i <span style="color:#000;font-weight:bold">=</span> 0<span style="color:#000;font-weight:bold">;</span> i <span style="color:#000;font-weight:bold">&lt;</span> 3<span style="color:#000;font-weight:bold">;</span> i<span style="color:#000;font-weight:bold">++)</span> <span style="color:#000;font-weight:bold">{</span>
+            Message textMessage <span style="color:#000;font-weight:bold">=</span> session<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">createTextMessage</span><span style="color:#000;font-weight:bold">(</span><span style="color:#d14">&#34;Hello &#34;</span> <span style="color:#000;font-weight:bold">+</span> i<span style="color:#000;font-weight:bold">);</span>
+            producer<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">send</span><span style="color:#000;font-weight:bold">(</span>textMessage<span style="color:#000;font-weight:bold">);</span>
+        <span style="color:#000;font-weight:bold">}</span>
+        producer<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">close</span><span style="color:#000;font-weight:bold">();</span>
+        session<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">close</span><span style="color:#000;font-weight:bold">();</span>
+        connection<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">close</span><span style="color:#000;font-weight:bold">();</span>
+    <span style="color:#000;font-weight:bold">}</span>
+<span style="color:#000;font-weight:bold">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><p><strong>Consumer</strong></p>
+<div class="highlight"><div style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4">
+<table style="border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 1
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 2
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 3
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 4
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 5
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 6
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 7
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 8
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 9
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">10
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">11
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">12
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">13
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">14
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">15
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">16
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">17
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">18
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">19
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">20
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#000;font-weight:bold">public</span> <span style="color:#000;font-weight:bold">class</span> <span style="color:#458;font-weight:bold">TConsumerPersistent</span> <span style="color:#000;font-weight:bold">{</span>
+    <span style="color:#000;font-weight:bold">private</span> <span style="color:#000;font-weight:bold">static</span> <span style="color:#000;font-weight:bold">final</span> String URL <span style="color:#000;font-weight:bold">=</span> <span style="color:#d14">&#34;tcp://localhost:61616&#34;</span><span style="color:#000;font-weight:bold">;</span>
+    <span style="color:#000;font-weight:bold">private</span> <span style="color:#000;font-weight:bold">static</span> <span style="color:#000;font-weight:bold">final</span> String TOPIC_NAME <span style="color:#000;font-weight:bold">=</span> <span style="color:#d14">&#34;DEMO.QUEUE.TEST.PERSISTENT001&#34;</span><span style="color:#000;font-weight:bold">;</span>
+    <span style="color:#000;font-weight:bold">public</span> <span style="color:#000;font-weight:bold">static</span> <span style="color:#458;font-weight:bold">void</span> <span style="color:#900;font-weight:bold">main</span><span style="color:#000;font-weight:bold">(</span>String<span style="color:#000;font-weight:bold">[]</span> args<span style="color:#000;font-weight:bold">)</span> <span style="color:#000;font-weight:bold">throws</span> JMSException<span style="color:#000;font-weight:bold">,</span> IOException <span style="color:#000;font-weight:bold">{</span>
+        ActiveMQConnectionFactory connectionFactory <span style="color:#000;font-weight:bold">=</span> <span style="color:#000;font-weight:bold">new</span> ActiveMQConnectionFactory<span style="color:#000;font-weight:bold">(</span>URL<span style="color:#000;font-weight:bold">);</span>
+        Connection connection <span style="color:#000;font-weight:bold">=</span> connectionFactory<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">createConnection</span><span style="color:#000;font-weight:bold">();</span>
+        connection<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">setClientID</span><span style="color:#000;font-weight:bold">(</span><span style="color:#d14">&#34;PERSISTENT001&#34;</span><span style="color:#000;font-weight:bold">);</span>
+        Session session <span style="color:#000;font-weight:bold">=</span> connection<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">createSession</span><span style="color:#000;font-weight:bold">(</span><span style="color:#000;font-weight:bold">false</span><span style="color:#000;font-weight:bold">,</span> Session<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">AUTO_ACKNOWLEDGE</span><span style="color:#000;font-weight:bold">);</span>
+        Topic destination <span style="color:#000;font-weight:bold">=</span> session<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">createTopic</span><span style="color:#000;font-weight:bold">(</span>TOPIC_NAME<span style="color:#000;font-weight:bold">);</span>
+        TopicSubscriber topicSubscriber <span style="color:#000;font-weight:bold">=</span> session<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">createDurableSubscriber</span><span style="color:#000;font-weight:bold">(</span>destination<span style="color:#000;font-weight:bold">,</span> <span style="color:#d14">&#34;TopicSubscriber&#34;</span><span style="color:#000;font-weight:bold">);</span>
+        connection<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">start</span><span style="color:#000;font-weight:bold">();</span>
+        Message message <span style="color:#000;font-weight:bold">=</span> topicSubscriber<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">receive</span><span style="color:#000;font-weight:bold">();</span>
+        <span style="color:#000;font-weight:bold">while</span> <span style="color:#000;font-weight:bold">(</span><span style="color:#000;font-weight:bold">null</span> <span style="color:#000;font-weight:bold">!=</span> message<span style="color:#000;font-weight:bold">)</span> <span style="color:#000;font-weight:bold">{</span>
+            System<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">out</span><span style="color:#000;font-weight:bold">.</span><span style="color:#008080">println</span><span style="color:#000;font-weight:bold">(</span><span style="color:#d14">&#34;Receive Message...&#34;</span> <span style="color:#000;font-weight:bold">+</span> message<span style="color:#000;font-weight:bold">);</span>
+            message <span style="color:#000;font-weight:bold">=</span> topicSubscriber<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">receive</span><span style="color:#000;font-weight:bold">(</span>3000<span style="color:#000;font-weight:bold">);</span>
+        <span style="color:#000;font-weight:bold">}</span>
+        session<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">close</span><span style="color:#000;font-weight:bold">();</span>
+        connection<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">close</span><span style="color:#000;font-weight:bold">();</span>
+    <span style="color:#000;font-weight:bold">}</span>
+<span style="color:#000;font-weight:bold">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><h5 id="事务">事务</h5>
+<p>在 Producer 中如果设置 事务为 true，那么发送 Message 的时候需要手动调用 commit。</p>
+<div class="highlight"><div style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4">
+<table style="border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">1
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">2
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">3
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">4
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">5
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">6
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">7
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#998;font-style:italic">// 设置事务为 true
+</span><span style="color:#998;font-style:italic"></span>Session session <span style="color:#000;font-weight:bold">=</span> connection<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">createSession</span><span style="color:#000;font-weight:bold">(</span><span style="color:#000;font-weight:bold">true</span><span style="color:#000;font-weight:bold">,</span> Session<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">AUTO_ACKNOWLEDGE</span><span style="color:#000;font-weight:bold">);</span>
+
+<span style="color:#998;font-style:italic">// 手动 commit
+</span><span style="color:#998;font-style:italic"></span>session<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">commit</span><span style="color:#000;font-weight:bold">();</span>
+<span style="color:#998;font-style:italic">// 手动 rollback
+</span><span style="color:#998;font-style:italic"></span>session<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">rollback</span><span style="color:#000;font-weight:bold">();</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>在 Consumer 中如果设置事务为 true，那么接收 Message 后也需要手动调用 commit。</p>
+<div class="highlight"><div style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4">
+<table style="border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">1
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">2
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">3
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">4
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">5
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">6
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">7
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#998;font-style:italic">// 设置事务为 true
+</span><span style="color:#998;font-style:italic"></span>Session session <span style="color:#000;font-weight:bold">=</span> connection<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">createSession</span><span style="color:#000;font-weight:bold">(</span><span style="color:#000;font-weight:bold">true</span><span style="color:#000;font-weight:bold">,</span> Session<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">AUTO_ACKNOWLEDGE</span><span style="color:#000;font-weight:bold">);</span>
+
+<span style="color:#998;font-style:italic">// 手动 commit
+</span><span style="color:#998;font-style:italic"></span>session<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">commit</span><span style="color:#000;font-weight:bold">();</span>
+<span style="color:#998;font-style:italic">// 手动 rollback
+</span><span style="color:#998;font-style:italic"></span>session<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">rollback</span><span style="color:#000;font-weight:bold">();</span>
+</code></pre></td></tr></table>
+</div>
+</div><h5 id="签收">签收</h5>
+<p>主要有三种：自动签收（<code>Session.AUTO_ACKNOWLEDGE</code>）、手动签收（<code>Session.CLIENT_ACKNOWLEDGE</code>）、运行重复消息（<code>Session.DUPS_OK_ACKNOWLEDGE</code>），事务（<code>Session.SESSION_TRANSACTED</code>）</p>
+<div class="highlight"><div style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4">
+<table style="border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">1
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">2
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">3
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">4
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">5
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#998;font-style:italic">// 设置手动签收
+</span><span style="color:#998;font-style:italic"></span>Session session <span style="color:#000;font-weight:bold">=</span> connection<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">createSession</span><span style="color:#000;font-weight:bold">(</span><span style="color:#000;font-weight:bold">false</span><span style="color:#000;font-weight:bold">,</span> Session<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">CLIENT_ACKNOWLEDGE</span><span style="color:#000;font-weight:bold">);</span>
+
+<span style="color:#998;font-style:italic">// 需要手动签收
+</span><span style="color:#998;font-style:italic"></span>message<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">acknowledge</span><span style="color:#000;font-weight:bold">();</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>在事务性会话中，当一个事务被成功提交则消息被自动签收，如果事务回滚，则消息会被再次传送。</p>
+<p>非事务性的会话中，消息何时被确认取决于创建会话的应答模式。</p>
+<h3 id="activemq-broker">ActiveMQ Broker</h3>
+<p>ActiveMQ Broker 作为独立的消息服务器构建 Java 应用，也支持在 VM 中通信基于嵌入式的 broke，集成在 java 应用中。本质上 Broker 就是实现了用代码的形式启动 ActiveMQ 将 MQ 嵌入到 Java 代码炸，以便随时启动，在用的时候再去启动这样能节省资源。</p>
+<div class="highlight"><div style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4">
+<table style="border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">1
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">2
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">3
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">4
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">5
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">6
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">7
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">8
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#000;font-weight:bold">public</span> <span style="color:#000;font-weight:bold">class</span> <span style="color:#458;font-weight:bold">EmbedBroker</span> <span style="color:#000;font-weight:bold">{</span>
+    <span style="color:#000;font-weight:bold">public</span> <span style="color:#000;font-weight:bold">static</span> <span style="color:#458;font-weight:bold">void</span> <span style="color:#900;font-weight:bold">main</span><span style="color:#000;font-weight:bold">(</span>String<span style="color:#000;font-weight:bold">[]</span> args<span style="color:#000;font-weight:bold">)</span> <span style="color:#000;font-weight:bold">throws</span> Exception <span style="color:#000;font-weight:bold">{</span>
+        BrokerService brokerService <span style="color:#000;font-weight:bold">=</span> <span style="color:#000;font-weight:bold">new</span> BrokerService<span style="color:#000;font-weight:bold">();</span>
+        brokerService<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">setUseJmx</span><span style="color:#000;font-weight:bold">(</span><span style="color:#000;font-weight:bold">true</span><span style="color:#000;font-weight:bold">);</span>
+        brokerService<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">addConnector</span><span style="color:#000;font-weight:bold">(</span><span style="color:#d14">&#34;tcp://localhost:61616&#34;</span><span style="color:#000;font-weight:bold">);</span>
+        brokerService<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">start</span><span style="color:#000;font-weight:bold">();</span>
+    <span style="color:#000;font-weight:bold">}</span>
+<span style="color:#000;font-weight:bold">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><h3 id="activemq-与-spring">ActiveMQ 与 Spring</h3>
+<p>可以将 ActiveMQ 相关的类交给 Spring 管理。</p>
+<p><code>pom.xml</code> 中的依赖如下：</p>
+<div class="highlight"><div style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4">
+<table style="border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 1
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 2
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 3
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 4
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 5
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 6
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 7
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 8
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 9
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">10
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">11
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">12
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">13
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">14
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">15
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">16
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">17
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">18
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">19
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">20
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">21
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">22
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">23
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">24
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">25
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">26
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">27
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">28
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">29
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">30
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">31
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">32
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">33
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">34
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">35
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">36
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">37
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">38
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">39
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">40
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">41
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">42
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">43
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">44
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">45
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">46
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">47
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">48
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">49
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">50
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">51
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">52
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">53
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">54
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">55
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">56
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">57
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">58
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">59
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">60
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">61
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">62
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">63
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">64
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">65
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">66
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">67
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">68
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">69
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">70
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">71
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">72
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">73
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">74
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">75
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">76
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">77
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">78
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">79
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">80
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">81
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">82
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">83
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">84
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">85
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">86
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">87
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">88
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">89
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">90
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">91
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">92
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">93
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">94
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">95
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-xml" data-lang="xml"><span style="color:#000080">&lt;dependencies&gt;</span>
+    <span style="color:#998;font-style:italic">&lt;!-- https://mvnrepository.com/artifact/org.apache.activemq/activemq-all --&gt;</span>
+    <span style="color:#000080">&lt;dependency&gt;</span>
+        <span style="color:#000080">&lt;groupId&gt;</span>org.apache.activemq<span style="color:#000080">&lt;/groupId&gt;</span>
+        <span style="color:#000080">&lt;artifactId&gt;</span>activemq-all<span style="color:#000080">&lt;/artifactId&gt;</span>
+        <span style="color:#000080">&lt;version&gt;</span>5.15.10<span style="color:#000080">&lt;/version&gt;</span>
+    <span style="color:#000080">&lt;/dependency&gt;</span>
+
+    <span style="color:#998;font-style:italic">&lt;!-- https://mvnrepository.com/artifact/org.apache.xbean/xbean-spring --&gt;</span>
+    <span style="color:#000080">&lt;dependency&gt;</span>
+        <span style="color:#000080">&lt;groupId&gt;</span>org.apache.xbean<span style="color:#000080">&lt;/groupId&gt;</span>
+        <span style="color:#000080">&lt;artifactId&gt;</span>xbean-spring<span style="color:#000080">&lt;/artifactId&gt;</span>
+        <span style="color:#000080">&lt;version&gt;</span>4.14<span style="color:#000080">&lt;/version&gt;</span>
+    <span style="color:#000080">&lt;/dependency&gt;</span>
+
+    <span style="color:#998;font-style:italic">&lt;!-- https://mvnrepository.com/artifact/org.slf4j/slf4j-api --&gt;</span>
+    <span style="color:#000080">&lt;dependency&gt;</span>
+        <span style="color:#000080">&lt;groupId&gt;</span>org.slf4j<span style="color:#000080">&lt;/groupId&gt;</span>
+        <span style="color:#000080">&lt;artifactId&gt;</span>slf4j-api<span style="color:#000080">&lt;/artifactId&gt;</span>
+        <span style="color:#000080">&lt;version&gt;</span>2.0.0-alpha1<span style="color:#000080">&lt;/version&gt;</span>
+    <span style="color:#000080">&lt;/dependency&gt;</span>
+
+    <span style="color:#998;font-style:italic">&lt;!-- https://mvnrepository.com/artifact/ch.qos.logback/logback-classic --&gt;</span>
+    <span style="color:#000080">&lt;dependency&gt;</span>
+        <span style="color:#000080">&lt;groupId&gt;</span>ch.qos.logback<span style="color:#000080">&lt;/groupId&gt;</span>
+        <span style="color:#000080">&lt;artifactId&gt;</span>logback-classic<span style="color:#000080">&lt;/artifactId&gt;</span>
+        <span style="color:#000080">&lt;version&gt;</span>1.3.0-alpha4<span style="color:#000080">&lt;/version&gt;</span>
+        <span style="color:#000080">&lt;scope&gt;</span>test<span style="color:#000080">&lt;/scope&gt;</span>
+    <span style="color:#000080">&lt;/dependency&gt;</span>
+
+    <span style="color:#998;font-style:italic">&lt;!-- https://mvnrepository.com/artifact/org.projectlombok/lombok --&gt;</span>
+    <span style="color:#000080">&lt;dependency&gt;</span>
+        <span style="color:#000080">&lt;groupId&gt;</span>org.projectlombok<span style="color:#000080">&lt;/groupId&gt;</span>
+        <span style="color:#000080">&lt;artifactId&gt;</span>lombok<span style="color:#000080">&lt;/artifactId&gt;</span>
+        <span style="color:#000080">&lt;version&gt;</span>1.18.10<span style="color:#000080">&lt;/version&gt;</span>
+        <span style="color:#000080">&lt;scope&gt;</span>provided<span style="color:#000080">&lt;/scope&gt;</span>
+    <span style="color:#000080">&lt;/dependency&gt;</span>
+
+    <span style="color:#998;font-style:italic">&lt;!-- https://mvnrepository.com/artifact/org.junit.jupiter/junit-jupiter-api --&gt;</span>
+    <span style="color:#000080">&lt;dependency&gt;</span>
+        <span style="color:#000080">&lt;groupId&gt;</span>org.junit.jupiter<span style="color:#000080">&lt;/groupId&gt;</span>
+        <span style="color:#000080">&lt;artifactId&gt;</span>junit-jupiter-api<span style="color:#000080">&lt;/artifactId&gt;</span>
+        <span style="color:#000080">&lt;version&gt;</span>5.6.0-M1<span style="color:#000080">&lt;/version&gt;</span>
+        <span style="color:#000080">&lt;scope&gt;</span>test<span style="color:#000080">&lt;/scope&gt;</span>
+    <span style="color:#000080">&lt;/dependency&gt;</span>
+
+    <span style="color:#998;font-style:italic">&lt;!-- https://mvnrepository.com/artifact/com.fasterxml.jackson.core/jackson-databind --&gt;</span>
+    <span style="color:#000080">&lt;dependency&gt;</span>
+        <span style="color:#000080">&lt;groupId&gt;</span>com.fasterxml.jackson.core<span style="color:#000080">&lt;/groupId&gt;</span>
+        <span style="color:#000080">&lt;artifactId&gt;</span>jackson-databind<span style="color:#000080">&lt;/artifactId&gt;</span>
+        <span style="color:#000080">&lt;version&gt;</span>2.10.0<span style="color:#000080">&lt;/version&gt;</span>
+    <span style="color:#000080">&lt;/dependency&gt;</span>
+
+    <span style="color:#998;font-style:italic">&lt;!-- https://mvnrepository.com/artifact/org.springframework/spring-jms --&gt;</span>
+    <span style="color:#000080">&lt;dependency&gt;</span>
+        <span style="color:#000080">&lt;groupId&gt;</span>org.springframework<span style="color:#000080">&lt;/groupId&gt;</span>
+        <span style="color:#000080">&lt;artifactId&gt;</span>spring-jms<span style="color:#000080">&lt;/artifactId&gt;</span>
+        <span style="color:#000080">&lt;version&gt;</span>5.2.0.RELEASE<span style="color:#000080">&lt;/version&gt;</span>
+    <span style="color:#000080">&lt;/dependency&gt;</span>
+
+    <span style="color:#998;font-style:italic">&lt;!-- https://mvnrepository.com/artifact/org.springframework/spring-core --&gt;</span>
+    <span style="color:#000080">&lt;dependency&gt;</span>
+        <span style="color:#000080">&lt;groupId&gt;</span>org.springframework<span style="color:#000080">&lt;/groupId&gt;</span>
+        <span style="color:#000080">&lt;artifactId&gt;</span>spring-core<span style="color:#000080">&lt;/artifactId&gt;</span>
+        <span style="color:#000080">&lt;version&gt;</span>5.2.0.RELEASE<span style="color:#000080">&lt;/version&gt;</span>
+    <span style="color:#000080">&lt;/dependency&gt;</span>
+
+    <span style="color:#998;font-style:italic">&lt;!-- https://mvnrepository.com/artifact/org.apache.activemq/activemq-pool --&gt;</span>
+    <span style="color:#000080">&lt;dependency&gt;</span>
+        <span style="color:#000080">&lt;groupId&gt;</span>org.apache.activemq<span style="color:#000080">&lt;/groupId&gt;</span>
+        <span style="color:#000080">&lt;artifactId&gt;</span>activemq-pool<span style="color:#000080">&lt;/artifactId&gt;</span>
+        <span style="color:#000080">&lt;version&gt;</span>5.15.10<span style="color:#000080">&lt;/version&gt;</span>
+    <span style="color:#000080">&lt;/dependency&gt;</span>
+
+    <span style="color:#998;font-style:italic">&lt;!-- https://mvnrepository.com/artifact/org.springframework/spring-context --&gt;</span>
+    <span style="color:#000080">&lt;dependency&gt;</span>
+        <span style="color:#000080">&lt;groupId&gt;</span>org.springframework<span style="color:#000080">&lt;/groupId&gt;</span>
+        <span style="color:#000080">&lt;artifactId&gt;</span>spring-context<span style="color:#000080">&lt;/artifactId&gt;</span>
+        <span style="color:#000080">&lt;version&gt;</span>5.2.0.RELEASE<span style="color:#000080">&lt;/version&gt;</span>
+    <span style="color:#000080">&lt;/dependency&gt;</span>
+
+    <span style="color:#998;font-style:italic">&lt;!-- https://mvnrepository.com/artifact/org.springframework/spring-aop --&gt;</span>
+    <span style="color:#000080">&lt;dependency&gt;</span>
+        <span style="color:#000080">&lt;groupId&gt;</span>org.springframework<span style="color:#000080">&lt;/groupId&gt;</span>
+        <span style="color:#000080">&lt;artifactId&gt;</span>spring-aop<span style="color:#000080">&lt;/artifactId&gt;</span>
+        <span style="color:#000080">&lt;version&gt;</span>5.2.0.RELEASE<span style="color:#000080">&lt;/version&gt;</span>
+    <span style="color:#000080">&lt;/dependency&gt;</span>
+
+    <span style="color:#998;font-style:italic">&lt;!-- https://mvnrepository.com/artifact/org.springframework/spring-orm --&gt;</span>
+    <span style="color:#000080">&lt;dependency&gt;</span>
+        <span style="color:#000080">&lt;groupId&gt;</span>org.springframework<span style="color:#000080">&lt;/groupId&gt;</span>
+        <span style="color:#000080">&lt;artifactId&gt;</span>spring-orm<span style="color:#000080">&lt;/artifactId&gt;</span>
+        <span style="color:#000080">&lt;version&gt;</span>5.2.0.RELEASE<span style="color:#000080">&lt;/version&gt;</span>
+    <span style="color:#000080">&lt;/dependency&gt;</span>
+<span style="color:#000080">&lt;/dependencies&gt;</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>Spring 配置文件<code>applicationContext.xml</code> 如下：</p>
+<div class="highlight"><div style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4">
+<table style="border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 1
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 2
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 3
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 4
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 5
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 6
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 7
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 8
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 9
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">10
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">11
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">12
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">13
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">14
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">15
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">16
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">17
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">18
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">19
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">20
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">21
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">22
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">23
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">24
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">25
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">26
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">27
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">28
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">29
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">30
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">31
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">32
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">33
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">34
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">35
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">36
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">37
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">38
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">39
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-xml" data-lang="xml"><span style="color:#999;font-weight:bold;font-style:italic">&lt;?xml version=&#34;1.0&#34; encoding=&#34;UTF-8&#34;?&gt;</span>
+<span style="color:#000080">&lt;beans</span> <span style="color:#008080">xmlns=</span><span style="color:#d14">&#34;http://www.springframework.org/schema/beans&#34;</span>
+       <span style="color:#008080">xmlns:xsi=</span><span style="color:#d14">&#34;http://www.w3.org/2001/XMLSchema-instance&#34;</span>
+       <span style="color:#008080">xmlns:context=</span><span style="color:#d14">&#34;http://www.springframework.org/schema/context&#34;</span>
+       <span style="color:#008080">xsi:schemaLocation=</span><span style="color:#d14">&#34;http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd&#34;</span><span style="color:#000080">&gt;</span>
+
+    <span style="color:#000080">&lt;context:component-scan</span> <span style="color:#008080">base-package=</span><span style="color:#d14">&#34;com.xinyue.activemq&#34;</span> <span style="color:#000080">/&gt;</span>
+
+    <span style="color:#000080">&lt;bean</span> <span style="color:#008080">id=</span><span style="color:#d14">&#34;jmsFactory&#34;</span> <span style="color:#008080">class=</span><span style="color:#d14">&#34;org.apache.activemq.pool.PooledConnectionFactory&#34;</span> <span style="color:#008080">destroy-method=</span><span style="color:#d14">&#34;stop&#34;</span><span style="color:#000080">&gt;</span>
+        <span style="color:#000080">&lt;property</span> <span style="color:#008080">name=</span><span style="color:#d14">&#34;connectionFactory&#34;</span><span style="color:#000080">&gt;</span>
+            <span style="color:#000080">&lt;bean</span> <span style="color:#008080">class=</span><span style="color:#d14">&#34;org.apache.activemq.ActiveMQConnectionFactory&#34;</span><span style="color:#000080">&gt;</span>
+                <span style="color:#000080">&lt;property</span> <span style="color:#008080">name=</span><span style="color:#d14">&#34;brokerURL&#34;</span> <span style="color:#008080">value=</span><span style="color:#d14">&#34;tcp://localhost:61616&#34;</span> <span style="color:#000080">/&gt;</span>
+            <span style="color:#000080">&lt;/bean&gt;</span>
+        <span style="color:#000080">&lt;/property&gt;</span>
+        <span style="color:#000080">&lt;property</span> <span style="color:#008080">name=</span><span style="color:#d14">&#34;maxConnections&#34;</span> <span style="color:#008080">value=</span><span style="color:#d14">&#34;100&#34;</span><span style="color:#000080">/&gt;</span>
+    <span style="color:#000080">&lt;/bean&gt;</span>
+
+    <span style="color:#000080">&lt;bean</span> <span style="color:#008080">id=</span><span style="color:#d14">&#34;destinationQueue&#34;</span> <span style="color:#008080">class=</span><span style="color:#d14">&#34;org.apache.activemq.command.ActiveMQQueue&#34;</span><span style="color:#000080">&gt;</span>
+        <span style="color:#000080">&lt;constructor-arg</span> <span style="color:#008080">index=</span><span style="color:#d14">&#34;0&#34;</span> <span style="color:#008080">value=</span><span style="color:#d14">&#34;DEMO.QUEUE.SPRING.TEST&#34;</span> <span style="color:#000080">/&gt;</span>
+    <span style="color:#000080">&lt;/bean&gt;</span>
+
+    <span style="color:#000080">&lt;bean</span> <span style="color:#008080">id=</span><span style="color:#d14">&#34;destinationTopic&#34;</span> <span style="color:#008080">class=</span><span style="color:#d14">&#34;org.apache.activemq.command.ActiveMQTopic&#34;</span><span style="color:#000080">&gt;</span>
+        <span style="color:#000080">&lt;constructor-arg</span> <span style="color:#008080">index=</span><span style="color:#d14">&#34;0&#34;</span> <span style="color:#008080">value=</span><span style="color:#d14">&#34;DEMO.TOPIC.SPRING.TEST&#34;</span> <span style="color:#000080">/&gt;</span>
+    <span style="color:#000080">&lt;/bean&gt;</span>
+
+    <span style="color:#000080">&lt;bean</span> <span style="color:#008080">id=</span><span style="color:#d14">&#34;jmsTemplate&#34;</span> <span style="color:#008080">class=</span><span style="color:#d14">&#34;org.springframework.jms.core.JmsTemplate&#34;</span><span style="color:#000080">&gt;</span>
+        <span style="color:#000080">&lt;property</span> <span style="color:#008080">name=</span><span style="color:#d14">&#34;connectionFactory&#34;</span> <span style="color:#008080">ref=</span><span style="color:#d14">&#34;jmsFactory&#34;</span> <span style="color:#000080">/&gt;</span>
+        <span style="color:#000080">&lt;property</span> <span style="color:#008080">name=</span><span style="color:#d14">&#34;defaultDestination&#34;</span> <span style="color:#008080">ref=</span><span style="color:#d14">&#34;destinationQueue&#34;</span> <span style="color:#000080">/&gt;</span>
+        <span style="color:#000080">&lt;property</span> <span style="color:#008080">name=</span><span style="color:#d14">&#34;messageConverter&#34;</span><span style="color:#000080">&gt;</span>
+            <span style="color:#000080">&lt;bean</span> <span style="color:#008080">class=</span><span style="color:#d14">&#34;org.springframework.jms.support.converter.SimpleMessageConverter&#34;</span> <span style="color:#000080">/&gt;</span>
+        <span style="color:#000080">&lt;/property&gt;</span>
+    <span style="color:#000080">&lt;/bean&gt;</span>
+
+    <span style="color:#000080">&lt;bean</span> <span style="color:#008080">id=</span><span style="color:#d14">&#34;jmsContainer&#34;</span> <span style="color:#008080">class=</span><span style="color:#d14">&#34;org.springframework.jms.listener.DefaultMessageListenerContainer&#34;</span><span style="color:#000080">&gt;</span>
+        <span style="color:#000080">&lt;property</span> <span style="color:#008080">name=</span><span style="color:#d14">&#34;connectionFactory&#34;</span> <span style="color:#008080">ref=</span><span style="color:#d14">&#34;jmsFactory&#34;</span> <span style="color:#000080">/&gt;</span>
+        <span style="color:#000080">&lt;property</span> <span style="color:#008080">name=</span><span style="color:#d14">&#34;destination&#34;</span> <span style="color:#008080">ref=</span><span style="color:#d14">&#34;destinationQueue&#34;</span> <span style="color:#000080">/&gt;</span>
+        <span style="color:#000080">&lt;property</span> <span style="color:#008080">name=</span><span style="color:#d14">&#34;messageListener&#34;</span> <span style="color:#008080">ref=</span><span style="color:#d14">&#34;myMessageListener&#34;</span> <span style="color:#000080">/&gt;</span>
+    <span style="color:#000080">&lt;/bean&gt;</span>
+<span style="color:#000080">&lt;/beans&gt;</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>Producer 代码：</p>
+<div class="highlight"><div style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4">
+<table style="border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 1
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 2
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 3
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 4
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 5
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 6
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 7
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 8
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 9
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">10
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">11
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">12
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#3c5d5d;font-weight:bold">@Service</span><span style="color:#000;font-weight:bold">(</span>value <span style="color:#000;font-weight:bold">=</span> <span style="color:#d14">&#34;qProducer&#34;</span><span style="color:#000;font-weight:bold">)</span>
+<span style="color:#000;font-weight:bold">public</span> <span style="color:#000;font-weight:bold">class</span> <span style="color:#458;font-weight:bold">QProducer</span> <span style="color:#000;font-weight:bold">{</span>
+    <span style="color:#3c5d5d;font-weight:bold">@Autowired</span>
+    <span style="color:#000;font-weight:bold">private</span> JmsTemplate jmsTemplate<span style="color:#000;font-weight:bold">;</span>
+
+    <span style="color:#000;font-weight:bold">public</span> <span style="color:#000;font-weight:bold">static</span> <span style="color:#458;font-weight:bold">void</span> <span style="color:#900;font-weight:bold">main</span><span style="color:#000;font-weight:bold">(</span>String<span style="color:#000;font-weight:bold">[]</span> args<span style="color:#000;font-weight:bold">)</span> <span style="color:#000;font-weight:bold">{</span>
+        ApplicationContext ctx <span style="color:#000;font-weight:bold">=</span> <span style="color:#000;font-weight:bold">new</span> ClassPathXmlApplicationContext<span style="color:#000;font-weight:bold">(</span><span style="color:#d14">&#34;applicationContext.xml&#34;</span><span style="color:#000;font-weight:bold">);</span>
+        QProducer producer <span style="color:#000;font-weight:bold">=</span> <span style="color:#000;font-weight:bold">(</span>QProducer<span style="color:#000;font-weight:bold">)</span> ctx<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">getBean</span><span style="color:#000;font-weight:bold">(</span><span style="color:#d14">&#34;qProducer&#34;</span><span style="color:#000;font-weight:bold">);</span>
+        producer<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">jmsTemplate</span><span style="color:#000;font-weight:bold">.</span><span style="color:#008080">send</span><span style="color:#000;font-weight:bold">(</span>session <span style="color:#000;font-weight:bold">-&gt;</span> session<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">createTextMessage</span><span style="color:#000;font-weight:bold">(</span><span style="color:#d14">&#34;Demo Message...&#34;</span><span style="color:#000;font-weight:bold">));</span>
+        System<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">out</span><span style="color:#000;font-weight:bold">.</span><span style="color:#008080">println</span><span style="color:#000;font-weight:bold">(</span><span style="color:#d14">&#34;Finish&#34;</span><span style="color:#000;font-weight:bold">);</span>
+    <span style="color:#000;font-weight:bold">}</span>
+<span style="color:#000;font-weight:bold">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>Consumer 代码：</p>
+<div class="highlight"><div style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4">
+<table style="border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 1
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 2
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 3
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 4
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 5
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 6
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 7
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 8
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 9
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">10
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">11
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">12
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#3c5d5d;font-weight:bold">@Service</span><span style="color:#000;font-weight:bold">(</span>value <span style="color:#000;font-weight:bold">=</span> <span style="color:#d14">&#34;qConsumer&#34;</span><span style="color:#000;font-weight:bold">)</span>
+<span style="color:#000;font-weight:bold">public</span> <span style="color:#000;font-weight:bold">class</span> <span style="color:#458;font-weight:bold">QConsumer</span> <span style="color:#000;font-weight:bold">{</span>
+    <span style="color:#3c5d5d;font-weight:bold">@Autowired</span>
+    <span style="color:#000;font-weight:bold">private</span> JmsTemplate jmsTemplate<span style="color:#000;font-weight:bold">;</span>
+
+    <span style="color:#000;font-weight:bold">public</span> <span style="color:#000;font-weight:bold">static</span> <span style="color:#458;font-weight:bold">void</span> <span style="color:#900;font-weight:bold">main</span><span style="color:#000;font-weight:bold">(</span>String<span style="color:#000;font-weight:bold">[]</span> args<span style="color:#000;font-weight:bold">)</span> <span style="color:#000;font-weight:bold">{</span>
+        ApplicationContext ctx <span style="color:#000;font-weight:bold">=</span> <span style="color:#000;font-weight:bold">new</span> ClassPathXmlApplicationContext<span style="color:#000;font-weight:bold">(</span><span style="color:#d14">&#34;applicationContext.xml&#34;</span><span style="color:#000;font-weight:bold">);</span>
+        QConsumer consumer <span style="color:#000;font-weight:bold">=</span> <span style="color:#000;font-weight:bold">(</span>QConsumer<span style="color:#000;font-weight:bold">)</span> ctx<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">getBean</span><span style="color:#000;font-weight:bold">(</span><span style="color:#d14">&#34;qConsumer&#34;</span><span style="color:#000;font-weight:bold">);</span>
+        Message message <span style="color:#000;font-weight:bold">=</span> consumer<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">jmsTemplate</span><span style="color:#000;font-weight:bold">.</span><span style="color:#008080">receive</span><span style="color:#000;font-weight:bold">();</span>
+        System<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">out</span><span style="color:#000;font-weight:bold">.</span><span style="color:#008080">println</span><span style="color:#000;font-weight:bold">(</span><span style="color:#d14">&#34;Receive Message From Queue::&#34;</span> <span style="color:#000;font-weight:bold">+</span> message<span style="color:#000;font-weight:bold">);</span>
+    <span style="color:#000;font-weight:bold">}</span>
+<span style="color:#000;font-weight:bold">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>Listener 代码（启动即会开始监听）</p>
+<div class="highlight"><div style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4">
+<table style="border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">1
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">2
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">3
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">4
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">5
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">6
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">7
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#3c5d5d;font-weight:bold">@Service</span><span style="color:#000;font-weight:bold">(</span>value <span style="color:#000;font-weight:bold">=</span> <span style="color:#d14">&#34;myMessageListener&#34;</span><span style="color:#000;font-weight:bold">)</span>
+<span style="color:#000;font-weight:bold">public</span> <span style="color:#000;font-weight:bold">class</span> <span style="color:#458;font-weight:bold">QMessageListener</span> <span style="color:#000;font-weight:bold">implements</span> MessageListener <span style="color:#000;font-weight:bold">{</span>
+    <span style="color:#3c5d5d;font-weight:bold">@Override</span>
+    <span style="color:#000;font-weight:bold">public</span> <span style="color:#458;font-weight:bold">void</span> <span style="color:#900;font-weight:bold">onMessage</span><span style="color:#000;font-weight:bold">(</span>Message message<span style="color:#000;font-weight:bold">)</span> <span style="color:#000;font-weight:bold">{</span>
+        System<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">out</span><span style="color:#000;font-weight:bold">.</span><span style="color:#008080">println</span><span style="color:#000;font-weight:bold">(</span><span style="color:#d14">&#34;Receive Message From Queue::&#34;</span> <span style="color:#000;font-weight:bold">+</span> message<span style="color:#000;font-weight:bold">);</span>
+    <span style="color:#000;font-weight:bold">}</span>
+<span style="color:#000;font-weight:bold">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><h3 id="activemq-与-springboot">ActiveMQ 与 SpringBoot</h3>
+<p>在 SpringBoot 中使用 ActiveMQ</p>
+<p><code>pom.xml</code> 中的依赖配置</p>
+<div class="highlight"><div style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4">
+<table style="border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 1
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 2
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 3
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 4
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 5
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 6
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 7
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 8
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 9
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">10
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">11
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">12
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">13
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">14
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">15
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">16
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">17
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">18
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">19
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">20
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">21
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">22
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">23
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">24
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">25
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">26
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">27
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">28
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">29
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">30
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#000;font-weight:bold">&lt;</span>dependencies<span style="color:#000;font-weight:bold">&gt;</span>
+        <span style="color:#000;font-weight:bold">&lt;!--</span> https<span style="color:#000;font-weight:bold">:</span><span style="color:#998;font-style:italic">//mvnrepository.com/artifact/org.springframework.boot/spring-boot-starter --&gt;
+</span><span style="color:#998;font-style:italic"></span>        <span style="color:#000;font-weight:bold">&lt;</span>dependency<span style="color:#000;font-weight:bold">&gt;</span>
+            <span style="color:#000;font-weight:bold">&lt;</span>groupId<span style="color:#000;font-weight:bold">&gt;</span>org<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">springframework</span><span style="color:#000;font-weight:bold">.</span><span style="color:#008080">boot</span><span style="color:#000;font-weight:bold">&lt;/</span>groupId<span style="color:#000;font-weight:bold">&gt;</span>
+            <span style="color:#000;font-weight:bold">&lt;</span>artifactId<span style="color:#000;font-weight:bold">&gt;</span>spring<span style="color:#000;font-weight:bold">-</span>boot<span style="color:#000;font-weight:bold">-</span>starter<span style="color:#000;font-weight:bold">&lt;/</span>artifactId<span style="color:#000;font-weight:bold">&gt;</span>
+            <span style="color:#000;font-weight:bold">&lt;</span>version<span style="color:#000;font-weight:bold">&gt;</span>2<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">2</span><span style="color:#000;font-weight:bold">.</span><span style="color:#008080">0</span><span style="color:#000;font-weight:bold">.</span><span style="color:#008080">RELEASE</span><span style="color:#000;font-weight:bold">&lt;/</span>version<span style="color:#000;font-weight:bold">&gt;</span>
+        <span style="color:#000;font-weight:bold">&lt;/</span>dependency<span style="color:#000;font-weight:bold">&gt;</span>
+
+        <span style="color:#000;font-weight:bold">&lt;!--</span> https<span style="color:#000;font-weight:bold">:</span><span style="color:#998;font-style:italic">//mvnrepository.com/artifact/org.springframework.boot/spring-boot-starter-web --&gt;
+</span><span style="color:#998;font-style:italic"></span>        <span style="color:#000;font-weight:bold">&lt;</span>dependency<span style="color:#000;font-weight:bold">&gt;</span>
+            <span style="color:#000;font-weight:bold">&lt;</span>groupId<span style="color:#000;font-weight:bold">&gt;</span>org<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">springframework</span><span style="color:#000;font-weight:bold">.</span><span style="color:#008080">boot</span><span style="color:#000;font-weight:bold">&lt;/</span>groupId<span style="color:#000;font-weight:bold">&gt;</span>
+            <span style="color:#000;font-weight:bold">&lt;</span>artifactId<span style="color:#000;font-weight:bold">&gt;</span>spring<span style="color:#000;font-weight:bold">-</span>boot<span style="color:#000;font-weight:bold">-</span>starter<span style="color:#000;font-weight:bold">-</span>web<span style="color:#000;font-weight:bold">&lt;/</span>artifactId<span style="color:#000;font-weight:bold">&gt;</span>
+            <span style="color:#000;font-weight:bold">&lt;</span>version<span style="color:#000;font-weight:bold">&gt;</span>2<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">2</span><span style="color:#000;font-weight:bold">.</span><span style="color:#008080">0</span><span style="color:#000;font-weight:bold">.</span><span style="color:#008080">RELEASE</span><span style="color:#000;font-weight:bold">&lt;/</span>version<span style="color:#000;font-weight:bold">&gt;</span>
+        <span style="color:#000;font-weight:bold">&lt;/</span>dependency<span style="color:#000;font-weight:bold">&gt;</span>
+
+        <span style="color:#000;font-weight:bold">&lt;!--</span> https<span style="color:#000;font-weight:bold">:</span><span style="color:#998;font-style:italic">//mvnrepository.com/artifact/org.springframework.boot/spring-boot-starter-test --&gt;
+</span><span style="color:#998;font-style:italic"></span>        <span style="color:#000;font-weight:bold">&lt;</span>dependency<span style="color:#000;font-weight:bold">&gt;</span>
+            <span style="color:#000;font-weight:bold">&lt;</span>groupId<span style="color:#000;font-weight:bold">&gt;</span>org<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">springframework</span><span style="color:#000;font-weight:bold">.</span><span style="color:#008080">boot</span><span style="color:#000;font-weight:bold">&lt;/</span>groupId<span style="color:#000;font-weight:bold">&gt;</span>
+            <span style="color:#000;font-weight:bold">&lt;</span>artifactId<span style="color:#000;font-weight:bold">&gt;</span>spring<span style="color:#000;font-weight:bold">-</span>boot<span style="color:#000;font-weight:bold">-</span>starter<span style="color:#000;font-weight:bold">-</span>test<span style="color:#000;font-weight:bold">&lt;/</span>artifactId<span style="color:#000;font-weight:bold">&gt;</span>
+            <span style="color:#000;font-weight:bold">&lt;</span>version<span style="color:#000;font-weight:bold">&gt;</span>2<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">2</span><span style="color:#000;font-weight:bold">.</span><span style="color:#008080">0</span><span style="color:#000;font-weight:bold">.</span><span style="color:#008080">RELEASE</span><span style="color:#000;font-weight:bold">&lt;/</span>version<span style="color:#000;font-weight:bold">&gt;</span>
+            <span style="color:#000;font-weight:bold">&lt;</span>scope<span style="color:#000;font-weight:bold">&gt;</span>test<span style="color:#000;font-weight:bold">&lt;/</span>scope<span style="color:#000;font-weight:bold">&gt;</span>
+        <span style="color:#000;font-weight:bold">&lt;/</span>dependency<span style="color:#000;font-weight:bold">&gt;</span>
+
+        <span style="color:#000;font-weight:bold">&lt;!--</span> https<span style="color:#000;font-weight:bold">:</span><span style="color:#998;font-style:italic">//mvnrepository.com/artifact/org.springframework.boot/spring-boot-starter-activemq --&gt;
+</span><span style="color:#998;font-style:italic"></span>        <span style="color:#000;font-weight:bold">&lt;</span>dependency<span style="color:#000;font-weight:bold">&gt;</span>
+            <span style="color:#000;font-weight:bold">&lt;</span>groupId<span style="color:#000;font-weight:bold">&gt;</span>org<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">springframework</span><span style="color:#000;font-weight:bold">.</span><span style="color:#008080">boot</span><span style="color:#000;font-weight:bold">&lt;/</span>groupId<span style="color:#000;font-weight:bold">&gt;</span>
+            <span style="color:#000;font-weight:bold">&lt;</span>artifactId<span style="color:#000;font-weight:bold">&gt;</span>spring<span style="color:#000;font-weight:bold">-</span>boot<span style="color:#000;font-weight:bold">-</span>starter<span style="color:#000;font-weight:bold">-</span>activemq<span style="color:#000;font-weight:bold">&lt;/</span>artifactId<span style="color:#000;font-weight:bold">&gt;</span>
+            <span style="color:#000;font-weight:bold">&lt;</span>version<span style="color:#000;font-weight:bold">&gt;</span>2<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">2</span><span style="color:#000;font-weight:bold">.</span><span style="color:#008080">0</span><span style="color:#000;font-weight:bold">.</span><span style="color:#008080">RELEASE</span><span style="color:#000;font-weight:bold">&lt;/</span>version<span style="color:#000;font-weight:bold">&gt;</span>
+        <span style="color:#000;font-weight:bold">&lt;/</span>dependency<span style="color:#000;font-weight:bold">&gt;</span>
+<span style="color:#000;font-weight:bold">&lt;/</span>dependencies<span style="color:#000;font-weight:bold">&gt;</span>
+</code></pre></td></tr></table>
+</div>
+</div><p><code>application.yml</code> 配置</p>
+<div class="highlight"><div style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4">
+<table style="border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 1
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 2
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 3
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 4
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 5
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 6
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 7
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 8
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 9
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">10
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">11
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">12
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-xml" data-lang="xml">server:
+  port: 8081
+spring:
+  activemq:
+    broker-url: tcp://localhost:61616
+    user: admin
+    password: admin
+  jms:
+    pub-sub-domain: false  # false:queue; true:topic
+
+queuename: DEMO.MQ.BOOT.TEST
+topicname: DEMO.MT.BOOT.TEST
+</code></pre></td></tr></table>
+</div>
+</div><p>Java 程序：</p>
+<div class="highlight"><div style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4">
+<table style="border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 1
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 2
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 3
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 4
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 5
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 6
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 7
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 8
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 9
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">10
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">11
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">12
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">13
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">14
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">15
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">16
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">17
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">18
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">19
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">20
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">21
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">22
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">23
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">24
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">25
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">26
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">27
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">28
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">29
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">30
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">31
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">32
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">33
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">34
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">35
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">36
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">37
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">38
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">39
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">40
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">41
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">42
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">43
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">44
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">45
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">46
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">47
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">48
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">49
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">50
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">51
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">52
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">53
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">54
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">55
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">56
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">57
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">58
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">59
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">60
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">61
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">62
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">63
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">64
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">65
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">66
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">67
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">68
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">69
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">70
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">71
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">72
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">73
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#998;font-style:italic">// 主启动类
+</span><span style="color:#998;font-style:italic"></span><span style="color:#3c5d5d;font-weight:bold">@SpringBootApplication</span>
+<span style="color:#000;font-weight:bold">public</span> <span style="color:#000;font-weight:bold">class</span> <span style="color:#458;font-weight:bold">BootMQApplication</span> <span style="color:#000;font-weight:bold">{</span>
+    <span style="color:#000;font-weight:bold">public</span> <span style="color:#000;font-weight:bold">static</span> <span style="color:#458;font-weight:bold">void</span> <span style="color:#900;font-weight:bold">main</span><span style="color:#000;font-weight:bold">(</span>String<span style="color:#000;font-weight:bold">[]</span> args<span style="color:#000;font-weight:bold">)</span> <span style="color:#000;font-weight:bold">{</span>
+        SpringApplication<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">run</span><span style="color:#000;font-weight:bold">(</span>BootMQApplication<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">class</span><span style="color:#000;font-weight:bold">);</span>
+    <span style="color:#000;font-weight:bold">}</span>
+<span style="color:#000;font-weight:bold">}</span>
+
+<span style="color:#998;font-style:italic">// Config 类
+</span><span style="color:#998;font-style:italic"></span><span style="color:#3c5d5d;font-weight:bold">@Configuration</span>
+<span style="color:#3c5d5d;font-weight:bold">@EnableJms</span>
+<span style="color:#3c5d5d;font-weight:bold">@EnableScheduling</span>
+<span style="color:#000;font-weight:bold">public</span> <span style="color:#000;font-weight:bold">class</span> <span style="color:#458;font-weight:bold">MQConfig</span> <span style="color:#000;font-weight:bold">{</span>
+    <span style="color:#3c5d5d;font-weight:bold">@Value</span><span style="color:#000;font-weight:bold">(</span><span style="color:#d14">&#34;${queuename}&#34;</span><span style="color:#000;font-weight:bold">)</span>
+    <span style="color:#000;font-weight:bold">private</span> String queueName<span style="color:#000;font-weight:bold">;</span>
+    <span style="color:#3c5d5d;font-weight:bold">@Value</span><span style="color:#000;font-weight:bold">(</span><span style="color:#d14">&#34;${topicname}&#34;</span><span style="color:#000;font-weight:bold">)</span>
+    <span style="color:#000;font-weight:bold">private</span> String topicName<span style="color:#000;font-weight:bold">;</span>
+
+    <span style="color:#3c5d5d;font-weight:bold">@Bean</span>
+    <span style="color:#000;font-weight:bold">public</span> Queue <span style="color:#900;font-weight:bold">queue</span><span style="color:#000;font-weight:bold">()</span> <span style="color:#000;font-weight:bold">{</span>
+        <span style="color:#000;font-weight:bold">return</span> <span style="color:#000;font-weight:bold">new</span> ActiveMQQueue<span style="color:#000;font-weight:bold">(</span>queueName<span style="color:#000;font-weight:bold">);</span>
+    <span style="color:#000;font-weight:bold">}</span>
+
+    <span style="color:#3c5d5d;font-weight:bold">@Bean</span>
+    <span style="color:#000;font-weight:bold">public</span> Topic <span style="color:#900;font-weight:bold">topic</span><span style="color:#000;font-weight:bold">()</span> <span style="color:#000;font-weight:bold">{</span>
+        <span style="color:#000;font-weight:bold">return</span> <span style="color:#000;font-weight:bold">new</span> ActiveMQTopic<span style="color:#000;font-weight:bold">(</span>topicName<span style="color:#000;font-weight:bold">);</span>
+    <span style="color:#000;font-weight:bold">}</span>
+<span style="color:#000;font-weight:bold">}</span>
+
+<span style="color:#998;font-style:italic">// 生产者类
+</span><span style="color:#998;font-style:italic"></span><span style="color:#3c5d5d;font-weight:bold">@Component</span><span style="color:#000;font-weight:bold">(</span>value <span style="color:#000;font-weight:bold">=</span> <span style="color:#d14">&#34;qProducer&#34;</span><span style="color:#000;font-weight:bold">)</span>
+<span style="color:#000;font-weight:bold">public</span> <span style="color:#000;font-weight:bold">class</span> <span style="color:#458;font-weight:bold">QProducer</span> <span style="color:#000;font-weight:bold">{</span>
+    <span style="color:#000;font-weight:bold">private</span> <span style="color:#000;font-weight:bold">final</span> JmsMessagingTemplate jmsMessagingTemplate<span style="color:#000;font-weight:bold">;</span>
+    <span style="color:#000;font-weight:bold">private</span> <span style="color:#000;font-weight:bold">final</span> Queue queue<span style="color:#000;font-weight:bold">;</span>
+
+    <span style="color:#000;font-weight:bold">public</span> <span style="color:#900;font-weight:bold">QProducer</span><span style="color:#000;font-weight:bold">(</span>JmsMessagingTemplate jmsMessagingTemplate<span style="color:#000;font-weight:bold">,</span> Queue queue<span style="color:#000;font-weight:bold">)</span> <span style="color:#000;font-weight:bold">{</span>
+        <span style="color:#000;font-weight:bold">this</span><span style="color:#000;font-weight:bold">.</span><span style="color:#008080">jmsMessagingTemplate</span> <span style="color:#000;font-weight:bold">=</span> jmsMessagingTemplate<span style="color:#000;font-weight:bold">;</span>
+        <span style="color:#000;font-weight:bold">this</span><span style="color:#000;font-weight:bold">.</span><span style="color:#008080">queue</span> <span style="color:#000;font-weight:bold">=</span> queue<span style="color:#000;font-weight:bold">;</span>
+    <span style="color:#000;font-weight:bold">}</span>
+
+    <span style="color:#000;font-weight:bold">public</span> <span style="color:#458;font-weight:bold">void</span> <span style="color:#900;font-weight:bold">produce</span><span style="color:#000;font-weight:bold">()</span> <span style="color:#000;font-weight:bold">{</span>
+        jmsMessagingTemplate<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">convertAndSend</span><span style="color:#000;font-weight:bold">(</span>queue<span style="color:#000;font-weight:bold">,</span> <span style="color:#d14">&#34;Demo Message&#34;</span><span style="color:#000;font-weight:bold">);</span>
+    <span style="color:#000;font-weight:bold">}</span>
+
+    <span style="color:#3c5d5d;font-weight:bold">@Scheduled</span><span style="color:#000;font-weight:bold">(</span>fixedDelay <span style="color:#000;font-weight:bold">=</span> 3000<span style="color:#000;font-weight:bold">)</span>
+    <span style="color:#000;font-weight:bold">public</span> <span style="color:#458;font-weight:bold">void</span> <span style="color:#900;font-weight:bold">produceTask</span><span style="color:#000;font-weight:bold">()</span> <span style="color:#000;font-weight:bold">{</span>
+        jmsMessagingTemplate<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">convertAndSend</span><span style="color:#000;font-weight:bold">(</span>queue<span style="color:#000;font-weight:bold">,</span> <span style="color:#d14">&#34;Demo Message Task&#34;</span><span style="color:#000;font-weight:bold">);</span>
+        System<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">out</span><span style="color:#000;font-weight:bold">.</span><span style="color:#008080">println</span><span style="color:#000;font-weight:bold">(</span><span style="color:#d14">&#34;Send message task done&#34;</span><span style="color:#000;font-weight:bold">);</span>
+    <span style="color:#000;font-weight:bold">}</span>
+<span style="color:#000;font-weight:bold">}</span>
+
+<span style="color:#998;font-style:italic">// 消费者类
+</span><span style="color:#998;font-style:italic"></span><span style="color:#3c5d5d;font-weight:bold">@Component</span><span style="color:#000;font-weight:bold">(</span>value <span style="color:#000;font-weight:bold">=</span> <span style="color:#d14">&#34;qConsumer&#34;</span><span style="color:#000;font-weight:bold">)</span>
+<span style="color:#000;font-weight:bold">public</span> <span style="color:#000;font-weight:bold">class</span> <span style="color:#458;font-weight:bold">QConsumer</span> <span style="color:#000;font-weight:bold">{</span>
+    <span style="color:#000;font-weight:bold">private</span> <span style="color:#000;font-weight:bold">final</span> JmsMessagingTemplate jmsMessagingTemplate<span style="color:#000;font-weight:bold">;</span>
+    <span style="color:#000;font-weight:bold">private</span> <span style="color:#000;font-weight:bold">final</span> Queue queue<span style="color:#000;font-weight:bold">;</span>
+
+    <span style="color:#000;font-weight:bold">public</span> <span style="color:#900;font-weight:bold">QConsumer</span><span style="color:#000;font-weight:bold">(</span>JmsMessagingTemplate jmsMessagingTemplate<span style="color:#000;font-weight:bold">,</span> Queue queue<span style="color:#000;font-weight:bold">)</span> <span style="color:#000;font-weight:bold">{</span>
+        <span style="color:#000;font-weight:bold">this</span><span style="color:#000;font-weight:bold">.</span><span style="color:#008080">jmsMessagingTemplate</span> <span style="color:#000;font-weight:bold">=</span> jmsMessagingTemplate<span style="color:#000;font-weight:bold">;</span>
+        <span style="color:#000;font-weight:bold">this</span><span style="color:#000;font-weight:bold">.</span><span style="color:#008080">queue</span> <span style="color:#000;font-weight:bold">=</span> queue<span style="color:#000;font-weight:bold">;</span>
+    <span style="color:#000;font-weight:bold">}</span>
+
+    <span style="color:#3c5d5d;font-weight:bold">@JmsListener</span><span style="color:#000;font-weight:bold">(</span>destination <span style="color:#000;font-weight:bold">=</span> <span style="color:#d14">&#34;${queuename}&#34;</span><span style="color:#000;font-weight:bold">)</span>
+    <span style="color:#000;font-weight:bold">public</span> <span style="color:#458;font-weight:bold">void</span> <span style="color:#900;font-weight:bold">consume</span><span style="color:#000;font-weight:bold">(</span>TextMessage textMessage<span style="color:#000;font-weight:bold">)</span> <span style="color:#000;font-weight:bold">{</span>
+        System<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">out</span><span style="color:#000;font-weight:bold">.</span><span style="color:#008080">println</span><span style="color:#000;font-weight:bold">(</span><span style="color:#d14">&#34;Receive TextMessage::&#34;</span> <span style="color:#000;font-weight:bold">+</span> textMessage<span style="color:#000;font-weight:bold">);</span>
+    <span style="color:#000;font-weight:bold">}</span>
+
+    <span style="color:#000;font-weight:bold">public</span> <span style="color:#458;font-weight:bold">void</span> <span style="color:#900;font-weight:bold">consume</span><span style="color:#000;font-weight:bold">()</span> <span style="color:#000;font-weight:bold">{</span>
+        String message <span style="color:#000;font-weight:bold">=</span> jmsMessagingTemplate<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">receiveAndConvert</span><span style="color:#000;font-weight:bold">(</span>queue<span style="color:#000;font-weight:bold">,</span> String<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">class</span><span style="color:#000;font-weight:bold">);</span>
+        System<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">out</span><span style="color:#000;font-weight:bold">.</span><span style="color:#008080">println</span><span style="color:#000;font-weight:bold">(</span><span style="color:#d14">&#34;Receive TextMessage::&#34;</span> <span style="color:#000;font-weight:bold">+</span> message<span style="color:#000;font-weight:bold">);</span>
+    <span style="color:#000;font-weight:bold">}</span>
+<span style="color:#000;font-weight:bold">}</span>
+
+</code></pre></td></tr></table>
+</div>
+</div><h3 id="activemq-传输协议">ActiveMQ 传输协议</h3>
+<p>ActiveMQ 中支持的  client-broker 通讯协议有：TCP、NIO、UDP、SSL、HTTP(s)、VM 等。在 <code>activemq.xml</code> 中的 <code>transportConnectors</code> 中。</p>
+<div class="highlight"><div style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4">
+<table style="border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">1
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">2
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">3
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">4
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">5
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">6
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">7
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">8
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-xml" data-lang="xml"><span style="color:#000080">&lt;transportConnectors&gt;</span>
+    <span style="color:#998;font-style:italic">&lt;!-- DOS protection, limit concurrent connections to 1000 and frame size to 100MB --&gt;</span>
+    <span style="color:#000080">&lt;transportConnector</span> <span style="color:#008080">name=</span><span style="color:#d14">&#34;openwire&#34;</span> <span style="color:#008080">uri=</span><span style="color:#d14">&#34;tcp://0.0.0.0:61616?maximumConnections=1000&amp;amp;wireFormat.maxFrameSize=104857600&#34;</span><span style="color:#000080">/&gt;</span>
+    <span style="color:#000080">&lt;transportConnector</span> <span style="color:#008080">name=</span><span style="color:#d14">&#34;amqp&#34;</span> <span style="color:#008080">uri=</span><span style="color:#d14">&#34;amqp://0.0.0.0:5672?maximumConnections=1000&amp;amp;wireFormat.maxFrameSize=104857600&#34;</span><span style="color:#000080">/&gt;</span>
+    <span style="color:#000080">&lt;transportConnector</span> <span style="color:#008080">name=</span><span style="color:#d14">&#34;stomp&#34;</span> <span style="color:#008080">uri=</span><span style="color:#d14">&#34;stomp://0.0.0.0:61613?maximumConnections=1000&amp;amp;wireFormat.maxFrameSize=104857600&#34;</span><span style="color:#000080">/&gt;</span>
+    <span style="color:#000080">&lt;transportConnector</span> <span style="color:#008080">name=</span><span style="color:#d14">&#34;mqtt&#34;</span> <span style="color:#008080">uri=</span><span style="color:#d14">&#34;mqtt://0.0.0.0:1883?maximumConnections=1000&amp;amp;wireFormat.maxFrameSize=104857600&#34;</span><span style="color:#000080">/&gt;</span>
+    <span style="color:#000080">&lt;transportConnector</span> <span style="color:#008080">name=</span><span style="color:#d14">&#34;ws&#34;</span> <span style="color:#008080">uri=</span><span style="color:#d14">&#34;ws://0.0.0.0:61614?maximumConnections=1000&amp;amp;wireFormat.maxFrameSize=104857600&#34;</span><span style="color:#000080">/&gt;</span>
+<span style="color:#000080">&lt;/transportConnectors&gt;</span>
+</code></pre></td></tr></table>
+</div>
+</div><ol>
+<li>
+<p>TCP 协议</p>
+<p>默认的 Broker 配置，监听 61616 端口。在网络传输数据前必须要序列化数据，消息通过 wire protocol 序列化成字节流。默认情况下 wire protocol 即 OpenWire，其为了促使网络上的效率和数据快速交互。连接样式是 <code>tcp://hostname:port?[key=value]</code> 。有以下优点：1 TCP 协议传输可靠性高，稳定性强。2 高效性，字节流方式传递效率高。3 有效性，可用性，应用广泛，支持任何平台。</p>
+</li>
+<li>
+<p>NIO 协议</p>
+<p>NIO 协议和 TCP 协议类似但 NIO 更侧重于底层访问操作。运行开发人员对同一资源可有更多的 client 调用和服务端有更多的负载。以下两种情况更适合 NIO 协议的场景： 1 可能有大连 client 连接到 Broker 上，一般情况下，大量的 Client 去连接 Broker 是被操作系统线程所限制的，NIO 的实现比 TCP 需要更少的线程去执行，所以推荐 NIO；2 对于 Broker 可能有一个迟钝的网络传输，NIO 可以提供更好的性能。连接样式是 <code>nio://hostname:prot?[key=value]</code></p>
+</li>
+<li>
+<p>AMQP 协议</p>
+<p>Advanced Message Queuing Protocol 一个提供统一消息服务的应用层标准高级消息队列协议，是应用层协议的一个开放标准，为面向消息的中间件设计。基于此协议的客户端与消息中间件传递消息并不受客户端中间件不同产品，不同开发预语言等条件限制。</p>
+</li>
+<li>
+<p>stomp 协议</p>
+<p>流文本定向消息协议，是一种 面向消息中间设计的简单协议。</p>
+</li>
+<li>
+<p>SSL 协议</p>
+</li>
+<li>
+<p>mqtt 协议</p>
+</li>
+<li>
+<p>ws 协议</p>
+</li>
+</ol>
+<p>也可以协议也可以设置为 auto，如下配置：</p>
+<div class="highlight"><div style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4">
+<table style="border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">1
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">2
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">3
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-xml" data-lang="xml"><span style="color:#000080">&lt;transportConnectors&gt;</span>
+    <span style="color:#000080">&lt;transportConnector</span> <span style="color:#008080">name=</span><span style="color:#d14">&#34;auto+nio&#34;</span> <span style="color:#008080">uri=</span><span style="color:#d14">&#34;tcp://0.0.0.0:61616?maximumConnections=1000&amp;amp;wireFormat.maxFrameSize=104857600&#34;</span><span style="color:#000080">/&gt;</span>
+<span style="color:#000080">&lt;/transportConnectors&gt;</span>
+</code></pre></td></tr></table>
+</div>
+</div><h3 id="activemq-消息持久化">ActiveMQ 消息持久化</h3>
+<p>为了避免意外宕机以后丢失消息，需要在重启后可以恢复消息队列，一般会使用持久化机制。对于 ActiveMQ 而言持久化机制有 JDBC，AMQ，KahaDB 和 LevelDB，基本处理逻辑是一致的。</p>
+<p>首先生产者将消息发送出去后，消息队列会将消息存储在本地数据文件或内存数据库或远程数据库中，之后再试图将消息发送给消费者，成功之后则将消息从存储中删除，失败则继续尝试发送。消息队列启动以后首先要检查指定存储位置，如果有未发送成功的消息则会把消息发送出去。</p>
+<p>默认的持久化方式是 kahaDB，主要配置是是在 <code>activemq.xml</code> 中的如下配置：</p>
+<div class="highlight"><div style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4">
+<table style="border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 1
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 2
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 3
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 4
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 5
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 6
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 7
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 8
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 9
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">10
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-xml" data-lang="xml"><span style="color:#998;font-style:italic">&lt;!--
+</span><span style="color:#998;font-style:italic">            Configure message persistence for the broker. The default persistence
+</span><span style="color:#998;font-style:italic">            mechanism is the KahaDB store (identified by the kahaDB tag).
+</span><span style="color:#998;font-style:italic">            For more information, see:
+</span><span style="color:#998;font-style:italic">
+</span><span style="color:#998;font-style:italic">            http://activemq.apache.org/persistence.html
+</span><span style="color:#998;font-style:italic">--&gt;</span>
+<span style="color:#000080">&lt;persistenceAdapter&gt;</span>
+    <span style="color:#000080">&lt;kahaDB</span> <span style="color:#008080">directory=</span><span style="color:#d14">&#34;${activemq.data}/kahadb&#34;</span><span style="color:#000080">/&gt;</span>
+<span style="color:#000080">&lt;/persistenceAdapter&gt;</span>
+</code></pre></td></tr></table>
+</div>
+</div><h4 id="kahadb">KahaDB</h4>
+<p>KahaDB 是默认默认的持久化方式，适用于任何场景，提供性能和恢复能力。消息存储使用一个事务日志和仅仅用一个索引文件来存储它所有的地址。其是一个针对于消息持久化的解决方案，对典型的消息使用模式进行了优化，数据被追加到 datalogs 中，当不需要 Log 文件中的数据时 log 文件也会被丢弃。</p>
+<p>KahaDB 在消息保存目录中只有 4类文件和一个 lock，如下所示：</p>
+<pre><code>db.data
+db.redo
+db.free
+db-1.log
+lock
+</code></pre><ol>
+<li>db-<!-- raw HTML omitted -->.log 存储消息到预定义大小的数据记录文件中，当数据文件已满时，一个新的文件会随之创建，number 数值递增。当不再有引用到数据文件中任何消息时，文件会被删除或者归档。</li>
+<li>db.data 包含持久化的 B 树索引，索引了消息数据记录中的消息。使用索引指向 db-<!-- raw HTML omitted -->.log 里面存储的消息。</li>
+<li>db.free 当前 db.data 文件里哪些页面是空闲的，文件具体内容是所有空闲页的 ID。</li>
+<li>db.redo 用于消息回复，在强制退出后会使用，用于回复 B 树索引。</li>
+<li>lock 文件锁，表示当前获得 KahaDB 读写权限的 broker。</li>
+</ol>
+<h4 id="jdbc">JDBC</h4>
+<p>主要有三张表 <code>activemq_msgs</code>, <code>activemq_acks</code>, <code>activemq_lock</code>。</p>
+<ol>
+<li>
+<p><code>activemq_msgs</code> 消息表</p>
+<p>id：自增主键</p>
+<p>container: 消息的 destination</p>
+<p>msgid_prod: 消息生产者的主键</p>
+<p>msg_seq: 发送消息的顺序，msggid_prod + msg_seq 可以组成 JMS 的 MessageID</p>
+<p>expiration: 消息过期时间</p>
+<p>msg：消息本地的 Java 序列化对象的二进制数据</p>
+<p>priority: 优先级  0 - 9</p>
+</li>
+<li>
+<p><code>activemq_acks</code> 订阅表，如果对于持久化的 Topic，订阅者和夫妻的订阅关系保存在这个表中。</p>
+<p>container: 消息的 destination</p>
+<p>sub_dest: 如果使用 Static 集群，此记录集群其他系统信息</p>
+<p>client_id： 每个订阅者都必须有一个唯一的 client id</p>
+<p>sub_name: 订阅者名称</p>
+<p>selector: 选择器，可以选择只消费满足条件的消息，条件可以用自定义属性实现，支持多属性的 and 和 or 操作</p>
+<p>last_acked_id: 记录消费过消息的 ID</p>
+</li>
+<li>
+<p><code>activemq_lock</code>‘ 集群环境中才有作用，只有一个 Broker 可以获得消息，称为 Master Broker，其他的只能作为备份等待 Master Broker 不可用，才可能成为下一个 Broker，该表记录当前的 Master Broker</p>
+</li>
+</ol>
+<p><code>activemq.xml</code> 中配置如下，并且需要将 mysql-connect-java 的包放到 lib 目录下：</p>
+<div class="highlight"><div style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4">
+<table style="border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 1
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 2
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 3
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 4
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 5
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 6
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 7
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 8
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 9
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">10
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">11
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-xml" data-lang="xml"><span style="color:#000080">&lt;persistenceAdapter&gt;</span>
+    <span style="color:#000080">&lt;jdbcPersistenceAdapter</span> <span style="color:#008080">dataSource=</span><span style="color:#d14">&#34;#mysql-ds&#34;</span> <span style="color:#000080">/&gt;</span>
+<span style="color:#000080">&lt;/persistenceAdapter&gt;</span>
+
+<span style="color:#000080">&lt;bean</span> <span style="color:#008080">id=</span><span style="color:#d14">&#34;mysql-ds&#34;</span> <span style="color:#008080">class=</span><span style="color:#d14">&#34;org.apache.commons.dbcp2.BasicDataSource&#34;</span> <span style="color:#008080">destroy-method=</span><span style="color:#d14">&#34;close&#34;</span><span style="color:#000080">&gt;</span>
+    <span style="color:#000080">&lt;property</span> <span style="color:#008080">name=</span><span style="color:#d14">&#34;driverClassName&#34;</span> <span style="color:#008080">value=</span><span style="color:#d14">&#34;com.mysql.jdbc.Driver&#34;</span><span style="color:#000080">/&gt;</span>
+    <span style="color:#000080">&lt;property</span> <span style="color:#008080">name=</span><span style="color:#d14">&#34;url&#34;</span> <span style="color:#008080">value=</span><span style="color:#d14">&#34;jdbc:mysql://localhost:3306/activemq?relaxAutoCommit=true&amp;amp;serverTimezone=UTC&#34;</span><span style="color:#000080">/&gt;</span>
+    <span style="color:#000080">&lt;property</span> <span style="color:#008080">name=</span><span style="color:#d14">&#34;username&#34;</span> <span style="color:#008080">value=</span><span style="color:#d14">&#34;xinyue&#34;</span><span style="color:#000080">/&gt;</span>
+    <span style="color:#000080">&lt;property</span> <span style="color:#008080">name=</span><span style="color:#d14">&#34;password&#34;</span> <span style="color:#008080">value=</span><span style="color:#d14">&#34;xinyue&#34;</span><span style="color:#000080">/&gt;</span>
+    <span style="color:#000080">&lt;property</span> <span style="color:#008080">name=</span><span style="color:#d14">&#34;poolPreparedStatements&#34;</span> <span style="color:#008080">value=</span><span style="color:#d14">&#34;true&#34;</span><span style="color:#000080">/&gt;</span>
+<span style="color:#000080">&lt;/bean&gt;</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>如果使用 JDBC with journal则使用如下的 persistence 配置。使用 ActiveMQ Journal 的告诉缓存写入技术，可以极大的提高性能，在消费者速度能够及时跟上生产者消息生产速度时，journal 文件能够大大减少写入到 DB 中消息。</p>
+<div class="highlight"><div style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4">
+<table style="border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 1
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 2
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 3
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 4
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 5
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 6
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 7
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 8
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 9
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">10
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-xml" data-lang="xml"><span style="color:#000080">&lt;persistenceFactory&gt;</span>
+    <span style="color:#000080">&lt;journalPersistenceAdapterFactory</span>
+        <span style="color:#008080">journalLogFiles=</span><span style="color:#d14">&#34;4&#34;</span>
+        <span style="color:#008080">journalLogFileSize=</span><span style="color:#d14">&#34;32768&#34;</span>
+        <span style="color:#008080">useJournal=</span><span style="color:#d14">&#34;true&#34;</span>
+        <span style="color:#008080">useQuickJournal=</span><span style="color:#d14">&#34;true&#34;</span>
+        <span style="color:#008080">dataSource=</span><span style="color:#d14">&#34;#mysql-ds&#34;</span>
+        <span style="color:#008080">dataDirectory=</span><span style="color:#d14">&#34;activemq-data&#34;</span><span style="color:#000080">&gt;</span>				  
+    <span style="color:#000080">&lt;/journalPersistenceAdapterFactory&gt;</span>
+<span style="color:#000080">&lt;/persistenceFactory&gt;</span>
+</code></pre></td></tr></table>
+</div>
+</div><h3 id="activemq-多节点集群">ActiveMQ 多节点集群</h3>
+<h3 id="activemq-异步延时和定时投递">ActiveMQ 异步、延时和定时投递</h3>
+<h4 id="异步">异步</h4>
+<p>ActiveMQ 支持同步和异步两种发送模式将消息发送到 Broker，模式的选择对发送延时有巨大的影响。Producer 能达到怎样的产出率主要受发送时延的影响，使用异步发送可以显著提高发送性能。ActiveMQ 默认使用异步发送模式：除非明确指定使用同步发送的方式或者在未使用事务的前提下发送持久化的消息，这两种情况都是同步发送的。</p>
+<p>如果在未使用事务的情况下发送持久化的消息，每次发送都是同步发送且会阻塞 Producer 直到 Broker 返回一个确认，表示消息已经被安全的持久化到磁盘。确认机制提供了消息安全的保障，但同时会阻塞客户端带来了很大的延迟。很多高性能的应用允许在失败的情况下有少量的数据丢失，如果你的应用满足这个特点，则可以使用异步发送来提高生产率，即使是发送持久化消息。</p>
+<p>可以使用以下三种方式开启：</p>
+<div class="highlight"><div style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4">
+<table style="border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">1
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">2
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">3
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">4
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">5
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">6
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#998;font-style:italic">// 连接参数中配置
+</span><span style="color:#998;font-style:italic"></span><span style="color:#d14">&#34;tcp://localhost:61616?jms.useAsyncSend=true&#34;</span>
+<span style="color:#998;font-style:italic">// ConnectionFactory 配置参数
+</span><span style="color:#998;font-style:italic"></span><span style="color:#000;font-weight:bold">((</span>ActiveMQConnectionFactory<span style="color:#000;font-weight:bold">)</span>connectionFactory<span style="color:#000;font-weight:bold">).</span><span style="color:#008080">setUseAsyncSend</span><span style="color:#000;font-weight:bold">(</span><span style="color:#000;font-weight:bold">true</span><span style="color:#000;font-weight:bold">);</span>
+<span style="color:#998;font-style:italic">// Connect 配置参数
+</span><span style="color:#998;font-style:italic"></span><span style="color:#000;font-weight:bold">((</span>ActiveMQConnection<span style="color:#000;font-weight:bold">)</span>connection<span style="color:#000;font-weight:bold">).</span><span style="color:#008080">setUseAsyncSend</span><span style="color:#000;font-weight:bold">(</span><span style="color:#000;font-weight:bold">true</span><span style="color:#000;font-weight:bold">);</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>为了确保异步发送成功则需要接收回调，同步和异步的一个区别就是 同步 send 完成表示一定发送成功，而异步则需要接收回调由客户端判断是否发送成功。</p>
+<div class="highlight"><div style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4">
+<table style="border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 1
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 2
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 3
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 4
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 5
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 6
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 7
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 8
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 9
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">10
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">11
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">12
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">13
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">14
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">15
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">16
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">17
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">18
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">19
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">20
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java">ActiveMQMessageProducer producer <span style="color:#000;font-weight:bold">=</span> <span style="color:#000;font-weight:bold">(</span>ActiveMQMessageProducer<span style="color:#000;font-weight:bold">)</span> session<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">createProducer</span><span style="color:#000;font-weight:bold">(</span>destination<span style="color:#000;font-weight:bold">);</span>
+producer<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">send</span><span style="color:#000;font-weight:bold">(</span>textMessage<span style="color:#000;font-weight:bold">,</span> <span style="color:#000;font-weight:bold">new</span> AsyncCallback<span style="color:#000;font-weight:bold">()</span> <span style="color:#000;font-weight:bold">{</span>
+    <span style="color:#3c5d5d;font-weight:bold">@Override</span>
+    <span style="color:#000;font-weight:bold">public</span> <span style="color:#458;font-weight:bold">void</span> <span style="color:#900;font-weight:bold">onSuccess</span><span style="color:#000;font-weight:bold">()</span> <span style="color:#000;font-weight:bold">{</span>
+        <span style="color:#000;font-weight:bold">try</span> <span style="color:#000;font-weight:bold">{</span>
+            System<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">out</span><span style="color:#000;font-weight:bold">.</span><span style="color:#008080">println</span><span style="color:#000;font-weight:bold">(</span>textMessage<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">getJMSMessageID</span><span style="color:#000;font-weight:bold">()</span> <span style="color:#000;font-weight:bold">+</span> <span style="color:#d14">&#34;\tSend Success&#34;</span><span style="color:#000;font-weight:bold">);</span>
+        <span style="color:#000;font-weight:bold">}</span> <span style="color:#000;font-weight:bold">catch</span> <span style="color:#000;font-weight:bold">(</span>JMSException e<span style="color:#000;font-weight:bold">)</span> <span style="color:#000;font-weight:bold">{</span>
+            e<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">printStackTrace</span><span style="color:#000;font-weight:bold">();</span>
+        <span style="color:#000;font-weight:bold">}</span>
+    <span style="color:#000;font-weight:bold">}</span>
+
+    <span style="color:#3c5d5d;font-weight:bold">@Override</span>
+    <span style="color:#000;font-weight:bold">public</span> <span style="color:#458;font-weight:bold">void</span> <span style="color:#900;font-weight:bold">onException</span><span style="color:#000;font-weight:bold">(</span>JMSException exception<span style="color:#000;font-weight:bold">)</span> <span style="color:#000;font-weight:bold">{</span>
+        <span style="color:#000;font-weight:bold">try</span> <span style="color:#000;font-weight:bold">{</span>
+            System<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">out</span><span style="color:#000;font-weight:bold">.</span><span style="color:#008080">println</span><span style="color:#000;font-weight:bold">(</span>textMessage<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">getJMSMessageID</span><span style="color:#000;font-weight:bold">()</span> <span style="color:#000;font-weight:bold">+</span> <span style="color:#d14">&#34;\tSend Faile&#34;</span><span style="color:#000;font-weight:bold">);</span>
+        <span style="color:#000;font-weight:bold">}</span> <span style="color:#000;font-weight:bold">catch</span> <span style="color:#000;font-weight:bold">(</span>JMSException e<span style="color:#000;font-weight:bold">)</span> <span style="color:#000;font-weight:bold">{</span>
+            e<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">printStackTrace</span><span style="color:#000;font-weight:bold">();</span>
+        <span style="color:#000;font-weight:bold">}</span>
+    <span style="color:#000;font-weight:bold">}</span>
+<span style="color:#000;font-weight:bold">});</span>
+</code></pre></td></tr></table>
+</div>
+</div><h4 id="延时-和-定时">延时 和 定时</h4>
+<p><code>activemq.xml</code> 中的 broker 的配置需要开启支持：</p>
+<div class="highlight"><div style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4">
+<table style="border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">1
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">2
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">3
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">4
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-xml" data-lang="xml"><span style="color:#000080">&lt;broker</span> <span style="color:#008080">xmlns=</span><span style="color:#d14">&#34;http://activemq.apache.org/schema/core&#34;</span> <span style="color:#008080">brokerName=</span><span style="color:#d14">&#34;localhost&#34;</span> 
+        <span style="color:#008080">dataDirectory=</span><span style="color:#d14">&#34;${activemq.data}&#34;</span> <span style="color:#008080">schedulerSupport=</span><span style="color:#d14">&#34;true&#34;</span><span style="color:#000080">&gt;</span>
+    <span style="color:#998;font-style:italic">&lt;!-- ... --&gt;</span>
+<span style="color:#000080">&lt;/broker&gt;</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>可以通过设置属性设置延时和定时</p>
+<div class="highlight"><div style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4">
+<table style="border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">1
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">2
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">3
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">4
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">5
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">6
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#998;font-style:italic">// 延时 3 秒发送
+</span><span style="color:#998;font-style:italic"></span>textMessage<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">setLongProperty</span><span style="color:#000;font-weight:bold">(</span>ScheduledMessage<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">AMQ_SCHEDULED_DELAY</span><span style="color:#000;font-weight:bold">,</span> 3000<span style="color:#000;font-weight:bold">);</span>
+<span style="color:#998;font-style:italic">// 3 秒发送一次
+</span><span style="color:#998;font-style:italic"></span>textMessage<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">setLongProperty</span><span style="color:#000;font-weight:bold">(</span>ScheduledMessage<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">AMQ_SCHEDULED_PERIOD</span><span style="color:#000;font-weight:bold">,</span> 3000<span style="color:#000;font-weight:bold">);</span>
+<span style="color:#998;font-style:italic">// 发送三次
+</span><span style="color:#998;font-style:italic"></span>textMessage<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">setIntProperty</span><span style="color:#000;font-weight:bold">(</span>ScheduledMessage<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">AMQ_SCHEDULED_REPEAT</span><span style="color:#000;font-weight:bold">,</span> 3<span style="color:#000;font-weight:bold">);</span>
+</code></pre></td></tr></table>
+</div>
+</div><h3 id="activemq-消息重发死信队列防止重复调用">ActiveMQ 消息重发、死信队列、防止重复调用</h3>
+<p>以下三种情况均会引起消息重发，间隔 1秒，重试 6 次</p>
+<ol>
+<li>Client 使用事务，且在 Session 中调用 了 rollback</li>
+<li>Client 使用事务，且在 调用 commit 之前关闭或者没有 commit</li>
+<li>Client 在 Session.CLIENT_ACKNOWLEDGE 的模式下，在 session 中调用了 recover</li>
+</ol>
+<p>如果一个消息被  redelivedred 超过最大重发次数（默认 6 次）之后，消费端会发送给 MQ 一个 <code>poison ack</code> 表示这个消息有毒，通知 Broker 不再发送该消息，此时 Broker 会把这个消息放到 DLQ 死信队列中。</p>
+<p>可以在 Java 代码中手动修改默认参数：</p>
+<div class="highlight"><div style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4">
+<table style="border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">1
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">2
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">3
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">4
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java">ActiveMQConnectionFactory connectionFactory <span style="color:#000;font-weight:bold">=</span> <span style="color:#000;font-weight:bold">new</span> ActiveMQConnectionFactory<span style="color:#000;font-weight:bold">(</span>URL<span style="color:#000;font-weight:bold">);</span>
+RedeliveryPolicy redeliveryPolicy <span style="color:#000;font-weight:bold">=</span> <span style="color:#000;font-weight:bold">new</span> RedeliveryPolicy<span style="color:#000;font-weight:bold">();</span>
+redeliveryPolicy<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">setMaximumRedeliveries</span><span style="color:#000;font-weight:bold">(</span>3<span style="color:#000;font-weight:bold">);</span>
+connectionFactory<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">setRedeliveryPolicy</span><span style="color:#000;font-weight:bold">(</span>redeliveryPolicy<span style="color:#000;font-weight:bold">);</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>默认的死信队列叫做 <code>ActiveMQ.DLQ</code> 可以通过 deadLetterQueue 属性设定</p>
+<div class="highlight"><div style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4">
+<table style="border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">1
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">2
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">3
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-xml" data-lang="xml"><span style="color:#000080">&lt;deadLetterStrategy&gt;</span>
+	<span style="color:#000080">&lt;sharedDeadLetterStrategy</span> <span style="color:#008080">deadLetterQueue=</span><span style="color:#d14">&#34;DLQ-QUEUE&#34;</span> <span style="color:#000080">/&gt;</span>
+<span style="color:#000080">&lt;/deadLetterStrategy&gt;</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>也可以单独指定死信队列：</p>
+<p>使用 useQueueForQueueMessages 属性表示是否将 Topic 的 DeadLetter 保存到 Queue 中。默认 true</p>
+<p>使用 processExpired 属性表示否是将过期消息放入私信队列。默认 true</p>
+<p>使用 processNonPersistent 属性表示是否将非持久消息放入死信队列。默认 false</p>
+<div class="highlight"><div style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4">
+<table style="border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">1
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">2
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">3
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">4
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">5
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-xml" data-lang="xml"><span style="color:#000080">&lt;policyEntry</span> <span style="color:#008080">queue=</span><span style="color:#d14">&#34;DEMO.QUEUE.TEST&#34;</span><span style="color:#000080">&gt;</span>
+	<span style="color:#000080">&lt;deadLetterStrategy&gt;</span>
+        <span style="color:#000080">&lt;individualDeadLetterStrategy</span> <span style="color:#008080">queuePrefix=</span><span style="color:#d14">&#34;DLQ.&#34;</span> <span style="color:#008080">useQueueForQueueMessages=</span><span style="color:#d14">&#34;false&#34;</span> <span style="color:#000080">/&gt;</span>
+    <span style="color:#000080">&lt;/deadLetterStrategy&gt;</span>
+<span style="color:#000080">&lt;/policyEntry&gt;</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>对于重复消息的问题，可以使用一个第三方的服务器例如 Redis，给消息分配全局 id，如果消费过该消息，将 &lt;id, message&gt; 存储下来，消费开始前先去redis 中查询，从而避免重复消费。</p>
+
+        </div>
+
+        
+
+
+        
+
+
+        <div class="post-meta meta-tags">
+            
+            没有标签
+            
+        </div>
+    </article>
+    
+    
+
+    
+    
+</div>
+
+                </div>
+
+                <div id="secondary">
+    <section class="widget">
+        <form id="search" action='//www.google.com/search' method="get" accept-charset="utf-8" target="_blank" _lpchecked="1">
+      
+      <input type="text" name="q" maxlength="20" placeholder="Search">
+      <input type="hidden" name="sitesearch" value="https://sangzhenya.github.io/">
+      <button type="submit" class="submit icon-search"></button>
+</form>
+    </section>
+    
+    <section class="widget">
+        <h3 class="widget-title">最近文章</h3>
+<ul class="widget-list">
+    
+    <li>
+        <a href="https://sangzhenya.github.io/post/Java/jdk8/Java-8-Stream/" title="Java 8 Stream">Java 8 Stream</a>
+    </li>
+    
+    <li>
+        <a href="https://sangzhenya.github.io/post/Java/jdk8/Java-8-Lambda/" title="Java 8 Lambda">Java 8 Lambda</a>
+    </li>
+    
+    <li>
+        <a href="https://sangzhenya.github.io/post/Java/juc/Java-ConcurrentHashMap/" title="Java ConcurrentHashMap">Java ConcurrentHashMap</a>
+    </li>
+    
+    <li>
+        <a href="https://sangzhenya.github.io/post/Java/juc/Java-CAS/" title="Java CAS">Java CAS</a>
+    </li>
+    
+    <li>
+        <a href="https://sangzhenya.github.io/post/Java/juc/Java-volatile/" title="Java volatile">Java volatile</a>
+    </li>
+    
+    <li>
+        <a href="https://sangzhenya.github.io/post/Java/juc/Java-ReentrantLock/" title="Java ReentrantLock">Java ReentrantLock</a>
+    </li>
+    
+    <li>
+        <a href="https://sangzhenya.github.io/post/Java/juc/Java-%E5%B9%B6%E5%8F%91%E6%8E%A7%E5%88%B6/" title="Java 并发控制">Java 并发控制</a>
+    </li>
+    
+    <li>
+        <a href="https://sangzhenya.github.io/post/Java/juc/Java-AQS/" title="Java AQS">Java AQS</a>
+    </li>
+    
+    <li>
+        <a href="https://sangzhenya.github.io/post/DataBase/MyBatis/MyBaits-%E4%B8%8E-Spring-Boot/" title=""></a>
+    </li>
+    
+    <li>
+        <a href="https://sangzhenya.github.io/post/DataBase/MyBatis/SQL-%E6%98%A0%E5%B0%84/" title=""></a>
+    </li>
+    
+</ul>
+    </section>
+
+    
+
+    <section class="widget">
+        <h3 class="widget-title">分类</h3>
+<ul class="widget-list">
+    
+    <li><a href="https://sangzhenya.github.io/categories/Java/">Java (8)</a></li>
+    
+    <li><a href="https://sangzhenya.github.io/categories/%E5%85%B3%E4%BA%8E/">关于 (1)</a></li>
+    
+</ul>
+    </section>
+
+    <section class="widget">
+        <h3 class="widget-title">标签</h3>
+<div class="tagcloud">
+    
+    <a href="https://sangzhenya.github.io/tags/JDK8/">JDK8</a>
+    
+    <a href="https://sangzhenya.github.io/tags/JUC/">JUC</a>
+    
+    <a href="https://sangzhenya.github.io/tags/JVM/">JVM</a>
+    
+    <a href="https://sangzhenya.github.io/tags/java/">java</a>
+    
+    <a href="https://sangzhenya.github.io/tags/%E5%85%B3%E4%BA%8E/">关于</a>
+    
+    <a href="https://sangzhenya.github.io/tags/%E9%9B%86%E5%90%88/">集合</a>
+    
+</div>
+    </section>
+
+    
+
+    <section class="widget">
+        <h3 class="widget-title">其它</h3>
+        <ul class="widget-list">
+            <li><a href="https://sangzhenya.github.io/index.xml">文章 RSS</a></li>
+        </ul>
+    </section>
+</div>
+            </div>
+        </div>
+    </div>
+    <footer id="footer">
+    <div class="container">
+        &copy; 2020 <a href="https://sangzhenya.github.io/">新月的博客 By 新月</a>.
+        Powered by <a rel="nofollow noreferer noopener" href="https://gohugo.io" target="_blank">Hugo</a>.
+        Theme based on <a href="https://github.com/flysnow-org/maupassant-hugo" target="_blank">maupassant</a>.
+        
+    </div>
+</footer>
+
+
+    
+    <script type="text/javascript">
+        window.MathJax = {
+            tex2jax: {
+                inlineMath: [['$', '$']],
+                processEscapes: true
+                }
+            };
+    </script>
+    <script src='https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-MML-AM_CHTML' async></script>
+
+
+<a id="rocket" href="#top"></a>
+<script type="text/javascript" src='https://sangzhenya.github.io/js/totop.js?v=0.0.0' async=""></script>
+
+
+
+
+
+
+</body>
+
+</html>

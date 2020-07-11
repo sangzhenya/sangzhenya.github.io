@@ -1,0 +1,268 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <title> | 新月的博客</title>
+    <meta property="og:title" content=" - 新月的博客">
+    <meta property="og:type" content="article">
+        
+        
+    <meta name="Keywords" content="">
+    <meta name="description" content="">
+        
+    <meta name="author" content="新月">
+    <meta property="og:url" content="https://sangzhenya.github.io/post/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/%E6%95%8F%E6%8D%B7%E5%BC%80%E5%8F%91%E7%9A%84%E5%85%AD%E4%B8%AA%E5%8E%9F%E5%88%99/">
+    <link rel="shortcut icon" href="https://sangzhenya.github.io/favicon.ico" type="image/x-icon">
+
+    <link rel="stylesheet" href='https://sangzhenya.github.io/css/normalize.css'>
+    <link rel="stylesheet" href='https://sangzhenya.github.io/css/style.css'>
+    <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+
+    
+
+
+    
+    
+</head>
+
+
+<body>
+    <header id="header" class="clearfix">
+    <div class="container">
+        <div class="col-group">
+            <div class="site-name ">
+                
+                    <a id="logo" href="https://sangzhenya.github.io/">
+                        新月的博客
+                    </a>
+                
+                <p class="description">晚来天欲雪，能饮一杯无？</p>
+            </div>
+            <div>
+                <nav id="nav-menu" class="clearfix">
+                    <a class="current" href="https://sangzhenya.github.io/">首页</a>
+                    
+                    <a  href="https://sangzhenya.github.io/archives/" title="归档">归档</a>
+                    
+                    <a  href="https://sangzhenya.github.io/about/" title="关于">关于</a>
+                    
+                </nav>
+            </div>
+        </div>
+    </div>
+</header>
+
+    <div id="body">
+        <div class="container">
+            <div class="col-group">
+
+                <div class="col-8" id="main">
+                    
+<div class="res-cons">
+    
+    <article class="post">
+        <header>
+            <h1 class="post-title"></h1>
+        </header>
+        <date class="post-meta meta-date">
+            1年1月1日
+        </date>
+        
+        
+        
+        <div class="post-content">
+            <h2 id="敏捷开发的六个原则">敏捷开发的六个原则</h2>
+<ol>
+<li>
+<p>单一职责原则（SRP）</p>
+<p>一个类只做一件事。就一个类而言，应该仅有一个引起它变化的原因。职责就是变化的原因，如果你多于一个的动机去改变一个类，那么这个类就具有多于一个的职责。</p>
+</li>
+<li>
+<p>开放 - 闭合原则（OCP）</p>
+<p>软件实体（类，模块，函数等等）应该可以扩展的，但是不可修改的。如果程序的一处改动就会产生连锁反应，导致一系列相关模块的改动，那么设计就具有僵化性的臭味。建议对系统进行重构，这样以后的改动，就不会导致更多的修改。如果正确的使用OCP，那么以后再进行同样的改动，就只需要添加新的代码，而不必改动已经正常运行的代码。</p>
+<p>开放 - 封闭原则的两个特征：对于扩展是开放的；对于更改是封闭的。这两点特征看起来是矛盾的，关键是要抽象。</p>
+<p>在OOPL中，可以创建出固定却能够描述一组任意可能行为的抽象。这个抽象就是抽象基类。而一组任意个可能的行为表现为可能的派生类。模块可以操作一个抽象体，由于模块依赖一个抽象体，所以对它的修改是关闭的。同时从这个抽象体派生，也可以扩展模块的行为。</p>
+<p>不过事实上，无论模块多么的封闭，都会存在一些无法对之封闭的变化。所以就必须有策略的对待这个问题，也就是说，设计人员必须对于他设计的模块对哪种变化封闭做出选择，必须先猜测出最可能发生变化的种类，然后构造抽象来隔离那些变化。</p>
+<p>对于应用程序的每一个部分都肆意的进行抽象并不是一个好主意。正确的做法是对程序中呈现频繁变化的那些部分做出抽象。拒绝不成熟 的抽象和抽象本身一样重要。</p>
+</li>
+<li>
+<p>Liskov 替换原则 （LSP）</p>
+<p>子类对象必须能够替换掉它们的基本类型。</p>
+<p>提取公共部分是一个设计工具，最好在代码不是很多时应用。如果一组类都支持一个公共的职责，那么它们应该从一个公共的超类继承该职责，如果公共的超类还不存在，那么就创建一个，并把公共的职责放入其中。</p>
+</li>
+<li>
+<p>依赖倒置原则（DIP）</p>
+<p>高层的模块不应该依赖低层的模块，二者都应该依赖抽象。抽象不应该依赖细节，细节应该依赖于抽象。</p>
+<p>依赖导致并不是仅仅指的的依赖关系的倒置，它也是接口所有权的倒置。我们通常认为工具库应该拥有它们的接口。但是当应用了DIP时，往往应该是客户拥有抽象接口，而它们的服务者则从这些抽象接口派生。低层模块中声明被高层模块调用的接口。 【熔炉示例】</p>
+</li>
+<li>
+<p>接口隔离原则（ISP）</p>
+<p>如果类的接口不是内聚的，就表示该类具有胖的接口。换句话说，类的胖的接口可以分解成多组方法，每一组方法都服务于一组不同的客户程序。这样一些客户可以使用一组成员函数，而其他客户程序可以使用其它组成员函数。</p>
+<p>一个接口添加一个方法只是为了能给它的一个子类带来好处的，这样这个接口被一个它不需要的方法污染了。如果每次子类需要一个新的方法，这个方法都添加到基类中，那么这个接口就慢慢的变成了一个胖接口了。</p>
+<p>不应该强迫客户依赖它们不使用的方法。需要避免这种耦合，分离接口。如果一个对象的不足必须通过该对象的接口去访问它，也可以通过委托或者该对象的基类去访问它。 【定时门的例子】</p>
+<p>对客户进行分组，这样可以为每组而不是每个客户创建分离的接口，可以极大地减少服务需要实现的接口数量。同时也避免让服务依赖于每个客户类型。</p>
+</li>
+</ol>
+<p>参考：<a href="https://book.douban.com/subject/1140457/">敏捷软件开发 : 原则、模式与实践</a></p>
+
+        </div>
+
+        
+
+
+        
+
+
+        <div class="post-meta meta-tags">
+            
+            没有标签
+            
+        </div>
+    </article>
+    
+    
+
+    
+    
+</div>
+
+                </div>
+
+                <div id="secondary">
+    <section class="widget">
+        <form id="search" action='//www.google.com/search' method="get" accept-charset="utf-8" target="_blank" _lpchecked="1">
+      
+      <input type="text" name="q" maxlength="20" placeholder="Search">
+      <input type="hidden" name="sitesearch" value="https://sangzhenya.github.io/">
+      <button type="submit" class="submit icon-search"></button>
+</form>
+    </section>
+    
+    <section class="widget">
+        <h3 class="widget-title">最近文章</h3>
+<ul class="widget-list">
+    
+    <li>
+        <a href="https://sangzhenya.github.io/post/Java/jdk8/Java-8-Stream/" title="Java 8 Stream">Java 8 Stream</a>
+    </li>
+    
+    <li>
+        <a href="https://sangzhenya.github.io/post/Java/jdk8/Java-8-Lambda/" title="Java 8 Lambda">Java 8 Lambda</a>
+    </li>
+    
+    <li>
+        <a href="https://sangzhenya.github.io/post/Java/juc/Java-ConcurrentHashMap/" title="Java ConcurrentHashMap">Java ConcurrentHashMap</a>
+    </li>
+    
+    <li>
+        <a href="https://sangzhenya.github.io/post/Java/juc/Java-CAS/" title="Java CAS">Java CAS</a>
+    </li>
+    
+    <li>
+        <a href="https://sangzhenya.github.io/post/Java/juc/Java-volatile/" title="Java volatile">Java volatile</a>
+    </li>
+    
+    <li>
+        <a href="https://sangzhenya.github.io/post/Java/juc/Java-ReentrantLock/" title="Java ReentrantLock">Java ReentrantLock</a>
+    </li>
+    
+    <li>
+        <a href="https://sangzhenya.github.io/post/Java/juc/Java-%E5%B9%B6%E5%8F%91%E6%8E%A7%E5%88%B6/" title="Java 并发控制">Java 并发控制</a>
+    </li>
+    
+    <li>
+        <a href="https://sangzhenya.github.io/post/Java/juc/Java-AQS/" title="Java AQS">Java AQS</a>
+    </li>
+    
+    <li>
+        <a href="https://sangzhenya.github.io/post/DataBase/MyBatis/MyBaits-%E4%B8%8E-Spring-Boot/" title=""></a>
+    </li>
+    
+    <li>
+        <a href="https://sangzhenya.github.io/post/DataBase/MyBatis/SQL-%E6%98%A0%E5%B0%84/" title=""></a>
+    </li>
+    
+</ul>
+    </section>
+
+    
+
+    <section class="widget">
+        <h3 class="widget-title">分类</h3>
+<ul class="widget-list">
+    
+    <li><a href="https://sangzhenya.github.io/categories/Java/">Java (8)</a></li>
+    
+    <li><a href="https://sangzhenya.github.io/categories/%E5%85%B3%E4%BA%8E/">关于 (1)</a></li>
+    
+</ul>
+    </section>
+
+    <section class="widget">
+        <h3 class="widget-title">标签</h3>
+<div class="tagcloud">
+    
+    <a href="https://sangzhenya.github.io/tags/JDK8/">JDK8</a>
+    
+    <a href="https://sangzhenya.github.io/tags/JUC/">JUC</a>
+    
+    <a href="https://sangzhenya.github.io/tags/JVM/">JVM</a>
+    
+    <a href="https://sangzhenya.github.io/tags/java/">java</a>
+    
+    <a href="https://sangzhenya.github.io/tags/%E5%85%B3%E4%BA%8E/">关于</a>
+    
+    <a href="https://sangzhenya.github.io/tags/%E9%9B%86%E5%90%88/">集合</a>
+    
+</div>
+    </section>
+
+    
+
+    <section class="widget">
+        <h3 class="widget-title">其它</h3>
+        <ul class="widget-list">
+            <li><a href="https://sangzhenya.github.io/index.xml">文章 RSS</a></li>
+        </ul>
+    </section>
+</div>
+            </div>
+        </div>
+    </div>
+    <footer id="footer">
+    <div class="container">
+        &copy; 2020 <a href="https://sangzhenya.github.io/">新月的博客 By 新月</a>.
+        Powered by <a rel="nofollow noreferer noopener" href="https://gohugo.io" target="_blank">Hugo</a>.
+        Theme based on <a href="https://github.com/flysnow-org/maupassant-hugo" target="_blank">maupassant</a>.
+        
+    </div>
+</footer>
+
+
+    
+    <script type="text/javascript">
+        window.MathJax = {
+            tex2jax: {
+                inlineMath: [['$', '$']],
+                processEscapes: true
+                }
+            };
+    </script>
+    <script src='https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-MML-AM_CHTML' async></script>
+
+
+<a id="rocket" href="#top"></a>
+<script type="text/javascript" src='https://sangzhenya.github.io/js/totop.js?v=0.0.0' async=""></script>
+
+
+
+
+
+
+</body>
+
+</html>

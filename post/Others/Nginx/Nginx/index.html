@@ -1,0 +1,523 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <title> | 新月的博客</title>
+    <meta property="og:title" content=" - 新月的博客">
+    <meta property="og:type" content="article">
+        
+        
+    <meta name="Keywords" content="">
+    <meta name="description" content="">
+        
+    <meta name="author" content="新月">
+    <meta property="og:url" content="https://sangzhenya.github.io/post/Others/Nginx/Nginx/">
+    <link rel="shortcut icon" href="https://sangzhenya.github.io/favicon.ico" type="image/x-icon">
+
+    <link rel="stylesheet" href='https://sangzhenya.github.io/css/normalize.css'>
+    <link rel="stylesheet" href='https://sangzhenya.github.io/css/style.css'>
+    <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+
+    
+
+
+    
+    
+</head>
+
+
+<body>
+    <header id="header" class="clearfix">
+    <div class="container">
+        <div class="col-group">
+            <div class="site-name ">
+                
+                    <a id="logo" href="https://sangzhenya.github.io/">
+                        新月的博客
+                    </a>
+                
+                <p class="description">晚来天欲雪，能饮一杯无？</p>
+            </div>
+            <div>
+                <nav id="nav-menu" class="clearfix">
+                    <a class="current" href="https://sangzhenya.github.io/">首页</a>
+                    
+                    <a  href="https://sangzhenya.github.io/archives/" title="归档">归档</a>
+                    
+                    <a  href="https://sangzhenya.github.io/about/" title="关于">关于</a>
+                    
+                </nav>
+            </div>
+        </div>
+    </div>
+</header>
+
+    <div id="body">
+        <div class="container">
+            <div class="col-group">
+
+                <div class="col-8" id="main">
+                    
+<div class="res-cons">
+    
+    <article class="post">
+        <header>
+            <h1 class="post-title"></h1>
+        </header>
+        <date class="post-meta meta-date">
+            1年1月1日
+        </date>
+        
+        
+        
+        <div class="post-content">
+            <h2 id="nginx">Nginx</h2>
+<p>Nginx 是一个高性能的 HTTP 和反向代理服务器，占用内存少，并发能力强，可以作为静态页面的 Web 服务器，同时支持 CGI 协议的动态语言，例如 perl、php 等。但是不支持 Java，Java 程序只能通过 Tomcat 的配合完成。Nginx 专为性能优化开发，性能是其最重要的考量，非常注重效率，能够经受住高负载的考研。</p>
+<h3 id="正向代理和反向代理">正向代理和反向代理</h3>
+<p>Nginx 可以作为正向代理，例如在局域网中的电脑无法直接访问外部网络，而是通过一个代理服务器访问，这种代理服务就成为正向代理。</p>
+<p><img src="http://img.programya.com/Snipaste_2019-11-16_16-02-25.png" alt="正向代理"></p>
+<p>Nginx 也可以作为反向代理，客户端对代理是无感知的，不需要任何配置就可以访问，只是请求会发送到反向服务器，由反向代理服务器选择目标服务器获取数据后，再返回给客户端，此时反向代理服务器和目标服务器对外就是一个服务器，暴露的是代理服务器的地址，因此真是真是服务器的地址。</p>
+<p><img src="http://img.programya.com/Snipaste_2019-11-16_16-05-31.png" alt="反向代理"></p>
+<h3 id="负载均衡和动静分离">负载均衡和动静分离</h3>
+<p>客户端发送多个请求到服务器，服务器处理请求，一些数据可能与数据库进行交互，服务器处理完毕后再将结果返回给客户端。在高并发的情况下需要增加服务器的数量即服务器集群，Nginx 可以将负载分发到不同的服务器上即做负载均衡。</p>
+<p><img src="http://img.programya.com/nginx/Snipaste_2019-11-16_16-17-19.png" alt="负载均衡"></p>
+<p>为了加快网站的解析速度，可以把动态也忙额静态页面放在不同的服务器来解析，进而加快解析速度。降低单个服务器的压力。</p>
+<p><img src="http://img.programya.com/Snipaste_2019-11-16_16-19-15.png" alt="动静分离"></p>
+<h3 id="nginx-安装与常用命令">Nginx 安装与常用命令</h3>
+<p>安装 PCRE 库： <code>sudo apt-get install libpcre3 libpcre3-dev  </code></p>
+<p>安装 zlib 库：<code>sudo apt-get install zlib1g-dev</code></p>
+<p>安装 OpenSSL 库：<code>sudo apt-get install openssl libssl-dev </code></p>
+<p>下载 Nginx 并解压，依次运行 <code>./configure</code>  和 <code>make &amp; make install</code></p>
+<p>切换到 <code>/usr/local/nginx/sbin</code> 目录</p>
+<p><code>./nginx</code> 命令启动 nginx</p>
+<p><code>./nginx -t</code> 测试配置文件是否正确</p>
+<p><code> ./nginx -s reload</code> 重新加载</p>
+<p><code> ./nginx -s stop</code> 关闭 nginx</p>
+<p><code>ps -ef | grep nginx</code> 查看 nginx 是否成功启动</p>
+<p>或者使用 <code>sudo apt install nginx-full</code> 直接安装 nginx，使用这种方式安装的话，nginx 会在 <code>/etc</code> 目录下。</p>
+<h3 id="nginx-配置文件">Nginx 配置文件</h3>
+<p><code>nginx.conf</code> 是 nginx 的配置文件。</p>
+<p>第一部分是全局块：</p>
+<div class="highlight"><div style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4">
+<table style="border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">1
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">2
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">3
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">4
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">5
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">6
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">7
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">8
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-nginx" data-lang="nginx"><span style="color:#998;font-style:italic"># 定义用户
+</span><span style="color:#998;font-style:italic"></span><span style="color:#000;font-weight:bold">user</span> <span style="color:#d14">www-data</span>;
+<span style="color:#998;font-style:italic"># 定义 worker process 数，该值越大可以支持的并发处理越多，但是受到硬件和软件的制约。
+</span><span style="color:#998;font-style:italic"></span><span style="color:#000;font-weight:bold">worker_processes</span> <span style="color:#d14">auto</span>;
+<span style="color:#998;font-style:italic"># 进程 PID 位置
+</span><span style="color:#998;font-style:italic"></span><span style="color:#000;font-weight:bold">pid</span> <span style="color:#d14">/run/nginx.pid</span>;
+<span style="color:#998;font-style:italic"># 包含的其他配置文件
+</span><span style="color:#998;font-style:italic"></span><span style="color:#000;font-weight:bold">include</span> /etc/nginx/modules-enabled/*.conf;
+</code></pre></td></tr></table>
+</div>
+</div><p>第二部分是 events 块：</p>
+<p>events 块涉及的指令 主要影响 Nginx 服务器与用户的网络连接，常用设置包括是否开启对多 work process 下的网络连接进行序列化，是否允许同时接受多个网络连接，选取哪种事件驱动模型来处理连接请求，每个 work process 可以同时支持的最大连接数（下面的配置是 768 个）。</p>
+<div class="highlight"><div style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4">
+<table style="border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">1
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">2
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">3
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">4
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-nginx" data-lang="nginx"><span style="color:#000;font-weight:bold">events</span> {
+	<span style="color:#000;font-weight:bold">worker_connections</span> <span style="color:#099">768</span>;
+	<span style="color:#998;font-style:italic"># multi_accept on;
+</span><span style="color:#998;font-style:italic"></span>}
+</code></pre></td></tr></table>
+</div>
+</div><p>第三部分是 http 块和 server 块</p>
+<p>http 块 文件引入、MIME-TYPE 定义、日志自定义、连接超时时间、单链接请求数上限等。</p>
+<div class="highlight"><div style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4">
+<table style="border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 1
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 2
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 3
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 4
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 5
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 6
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 7
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 8
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 9
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">10
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">11
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">12
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">13
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">14
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">15
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">16
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">17
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">18
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">19
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">20
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">21
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">22
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">23
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">24
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">25
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">26
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">27
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">28
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">29
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">30
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">31
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">32
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">33
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">34
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">35
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">36
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">37
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">38
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">39
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">40
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">41
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">42
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">43
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">44
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">45
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">46
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">47
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">48
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">49
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">50
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">51
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">52
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">53
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-nginx" data-lang="nginx"><span style="color:#000;font-weight:bold">http</span> {
+
+	<span style="color:#998;font-style:italic">##
+</span><span style="color:#998;font-style:italic"></span>	<span style="color:#998;font-style:italic"># Basic Settings
+</span><span style="color:#998;font-style:italic"></span>	<span style="color:#998;font-style:italic">##
+</span><span style="color:#998;font-style:italic"></span>
+	<span style="color:#000;font-weight:bold">sendfile</span> <span style="color:#008080">on</span>;
+	<span style="color:#000;font-weight:bold">tcp_nopush</span> <span style="color:#008080">on</span>;
+	<span style="color:#000;font-weight:bold">tcp_nodelay</span> <span style="color:#008080">on</span>;
+	<span style="color:#000;font-weight:bold">keepalive_timeout</span> <span style="color:#099">65</span>;
+	<span style="color:#000;font-weight:bold">types_hash_max_size</span> <span style="color:#099">2048</span>;
+	<span style="color:#998;font-style:italic"># server_tokens off;
+</span><span style="color:#998;font-style:italic"></span>
+	<span style="color:#998;font-style:italic"># server_names_hash_bucket_size 64;
+</span><span style="color:#998;font-style:italic"></span>	<span style="color:#998;font-style:italic"># server_name_in_redirect off;
+</span><span style="color:#998;font-style:italic"></span>
+	<span style="color:#000;font-weight:bold">include</span> <span style="color:#d14">/etc/nginx/mime.types</span>;
+	<span style="color:#000;font-weight:bold">default_type</span> <span style="color:#d14">application/octet-stream</span>;
+
+	<span style="color:#998;font-style:italic">##
+</span><span style="color:#998;font-style:italic"></span>	<span style="color:#998;font-style:italic"># SSL Settings
+</span><span style="color:#998;font-style:italic"></span>	<span style="color:#998;font-style:italic">##
+</span><span style="color:#998;font-style:italic"></span>
+	<span style="color:#000;font-weight:bold">ssl_protocols</span> <span style="color:#d14">TLSv1</span> <span style="color:#d14">TLSv1.1</span> <span style="color:#d14">TLSv1.2</span>; <span style="color:#998;font-style:italic"># Dropping SSLv3, ref: POODLE
+</span><span style="color:#998;font-style:italic"></span>	<span style="color:#000;font-weight:bold">ssl_prefer_server_ciphers</span> <span style="color:#008080">on</span>;
+
+	<span style="color:#998;font-style:italic">##
+</span><span style="color:#998;font-style:italic"></span>	<span style="color:#998;font-style:italic"># Logging Settings
+</span><span style="color:#998;font-style:italic"></span>	<span style="color:#998;font-style:italic">##
+</span><span style="color:#998;font-style:italic"></span>
+	<span style="color:#000;font-weight:bold">access_log</span> <span style="color:#d14">/var/log/nginx/access.log</span>;
+	<span style="color:#000;font-weight:bold">error_log</span> <span style="color:#d14">/var/log/nginx/error.log</span>;
+
+	<span style="color:#998;font-style:italic">##
+</span><span style="color:#998;font-style:italic"></span>	<span style="color:#998;font-style:italic"># Gzip Settings
+</span><span style="color:#998;font-style:italic"></span>	<span style="color:#998;font-style:italic">##
+</span><span style="color:#998;font-style:italic"></span>
+	<span style="color:#000;font-weight:bold">gzip</span> <span style="color:#008080">on</span>;
+
+	<span style="color:#998;font-style:italic"># gzip_vary on;
+</span><span style="color:#998;font-style:italic"></span>	<span style="color:#998;font-style:italic"># gzip_proxied any;
+</span><span style="color:#998;font-style:italic"></span>	<span style="color:#998;font-style:italic"># gzip_comp_level 6;
+</span><span style="color:#998;font-style:italic"></span>	<span style="color:#998;font-style:italic"># gzip_buffers 16 8k;
+</span><span style="color:#998;font-style:italic"></span>	<span style="color:#998;font-style:italic"># gzip_http_version 1.1;
+</span><span style="color:#998;font-style:italic"></span>	<span style="color:#998;font-style:italic"># gzip_types text/plain text/css application/json application/javascript text/xml application/xml application/xml+rss text/javascript;
+</span><span style="color:#998;font-style:italic"></span>
+	<span style="color:#998;font-style:italic">##
+</span><span style="color:#998;font-style:italic"></span>	<span style="color:#998;font-style:italic"># Virtual Host Configs
+</span><span style="color:#998;font-style:italic"></span>	<span style="color:#998;font-style:italic">##
+</span><span style="color:#998;font-style:italic"></span>
+	<span style="color:#000;font-weight:bold">include</span> <span style="color:#d14">/etc/nginx/conf.d/*.conf</span>;
+	<span style="color:#000;font-weight:bold">include</span> <span style="color:#d14">/etc/nginx/sites-enabled/*</span>;
+}
+</code></pre></td></tr></table>
+</div>
+</div><p>server 块</p>
+<div class="highlight"><div style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4">
+<table style="border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 1
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 2
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 3
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 4
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 5
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 6
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 7
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 8
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 9
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">10
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">11
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">12
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">13
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">14
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">15
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">16
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">17
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">18
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">19
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">20
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">21
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">22
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">23
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">24
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">25
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">26
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">27
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">28
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">29
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">30
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">31
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">32
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">33
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">34
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">35
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">36
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">37
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">38
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">39
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">40
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">41
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">42
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">43
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">44
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">45
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">46
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">47
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">48
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">49
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">50
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">51
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-nginx" data-lang="nginx"><span style="color:#000;font-weight:bold">server</span> {
+	<span style="color:#000;font-weight:bold">listen</span> <span style="color:#099">80</span> <span style="color:#d14">default_server</span>;
+	<span style="color:#000;font-weight:bold">listen</span> <span style="color:#d14">[::]:80</span> <span style="color:#d14">default_server</span>;
+
+	<span style="color:#998;font-style:italic"># SSL configuration
+</span><span style="color:#998;font-style:italic"></span>	<span style="color:#998;font-style:italic">#
+</span><span style="color:#998;font-style:italic"></span>	<span style="color:#998;font-style:italic"># listen 443 ssl default_server;
+</span><span style="color:#998;font-style:italic"></span>	<span style="color:#998;font-style:italic"># listen [::]:443 ssl default_server;
+</span><span style="color:#998;font-style:italic"></span>	<span style="color:#998;font-style:italic">#
+</span><span style="color:#998;font-style:italic"></span>	<span style="color:#998;font-style:italic"># Note: You should disable gzip for SSL traffic.
+</span><span style="color:#998;font-style:italic"></span>	<span style="color:#998;font-style:italic"># See: https://bugs.debian.org/773332
+</span><span style="color:#998;font-style:italic"></span>	<span style="color:#998;font-style:italic">#
+</span><span style="color:#998;font-style:italic"></span>	<span style="color:#998;font-style:italic"># Read up on ssl_ciphers to ensure a secure configuration.
+</span><span style="color:#998;font-style:italic"></span>	<span style="color:#998;font-style:italic"># See: https://bugs.debian.org/765782
+</span><span style="color:#998;font-style:italic"></span>	<span style="color:#998;font-style:italic">#
+</span><span style="color:#998;font-style:italic"></span>	<span style="color:#998;font-style:italic"># Self signed certs generated by the ssl-cert package
+</span><span style="color:#998;font-style:italic"></span>	<span style="color:#998;font-style:italic"># Don&#39;t use them in a production server!
+</span><span style="color:#998;font-style:italic"></span>	<span style="color:#998;font-style:italic">#
+</span><span style="color:#998;font-style:italic"></span>	<span style="color:#998;font-style:italic"># include snippets/snakeoil.conf;
+</span><span style="color:#998;font-style:italic"></span>
+	<span style="color:#000;font-weight:bold">root</span> <span style="color:#d14">/var/www/html</span>;
+
+	<span style="color:#998;font-style:italic"># Add index.php to the list if you are using PHP
+</span><span style="color:#998;font-style:italic"></span>	<span style="color:#000;font-weight:bold">index</span> <span style="color:#d14">index.html</span> <span style="color:#d14">index.htm</span> <span style="color:#d14">index.nginx-debian.html</span>;
+
+	<span style="color:#000;font-weight:bold">server_name</span> <span style="color:#d14">_</span>;
+
+	<span style="color:#000;font-weight:bold">location</span> <span style="color:#d14">/</span> {
+		<span style="color:#998;font-style:italic"># First attempt to serve request as file, then
+</span><span style="color:#998;font-style:italic"></span>		<span style="color:#998;font-style:italic"># as directory, then fall back to displaying a 404.
+</span><span style="color:#998;font-style:italic"></span>		<span style="color:#000;font-weight:bold">try_files</span> <span style="color:#008080">$uri</span> <span style="color:#008080">$uri/</span> =<span style="color:#099">404</span>;
+	}
+
+	<span style="color:#998;font-style:italic"># pass PHP scripts to FastCGI server
+</span><span style="color:#998;font-style:italic"></span>	<span style="color:#998;font-style:italic">#
+</span><span style="color:#998;font-style:italic"></span>	<span style="color:#998;font-style:italic">#location ~ \.php$ {
+</span><span style="color:#998;font-style:italic"></span>	<span style="color:#998;font-style:italic">#	include snippets/fastcgi-php.conf;
+</span><span style="color:#998;font-style:italic"></span>	<span style="color:#998;font-style:italic">#
+</span><span style="color:#998;font-style:italic"></span>	<span style="color:#998;font-style:italic">#	# With php-fpm (or other unix sockets):
+</span><span style="color:#998;font-style:italic"></span>	<span style="color:#998;font-style:italic">#	fastcgi_pass unix:/var/run/php/php7.0-fpm.sock;
+</span><span style="color:#998;font-style:italic"></span>	<span style="color:#998;font-style:italic">#	# With php-cgi (or other tcp sockets):
+</span><span style="color:#998;font-style:italic"></span>	<span style="color:#998;font-style:italic">#	fastcgi_pass 127.0.0.1:9000;
+</span><span style="color:#998;font-style:italic"></span>	<span style="color:#998;font-style:italic">#}
+</span><span style="color:#998;font-style:italic"></span>
+	<span style="color:#998;font-style:italic"># deny access to .htaccess files, if Apache&#39;s document root
+</span><span style="color:#998;font-style:italic"></span>	<span style="color:#998;font-style:italic"># concurs with nginx&#39;s one
+</span><span style="color:#998;font-style:italic"></span>	<span style="color:#998;font-style:italic">#
+</span><span style="color:#998;font-style:italic"></span>	<span style="color:#998;font-style:italic">#location ~ /\.ht {
+</span><span style="color:#998;font-style:italic"></span>	<span style="color:#998;font-style:italic">#	deny all;
+</span><span style="color:#998;font-style:italic"></span>	<span style="color:#998;font-style:italic">#}
+</span><span style="color:#998;font-style:italic"></span>}
+</code></pre></td></tr></table>
+</div>
+</div>
+        </div>
+
+        
+
+
+        
+
+
+        <div class="post-meta meta-tags">
+            
+            没有标签
+            
+        </div>
+    </article>
+    
+    
+
+    
+    
+</div>
+
+                </div>
+
+                <div id="secondary">
+    <section class="widget">
+        <form id="search" action='//www.google.com/search' method="get" accept-charset="utf-8" target="_blank" _lpchecked="1">
+      
+      <input type="text" name="q" maxlength="20" placeholder="Search">
+      <input type="hidden" name="sitesearch" value="https://sangzhenya.github.io/">
+      <button type="submit" class="submit icon-search"></button>
+</form>
+    </section>
+    
+    <section class="widget">
+        <h3 class="widget-title">最近文章</h3>
+<ul class="widget-list">
+    
+    <li>
+        <a href="https://sangzhenya.github.io/post/Java/jdk8/Java-8-Stream/" title="Java 8 Stream">Java 8 Stream</a>
+    </li>
+    
+    <li>
+        <a href="https://sangzhenya.github.io/post/Java/jdk8/Java-8-Lambda/" title="Java 8 Lambda">Java 8 Lambda</a>
+    </li>
+    
+    <li>
+        <a href="https://sangzhenya.github.io/post/Java/juc/Java-ConcurrentHashMap/" title="Java ConcurrentHashMap">Java ConcurrentHashMap</a>
+    </li>
+    
+    <li>
+        <a href="https://sangzhenya.github.io/post/Java/juc/Java-CAS/" title="Java CAS">Java CAS</a>
+    </li>
+    
+    <li>
+        <a href="https://sangzhenya.github.io/post/Java/juc/Java-volatile/" title="Java volatile">Java volatile</a>
+    </li>
+    
+    <li>
+        <a href="https://sangzhenya.github.io/post/Java/juc/Java-ReentrantLock/" title="Java ReentrantLock">Java ReentrantLock</a>
+    </li>
+    
+    <li>
+        <a href="https://sangzhenya.github.io/post/Java/juc/Java-%E5%B9%B6%E5%8F%91%E6%8E%A7%E5%88%B6/" title="Java 并发控制">Java 并发控制</a>
+    </li>
+    
+    <li>
+        <a href="https://sangzhenya.github.io/post/Java/juc/Java-AQS/" title="Java AQS">Java AQS</a>
+    </li>
+    
+    <li>
+        <a href="https://sangzhenya.github.io/post/DataBase/MyBatis/MyBaits-%E4%B8%8E-Spring-Boot/" title=""></a>
+    </li>
+    
+    <li>
+        <a href="https://sangzhenya.github.io/post/DataBase/MyBatis/SQL-%E6%98%A0%E5%B0%84/" title=""></a>
+    </li>
+    
+</ul>
+    </section>
+
+    
+
+    <section class="widget">
+        <h3 class="widget-title">分类</h3>
+<ul class="widget-list">
+    
+    <li><a href="https://sangzhenya.github.io/categories/Java/">Java (8)</a></li>
+    
+    <li><a href="https://sangzhenya.github.io/categories/%E5%85%B3%E4%BA%8E/">关于 (1)</a></li>
+    
+</ul>
+    </section>
+
+    <section class="widget">
+        <h3 class="widget-title">标签</h3>
+<div class="tagcloud">
+    
+    <a href="https://sangzhenya.github.io/tags/JDK8/">JDK8</a>
+    
+    <a href="https://sangzhenya.github.io/tags/JUC/">JUC</a>
+    
+    <a href="https://sangzhenya.github.io/tags/JVM/">JVM</a>
+    
+    <a href="https://sangzhenya.github.io/tags/java/">java</a>
+    
+    <a href="https://sangzhenya.github.io/tags/%E5%85%B3%E4%BA%8E/">关于</a>
+    
+    <a href="https://sangzhenya.github.io/tags/%E9%9B%86%E5%90%88/">集合</a>
+    
+</div>
+    </section>
+
+    
+
+    <section class="widget">
+        <h3 class="widget-title">其它</h3>
+        <ul class="widget-list">
+            <li><a href="https://sangzhenya.github.io/index.xml">文章 RSS</a></li>
+        </ul>
+    </section>
+</div>
+            </div>
+        </div>
+    </div>
+    <footer id="footer">
+    <div class="container">
+        &copy; 2020 <a href="https://sangzhenya.github.io/">新月的博客 By 新月</a>.
+        Powered by <a rel="nofollow noreferer noopener" href="https://gohugo.io" target="_blank">Hugo</a>.
+        Theme based on <a href="https://github.com/flysnow-org/maupassant-hugo" target="_blank">maupassant</a>.
+        
+    </div>
+</footer>
+
+
+    
+    <script type="text/javascript">
+        window.MathJax = {
+            tex2jax: {
+                inlineMath: [['$', '$']],
+                processEscapes: true
+                }
+            };
+    </script>
+    <script src='https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-MML-AM_CHTML' async></script>
+
+
+<a id="rocket" href="#top"></a>
+<script type="text/javascript" src='https://sangzhenya.github.io/js/totop.js?v=0.0.0' async=""></script>
+
+
+
+
+
+
+</body>
+
+</html>

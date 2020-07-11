@@ -1,0 +1,412 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <title> | 新月的博客</title>
+    <meta property="og:title" content=" - 新月的博客">
+    <meta property="og:type" content="article">
+        
+        
+    <meta name="Keywords" content="">
+    <meta name="description" content="">
+        
+    <meta name="author" content="新月">
+    <meta property="og:url" content="https://sangzhenya.github.io/post/Others/Netty/Netty-%E6%A0%B8%E5%BF%83/">
+    <link rel="shortcut icon" href="https://sangzhenya.github.io/favicon.ico" type="image/x-icon">
+
+    <link rel="stylesheet" href='https://sangzhenya.github.io/css/normalize.css'>
+    <link rel="stylesheet" href='https://sangzhenya.github.io/css/style.css'>
+    <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+
+    
+
+
+    
+    
+</head>
+
+
+<body>
+    <header id="header" class="clearfix">
+    <div class="container">
+        <div class="col-group">
+            <div class="site-name ">
+                
+                    <a id="logo" href="https://sangzhenya.github.io/">
+                        新月的博客
+                    </a>
+                
+                <p class="description">晚来天欲雪，能饮一杯无？</p>
+            </div>
+            <div>
+                <nav id="nav-menu" class="clearfix">
+                    <a class="current" href="https://sangzhenya.github.io/">首页</a>
+                    
+                    <a  href="https://sangzhenya.github.io/archives/" title="归档">归档</a>
+                    
+                    <a  href="https://sangzhenya.github.io/about/" title="关于">关于</a>
+                    
+                </nav>
+            </div>
+        </div>
+    </div>
+</header>
+
+    <div id="body">
+        <div class="container">
+            <div class="col-group">
+
+                <div class="col-8" id="main">
+                    
+<div class="res-cons">
+    
+    <article class="post">
+        <header>
+            <h1 class="post-title"></h1>
+        </header>
+        <date class="post-meta meta-date">
+            1年1月1日
+        </date>
+        
+        
+        
+        <div class="post-content">
+            <h2 id="netty-核心">Netty 核心</h2>
+<h3 id="bootstrap-和-serverbootstrap">Bootstrap 和 ServerBootstrap</h3>
+<p>Bootstrap 即导引，一个 Netty 应用通常由一个 Boostrap 开始，主要作用是配置整个 Netty 程序，串联各个组件，Netty 中的 Bootstrap 类是客户端程序的启动引导类，ServerBootstrap 是服务端启动引导类。常用方法如下：</p>
+<div class="highlight"><div style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4">
+<table style="border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 1
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 2
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 3
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 4
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 5
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 6
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 7
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 8
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 9
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">10
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">11
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">12
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">13
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">14
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">15
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">16
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#998;font-style:italic">// 服务端用来设置两个 Event Group
+</span><span style="color:#998;font-style:italic"></span><span style="color:#000;font-weight:bold">public</span> ServerBootstrap <span style="color:#900;font-weight:bold">group</span><span style="color:#000;font-weight:bold">(</span>EventLoopGroup parentGroup<span style="color:#000;font-weight:bold">,</span> EventLoopGroup childGroup<span style="color:#000;font-weight:bold">);</span>
+<span style="color:#998;font-style:italic">// 客户端用来设置一个 Event Group
+</span><span style="color:#998;font-style:italic"></span><span style="color:#000;font-weight:bold">public</span> ServerBootstrap <span style="color:#900;font-weight:bold">group</span><span style="color:#000;font-weight:bold">(</span>EventLoopGroup group<span style="color:#000;font-weight:bold">);</span>
+<span style="color:#998;font-style:italic">// 用了设置一个服务器端的 Channel 实现
+</span><span style="color:#998;font-style:italic"></span><span style="color:#000;font-weight:bold">public</span> B <span style="color:#900;font-weight:bold">channel</span><span style="color:#000;font-weight:bold">(</span>Class<span style="color:#000;font-weight:bold">&lt;?</span> <span style="color:#000;font-weight:bold">extends</span> C<span style="color:#000;font-weight:bold">&gt;</span> channelClass<span style="color:#000;font-weight:bold">);</span>
+<span style="color:#998;font-style:italic">// 用来个 ServerChannel 添加配置
+</span><span style="color:#998;font-style:italic"></span><span style="color:#000;font-weight:bold">public</span> <span style="color:#000;font-weight:bold">&lt;</span>T<span style="color:#000;font-weight:bold">&gt;</span> B <span style="color:#900;font-weight:bold">option</span><span style="color:#000;font-weight:bold">(</span>ChannelOption<span style="color:#000;font-weight:bold">&lt;</span>T<span style="color:#000;font-weight:bold">&gt;</span> option<span style="color:#000;font-weight:bold">,</span> T value<span style="color:#000;font-weight:bold">);</span>
+<span style="color:#998;font-style:italic">// 用来给接收到的 Channel 添加配置
+</span><span style="color:#998;font-style:italic"></span><span style="color:#000;font-weight:bold">public</span> <span style="color:#000;font-weight:bold">&lt;</span>T<span style="color:#000;font-weight:bold">&gt;</span> ServerBootstrap <span style="color:#900;font-weight:bold">childOption</span><span style="color:#000;font-weight:bold">(</span>ChannelOption<span style="color:#000;font-weight:bold">&lt;</span>T<span style="color:#000;font-weight:bold">&gt;</span> childOption<span style="color:#000;font-weight:bold">,</span> T value<span style="color:#000;font-weight:bold">);</span>
+<span style="color:#998;font-style:italic">// 用来设置业务处理类
+</span><span style="color:#998;font-style:italic"></span><span style="color:#000;font-weight:bold">final</span> ChannelHandler <span style="color:#900;font-weight:bold">childHandler</span><span style="color:#000;font-weight:bold">();</span>
+<span style="color:#998;font-style:italic">// 服务端设置绑定端口
+</span><span style="color:#998;font-style:italic"></span><span style="color:#000;font-weight:bold">public</span> ChannelFuture <span style="color:#900;font-weight:bold">bind</span><span style="color:#000;font-weight:bold">(</span><span style="color:#458;font-weight:bold">int</span> inetPort<span style="color:#000;font-weight:bold">);</span>
+<span style="color:#998;font-style:italic">// 客户端用于连接服务器
+</span><span style="color:#998;font-style:italic"></span><span style="color:#000;font-weight:bold">public</span> ChannelFuture <span style="color:#900;font-weight:bold">connect</span><span style="color:#000;font-weight:bold">(</span>String inetHost<span style="color:#000;font-weight:bold">,</span> <span style="color:#458;font-weight:bold">int</span> inetPort<span style="color:#000;font-weight:bold">);</span>
+</code></pre></td></tr></table>
+</div>
+</div><h3 id="future-和-channelfuture">Future 和 ChannelFuture</h3>
+<p>Netty 中的所有 IO 操作都是异步的，不能立刻得知消息是否被正确处理。但是可以过一会等其执行完成或者直接注册一个监听，具体是通过 Future 和 ChannelFutre 实现的，他们可以注册一个监听，在操作成功或者失败的时候自动触发注册的监听事件。常用方法有：</p>
+<div class="highlight"><div style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4">
+<table style="border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">1
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">2
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">3
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">4
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#998;font-style:italic">// 返回当正在进行 IO 操作的 Channel
+</span><span style="color:#998;font-style:italic"></span>Channel <span style="color:#900;font-weight:bold">channel</span><span style="color:#000;font-weight:bold">();</span>
+<span style="color:#998;font-style:italic">// 等待异步操作执行完毕
+</span><span style="color:#998;font-style:italic"></span>ChannelFuture <span style="color:#900;font-weight:bold">sync</span><span style="color:#000;font-weight:bold">();</span>
+</code></pre></td></tr></table>
+</div>
+</div><h3 id="channel">Channel</h3>
+<p>Netty 网络通讯的组件，能够用于执行网络 IO 操作，通过 Channel 可以获得网络连接 Channel 的状态和网络连接的配置参数。其还提供一部网络 IO 操作（建立连接，绑定端口，读写等），调用返回一个 ChannelFuture  实例，通过注册监听到 ChannelFuture 上，可以在 IO 操作成功，失败或者取消的时候调用注册的监听器。Channel 还支持关联 IO 操作和对应处理程序。不同协议，不同阻塞类型的连接都有不同的 Channel 与之对应，常用的 Channel 类型如下：</p>
+<pre><code>NioSocketChannel：异步客户端 TCP Socket 连接
+NioServerSocketChannel：异步服务器端 TCP Socket 连接
+NioDatagramChannel：异步 UDP 连接
+NioSctpChannel：异步客户端 Sctp 连接
+NioSctpServerChannel：异步服务器端 Sctp 连接，涵盖 UDP/TCP/文件 IO
+</code></pre><h3 id="selector">Selector</h3>
+<p>Netty  基于 Selector 对象实现多路 IO 复用，通过 Selector 一个线程可以监听多个连接的 Channel 事件，当向一个 Selector 中注册 Channel 后，Selector 内部的机制就可以自动不断的查询这些注册 Channel 是否已经有就绪的 IO 操作，可以使用一个线程高效的管理多个 Channel。</p>
+<h3 id="channelhandler">ChannelHandler</h3>
+<p>ChannelHandler 是一个接口，处理 IO 事件或者拦截 IO 操作并将其转发到其 ChannelPipeline 中的下一个处理程序。其本有很多的子类实现，使用的时候可以继承其子类。主要入下图所示：</p>
+<p><img src="http://img.programya.com/20200118084724.png" alt="ChannelHandler 及子类"></p>
+<pre><code>ChannelInboundHandler: 处理入站 IO 事件
+ChannelOutboundHandler: 处理出站 IO 事件
+ChannelInboundHandlerAdapter: 处理入站 IO 事件
+ChannelOutboundHandlerAdapter: 处理出站 IO 事件
+ChannelDuplexHandler: 处理出入站事件
+</code></pre><p>一般需要重写的方法如下：</p>
+<div class="highlight"><div style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4">
+<table style="border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 1
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 2
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 3
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 4
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 5
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 6
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 7
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 8
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 9
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">10
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">11
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">12
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">13
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">14
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">15
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#998;font-style:italic">// 注册事件
+</span><span style="color:#998;font-style:italic"></span><span style="color:#000;font-weight:bold">public</span> <span style="color:#458;font-weight:bold">void</span> <span style="color:#900;font-weight:bold">channelRegistered</span><span style="color:#000;font-weight:bold">(</span>ChannelHandlerContext ctx<span style="color:#000;font-weight:bold">);</span>
+<span style="color:#998;font-style:italic">// 取消注册事件
+</span><span style="color:#998;font-style:italic"></span><span style="color:#000;font-weight:bold">public</span> <span style="color:#458;font-weight:bold">void</span> <span style="color:#900;font-weight:bold">channelUnregistered</span><span style="color:#000;font-weight:bold">(</span>ChannelHandlerContext ctx<span style="color:#000;font-weight:bold">);</span>
+<span style="color:#998;font-style:italic">// 就绪事件
+</span><span style="color:#998;font-style:italic"></span><span style="color:#000;font-weight:bold">public</span> <span style="color:#458;font-weight:bold">void</span> <span style="color:#900;font-weight:bold">channelActive</span><span style="color:#000;font-weight:bold">(</span>ChannelHandlerContext ctx<span style="color:#000;font-weight:bold">);</span>
+<span style="color:#000;font-weight:bold">public</span> <span style="color:#458;font-weight:bold">void</span> <span style="color:#900;font-weight:bold">channelInactive</span><span style="color:#000;font-weight:bold">(</span>ChannelHandlerContext ctx<span style="color:#000;font-weight:bold">);</span>
+<span style="color:#998;font-style:italic">// 读取事件
+</span><span style="color:#998;font-style:italic"></span><span style="color:#000;font-weight:bold">public</span> <span style="color:#458;font-weight:bold">void</span> <span style="color:#900;font-weight:bold">channelRead</span><span style="color:#000;font-weight:bold">(</span>ChannelHandlerContext ctx<span style="color:#000;font-weight:bold">,</span> Object msg<span style="color:#000;font-weight:bold">);</span>
+<span style="color:#998;font-style:italic">// 读取结束
+</span><span style="color:#998;font-style:italic"></span><span style="color:#000;font-weight:bold">public</span> <span style="color:#458;font-weight:bold">void</span> <span style="color:#900;font-weight:bold">channelReadComplete</span><span style="color:#000;font-weight:bold">(</span>ChannelHandlerContext ctx<span style="color:#000;font-weight:bold">);</span>
+<span style="color:#000;font-weight:bold">public</span> <span style="color:#458;font-weight:bold">void</span> <span style="color:#900;font-weight:bold">userEventTriggered</span><span style="color:#000;font-weight:bold">(</span>ChannelHandlerContext ctx<span style="color:#000;font-weight:bold">,</span> Object evt<span style="color:#000;font-weight:bold">);</span>
+<span style="color:#000;font-weight:bold">public</span> <span style="color:#458;font-weight:bold">void</span> <span style="color:#900;font-weight:bold">channelWritabilityChanged</span><span style="color:#000;font-weight:bold">(</span>ChannelHandlerContext ctx<span style="color:#000;font-weight:bold">);</span>
+<span style="color:#998;font-style:italic">// 出现异常
+</span><span style="color:#998;font-style:italic"></span><span style="color:#000;font-weight:bold">public</span> <span style="color:#458;font-weight:bold">void</span> <span style="color:#900;font-weight:bold">exceptionCaught</span><span style="color:#000;font-weight:bold">(</span>ChannelHandlerContext ctx<span style="color:#000;font-weight:bold">,</span> Throwable cause<span style="color:#000;font-weight:bold">);</span>
+</code></pre></td></tr></table>
+</div>
+</div><h3 id="pipeline-和-channelpipeline">Pipeline 和 ChannelPipeline</h3>
+<p>ChannelPipeline 是一个 Handler 的集合，负责处理和连接 Inbound 或者 Outbound 的事件和操作，相当于一个贯穿 Netty 的链。其实现了一种高级形式的拦截过滤器模式，使用户可以完全控制事件的处理方式，以及 Channel 中各自的 ChannelHandler 如何相互交互。</p>
+<p>在 Netty 中每个 Channel 都有且仅有一个 ChannelPipeline 与之对应，其组成关系如下：</p>
+<p><img src="http://img.programya.com/20200118092350.png" alt=""></p>
+<p>一个 Channel 包含一个 ChannelPipeline，而 ChannelPipeline 中又维护了一个由 ChannelHandler 组成的双向链表，并且每个 ChannelHandlerContext 中又关联着 ChannelHandler。入站事件和出站事件在一个双向链表中，入站时间会从链表 header 向后传递到最后一个入站的 handler；出站事件会从链表 tail 传递到最前面一个出站的 handler。两种类型的 handler 互不干扰。常用方法如下：</p>
+<div class="highlight"><div style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4">
+<table style="border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">1
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">2
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">3
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">4
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#998;font-style:italic">// 添加一个处理类在链表第一个位置
+</span><span style="color:#998;font-style:italic"></span>ChannelPipeline <span style="color:#900;font-weight:bold">addFirst</span><span style="color:#000;font-weight:bold">(</span>ChannelHandler<span style="color:#000;font-weight:bold">...</span> handlers<span style="color:#000;font-weight:bold">);</span>
+<span style="color:#998;font-style:italic">// 添加一个处理类在链表最后一个位置
+</span><span style="color:#998;font-style:italic"></span>ChannelPipeline <span style="color:#900;font-weight:bold">addLast</span><span style="color:#000;font-weight:bold">(</span>ChannelHandler<span style="color:#000;font-weight:bold">...</span> handlers<span style="color:#000;font-weight:bold">);</span>
+</code></pre></td></tr></table>
+</div>
+</div><h3 id="channelhandlercontext">ChannelHandlerContext</h3>
+<p>其中保存 Channel 相关的所有信息，绑定了对应的 Pipeline，同时关联一个 ChannelHandler 对象。常用方法如下：</p>
+<div class="highlight"><div style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4">
+<table style="border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">1
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">2
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">3
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">4
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">5
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">6
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#998;font-style:italic">// 关闭 Channel
+</span><span style="color:#998;font-style:italic"></span>ChannelFuture <span style="color:#900;font-weight:bold">close</span><span style="color:#000;font-weight:bold">();</span>
+<span style="color:#998;font-style:italic">// 刷新
+</span><span style="color:#998;font-style:italic"></span>ChannelOutboundInvoker <span style="color:#900;font-weight:bold">flush</span><span style="color:#000;font-weight:bold">();</span>
+<span style="color:#998;font-style:italic">// 将数据写到 ChannelPipeline 中，当前 ChannelHandler 的一个 ChannelHandler 开始处理
+</span><span style="color:#998;font-style:italic"></span>ChannelFuture <span style="color:#900;font-weight:bold">writeAndFlush</span><span style="color:#000;font-weight:bold">(</span>Object msg<span style="color:#000;font-weight:bold">);</span>
+</code></pre></td></tr></table>
+</div>
+</div><h3 id="channeloption">ChannelOption</h3>
+<p>Netty 在创建 Channel 实例后一般都需要设置 ChannelOption 参数，常用的参数如下：</p>
+<pre><code>ChannelOption.SO_BACKLOG: 对应 TCP/IP 协议 listen 函数中的 backlog 函数，
+用来初始化服务器可连接队列大小。服务端处理客户端连接请求的是顺序处理的，所以同一时间
+职能处理一个客户端连接。多个客户端来的时候，服务端将不能处理的客户端连接放在队列中等待处理，
+backlog 指定队列的大小。
+ChannelOption.SO_KEEPALIVE: 一直保持连接活动状态。
+</code></pre><h3 id="eventloopgroup-和-nioeventloopgroup">EventLoopGroup 和 NioEventLoopGroup</h3>
+<p>EventLoopGroup 是一组 EventLoop 的抽象，Netty 为了更好的利用多核 CPU 资源，一般会有多个 EventLoop 同时工作，每个 EventLoop 维护一个 Selector 实例。其提供了一个 next 接口，可以从组里按照一定的规则获取其中一个 EventLoop 来处理任。在 Netty 服务器端编程中，一般需要提供两个 EventLoopGroup 例如：BossEventLoopGroup 和 WorkerEventLoopGroup。</p>
+<p>通常一个服务端口即一个 ServerSocketChannel 对应一个 Selector 和一个 EventLoop 线程。BossEventLoopGroup 负责客户端的连接并将 SocketChannel 交给 WorkerEventLoopGroup 来进行 IO 处理。</p>
+<p>BossEventLoopGroup 通常是一个单线程的 EventLoop，EventLoop 维护者一个注册了 ServerSocketChannel 的 Selector 实例。BossEventLoop 不断轮询 Selector 将连接事件分离出来，通常是 OP_ACCEPT 事件，然后接收到的 SocketChannel 交给 WorkerEventLoopGroup ，其会由 next 选择其中的一个 EventLoop 了将这个 SocketChannel 注册到其维护的 Selector 并对其后续 IO 事件进行处理。</p>
+<h3 id="unpooled">Unpooled</h3>
+<p>Netty 提供的专门用来操作缓冲区的工具类，常用方法有：</p>
+<div class="highlight"><div style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4">
+<table style="border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">1
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">2
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#998;font-style:italic">// 通过给定的数据和字符编码返回一个 ByteBuf 对象
+</span><span style="color:#998;font-style:italic"></span><span style="color:#000;font-weight:bold">private</span> <span style="color:#000;font-weight:bold">static</span> ByteBuf <span style="color:#900;font-weight:bold">copiedBuffer</span><span style="color:#000;font-weight:bold">(</span>CharBuffer buffer<span style="color:#000;font-weight:bold">,</span> Charset charset<span style="color:#000;font-weight:bold">);</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>创建 ByteBuf，该对象包含一个数组 arr，在 Netty 的 buffer 中不需要 flip 进行反转，底层维护了 readerIndex， writerIndex 和 capacity 将 buffer 分成三个区域： 0 到 readerIndex 已经读取的区域；readerIndex  到 writerIndex 可读区域；writerIndex 才 capacity 可写区域。</p>
+<h3 id="编解码">编解码</h3>
+<p>编写网络应用程序时，因为数据在网络中传输的都是二进制字节码数据，在发送数据时就需要编码，接收数据时就需要解码。 Codec 的组成部分有两个：decoder(解码器) 和 encoder(编码器)；encoder 复杂把业务数据转换成字节码数据，decoder 负责把字节码数据转换成业务数据。Netty 自身提供了一些 codec(编解码器)，例如 StringEncoder 对字符串数据进行编码，ObjectEncoder 对 Java 对象进行编码。StringDecoder 对字符串进行解码，ObjectEncoder 对 Java 对象进行解码。</p>
+<p>Netty 的 ObjectDecoder 和 ObjectEncoder 可以用来实现 POJO 对象或各种业务对象的变暗和解码，底层使用的仍是 Java 序列化技术，而 Java 序列化技术本身效率不高且存在无法跨语言，序列化后提交太大，序列化性能太低。</p>
+
+        </div>
+
+        
+
+
+        
+
+
+        <div class="post-meta meta-tags">
+            
+            没有标签
+            
+        </div>
+    </article>
+    
+    
+
+    
+    
+</div>
+
+                </div>
+
+                <div id="secondary">
+    <section class="widget">
+        <form id="search" action='//www.google.com/search' method="get" accept-charset="utf-8" target="_blank" _lpchecked="1">
+      
+      <input type="text" name="q" maxlength="20" placeholder="Search">
+      <input type="hidden" name="sitesearch" value="https://sangzhenya.github.io/">
+      <button type="submit" class="submit icon-search"></button>
+</form>
+    </section>
+    
+    <section class="widget">
+        <h3 class="widget-title">最近文章</h3>
+<ul class="widget-list">
+    
+    <li>
+        <a href="https://sangzhenya.github.io/post/Java/jdk8/Java-8-Stream/" title="Java 8 Stream">Java 8 Stream</a>
+    </li>
+    
+    <li>
+        <a href="https://sangzhenya.github.io/post/Java/jdk8/Java-8-Lambda/" title="Java 8 Lambda">Java 8 Lambda</a>
+    </li>
+    
+    <li>
+        <a href="https://sangzhenya.github.io/post/Java/juc/Java-ConcurrentHashMap/" title="Java ConcurrentHashMap">Java ConcurrentHashMap</a>
+    </li>
+    
+    <li>
+        <a href="https://sangzhenya.github.io/post/Java/juc/Java-CAS/" title="Java CAS">Java CAS</a>
+    </li>
+    
+    <li>
+        <a href="https://sangzhenya.github.io/post/Java/juc/Java-volatile/" title="Java volatile">Java volatile</a>
+    </li>
+    
+    <li>
+        <a href="https://sangzhenya.github.io/post/Java/juc/Java-ReentrantLock/" title="Java ReentrantLock">Java ReentrantLock</a>
+    </li>
+    
+    <li>
+        <a href="https://sangzhenya.github.io/post/Java/juc/Java-%E5%B9%B6%E5%8F%91%E6%8E%A7%E5%88%B6/" title="Java 并发控制">Java 并发控制</a>
+    </li>
+    
+    <li>
+        <a href="https://sangzhenya.github.io/post/Java/juc/Java-AQS/" title="Java AQS">Java AQS</a>
+    </li>
+    
+    <li>
+        <a href="https://sangzhenya.github.io/post/DataBase/MyBatis/MyBaits-%E4%B8%8E-Spring-Boot/" title=""></a>
+    </li>
+    
+    <li>
+        <a href="https://sangzhenya.github.io/post/DataBase/MyBatis/SQL-%E6%98%A0%E5%B0%84/" title=""></a>
+    </li>
+    
+</ul>
+    </section>
+
+    
+
+    <section class="widget">
+        <h3 class="widget-title">分类</h3>
+<ul class="widget-list">
+    
+    <li><a href="https://sangzhenya.github.io/categories/Java/">Java (8)</a></li>
+    
+    <li><a href="https://sangzhenya.github.io/categories/%E5%85%B3%E4%BA%8E/">关于 (1)</a></li>
+    
+</ul>
+    </section>
+
+    <section class="widget">
+        <h3 class="widget-title">标签</h3>
+<div class="tagcloud">
+    
+    <a href="https://sangzhenya.github.io/tags/JDK8/">JDK8</a>
+    
+    <a href="https://sangzhenya.github.io/tags/JUC/">JUC</a>
+    
+    <a href="https://sangzhenya.github.io/tags/JVM/">JVM</a>
+    
+    <a href="https://sangzhenya.github.io/tags/java/">java</a>
+    
+    <a href="https://sangzhenya.github.io/tags/%E5%85%B3%E4%BA%8E/">关于</a>
+    
+    <a href="https://sangzhenya.github.io/tags/%E9%9B%86%E5%90%88/">集合</a>
+    
+</div>
+    </section>
+
+    
+
+    <section class="widget">
+        <h3 class="widget-title">其它</h3>
+        <ul class="widget-list">
+            <li><a href="https://sangzhenya.github.io/index.xml">文章 RSS</a></li>
+        </ul>
+    </section>
+</div>
+            </div>
+        </div>
+    </div>
+    <footer id="footer">
+    <div class="container">
+        &copy; 2020 <a href="https://sangzhenya.github.io/">新月的博客 By 新月</a>.
+        Powered by <a rel="nofollow noreferer noopener" href="https://gohugo.io" target="_blank">Hugo</a>.
+        Theme based on <a href="https://github.com/flysnow-org/maupassant-hugo" target="_blank">maupassant</a>.
+        
+    </div>
+</footer>
+
+
+    
+    <script type="text/javascript">
+        window.MathJax = {
+            tex2jax: {
+                inlineMath: [['$', '$']],
+                processEscapes: true
+                }
+            };
+    </script>
+    <script src='https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-MML-AM_CHTML' async></script>
+
+
+<a id="rocket" href="#top"></a>
+<script type="text/javascript" src='https://sangzhenya.github.io/js/totop.js?v=0.0.0' async=""></script>
+
+
+
+
+
+
+</body>
+
+</html>

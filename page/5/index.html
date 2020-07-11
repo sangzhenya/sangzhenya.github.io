@@ -1,0 +1,447 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+	<meta name="generator" content="Hugo 0.72.0" />
+
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <title>新月的博客 | 晚来天欲雪，能饮一杯无？</title>
+    <meta property="og:title" content="新月的博客 | 晚来天欲雪，能饮一杯无？">
+    <meta property="og:type" content="website">
+    <meta name="Keywords" content="">
+    <meta name="description" content="">
+    <meta property="og:url" content="https://sangzhenya.github.io/">
+    <link rel="shortcut icon" href="https://sangzhenya.github.io/favicon.ico" type="image/x-icon">
+
+    <link rel="stylesheet" href='https://sangzhenya.github.io/css/normalize.css'>
+    <link rel="stylesheet" href='https://sangzhenya.github.io/css/style.css'>
+    <link rel="alternate" type="application/rss+xml+xml" href="https://sangzhenya.github.io/index.xml" title="新月的博客" />
+    <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+
+    
+
+
+    
+    
+</head>
+
+
+<body>
+    <header id="header" class="clearfix">
+    <div class="container">
+        <div class="col-group">
+            <div class="site-name ">
+                
+                    <h1>
+                        <a id="logo" href="https://sangzhenya.github.io/">
+                            新月的博客
+                        </a>
+                    </h1>
+                
+                <p class="description">晚来天欲雪，能饮一杯无？</p>
+            </div>
+            <div>
+                <nav id="nav-menu" class="clearfix">
+                    <a class="current" href="https://sangzhenya.github.io/">首页</a>
+                    
+                    <a  href="https://sangzhenya.github.io/archives/" title="归档">归档</a>
+                    
+                    <a  href="https://sangzhenya.github.io/about/" title="关于">关于</a>
+                    
+                </nav>
+            </div>
+        </div>
+    </div>
+</header>
+
+    <div id="body">
+        <div class="container">
+            <div class="col-group">
+
+                <div class="col-8" id="main">
+                    
+<div class="res-cons">
+    
+    <article class="post">
+        <header>
+            <h1 class="post-title">
+                <a href="https://sangzhenya.github.io/post/Others/Github-Action-%E8%87%AA%E5%8A%A8%E9%83%A8%E7%BD%B2/" title=""></a>
+            </h1>
+        </header>
+        <date class="post-meta meta-date">
+            1年1月1日
+        </date>
+        
+        <div class="post-content">
+            Github Action 自动部署 博客的前端项目同样需要在每次修改之后自动部署到服务器上，但是由于服务器内存太小导致，运行 npm run build 命令的时候内存不足导致其他程序异常退出，所以没有使用 Jenkins 进行自动化部署。然后发现 Github 提供了 Action 可以进行自动化 build 部署。所以对于前端项目使用 GitHub Action 进行部署。 本文仅记录自己前端项目的自动构……
+        </div>
+        <p class="readmore"><a href="https://sangzhenya.github.io/post/Others/Github-Action-%E8%87%AA%E5%8A%A8%E9%83%A8%E7%BD%B2/">阅读全文</a></p>
+    </article>
+    
+    <article class="post">
+        <header>
+            <h1 class="post-title">
+                <a href="https://sangzhenya.github.io/post/Others/Java-%E7%A8%8B%E5%BA%8F-Debug-%E5%90%8E%E9%9D%A2%E7%9A%84%E6%95%B0%E5%AD%97/" title=""></a>
+            </h1>
+        </header>
+        <date class="post-meta meta-date">
+            1年1月1日
+        </date>
+        
+        <div class="post-content">
+            Debug Java 程序 对象后面的数字是什么？ 在 Debug Java 程序的时候，在 IDEA 的 Variables 窗口中经常可以看到类似下图形式的变量： {ConcurrentHashMap$Segment@873} 中的 873 是 JVM 在调试的时候提供的唯一的 ObjectId，在程序内部是无法访问的。可以参考 Stack Overflow上的一个问答： Deciphering variable information while debugging Java 后半部分：java.util.concurrent.Co……
+        </div>
+        <p class="readmore"><a href="https://sangzhenya.github.io/post/Others/Java-%E7%A8%8B%E5%BA%8F-Debug-%E5%90%8E%E9%9D%A2%E7%9A%84%E6%95%B0%E5%AD%97/">阅读全文</a></p>
+    </article>
+    
+    <article class="post">
+        <header>
+            <h1 class="post-title">
+                <a href="https://sangzhenya.github.io/post/Others/Jenkins-%E8%87%AA%E5%8A%A8%E9%83%A8%E7%BD%B2/" title=""></a>
+            </h1>
+        </header>
+        <date class="post-meta meta-date">
+            1年1月1日
+        </date>
+        
+        <div class="post-content">
+            Jenkins 自动部署 博客后台每次 build 之后都需手动放到服务器上，然后停掉原本的服务，重新启动服务。为了简化流程所以使用 Jenkins 进行自动化部署。 首先项目是基于 Docker 的（至于 Jenkins 和 Docker 的安装非常流程化，这边不赘述）。 将项目打包成 Docker 镜像 首先编写 Dockerfile 简单如下， 1 2 3 4 5 6 FROMopenjdk:11.0-jre-slimMAINTAINERxinyue&lt;xinyue@xinyue.com&gt;EXPOSE8081VOLUME/tmpADD /target/blog-0.0.1-SNAPSHOT.jar app.jarENTRYPOINT [ &#34;java&#34;, &#34;-jar&#34;, &#34;/app.jar&#34;, &#34;--spring.profiles.active=prd&#34;] 对于我的项目非常的简单，就是基……
+        </div>
+        <p class="readmore"><a href="https://sangzhenya.github.io/post/Others/Jenkins-%E8%87%AA%E5%8A%A8%E9%83%A8%E7%BD%B2/">阅读全文</a></p>
+    </article>
+    
+    <article class="post">
+        <header>
+            <h1 class="post-title">
+                <a href="https://sangzhenya.github.io/post/Others/Linux-%E5%91%BD%E4%BB%A4/" title=""></a>
+            </h1>
+        </header>
+        <date class="post-meta meta-date">
+            1年1月1日
+        </date>
+        
+        <div class="post-content">
+            Linux 命令 强制卸载软件： 1 2 3 4 sudo mv /var/lib/dpkg/info/{packagename}.* /tmp/ sudo dpkg --remove --force-remove-reinstreq {packagename} sudo apt-get remove {packagename} sudo apt-get autoremove &amp;&amp; sudo apt-get autoclean 常用命令： top 命令： load average: 三个值分别是系统 1分钟，5分钟，15分钟系统的负载平均值。如果三个值相加，除以3，乘以 100%的结果大于 60%，则表明系统压力过大。 uptime 命令精简版，显示系统负载情况。 vmstat 命令； vmstat -n 2 3 每 2 秒查询……
+        </div>
+        <p class="readmore"><a href="https://sangzhenya.github.io/post/Others/Linux-%E5%91%BD%E4%BB%A4/">阅读全文</a></p>
+    </article>
+    
+    <article class="post">
+        <header>
+            <h1 class="post-title">
+                <a href="https://sangzhenya.github.io/post/Others/Maven/" title=""></a>
+            </h1>
+        </header>
+        <date class="post-meta meta-date">
+            1年1月1日
+        </date>
+        
+        <div class="post-content">
+            Maven 入门 构建的各个环节 清理：将以前编译得到的旧的 class 字节码文件删除，为下一次编译做准备 编译：将 Java 源程序编译成 class 字节码文件 测试：自动测试，自动调用 junit 程序 报告：测试程序执行的结果 打包：动态 Web工程打 war 包，Java 工程打 jar 包 安装：将打包得到的文件复制到 ”仓库“ 中指定的位置 部署：将打包后的……
+        </div>
+        <p class="readmore"><a href="https://sangzhenya.github.io/post/Others/Maven/">阅读全文</a></p>
+    </article>
+    
+    <article class="post">
+        <header>
+            <h1 class="post-title">
+                <a href="https://sangzhenya.github.io/post/Others/Netty/Java-IO-%E6%A8%A1%E5%9E%8B/" title=""></a>
+            </h1>
+        </header>
+        <date class="post-meta meta-date">
+            1年1月1日
+        </date>
+        
+        <div class="post-content">
+            Java IO 模型 Java 模型简单的理解就是使用什么样的通道惊醒数据的发送和接收，这很大程度上决定了程序通讯的性能。Java 支持 3 种网络编程模型 IO：BIO，NIO，AIO。 BIO 是同步阻塞模型，服务器实现模式为一个连接对应一个线程，即客户端有请求的时候服务端就需要启动一个线程进行处理，如果这个连接……
+        </div>
+        <p class="readmore"><a href="https://sangzhenya.github.io/post/Others/Netty/Java-IO-%E6%A8%A1%E5%9E%8B/">阅读全文</a></p>
+    </article>
+    
+    <article class="post">
+        <header>
+            <h1 class="post-title">
+                <a href="https://sangzhenya.github.io/post/Others/Netty/Netty-EventLoop/" title=""></a>
+            </h1>
+        </header>
+        <date class="post-meta meta-date">
+            1年1月1日
+        </date>
+        
+        <div class="post-content">
+            Netty EventLoop NioEventLoop 的继承关系图如下： 首先看一下 SingleThreadEventLoop 类的 execute 方法： 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29 30 31 32 33 34 35 public void execute(Runnable task) { ObjectUtil.checkNotNull(task, &#34;task&#34;); execute(task, !(task instanceof LazyRunnable) &amp;&amp; wakesUpForTask(task)); } private void execute(Runnable task, boolean immediate) { boolean inEventLoop = inEventLoop(); // 将 task 添加到队列中 addTask(task); if (!inEventLoop) { // 如果该 EventLoop 线程不是当前线程则尝试启动线程 startThread(); if (isShutdown()) { boolean reject = false; try { // 如果启动失败，从 task 队列中……
+        </div>
+        <p class="readmore"><a href="https://sangzhenya.github.io/post/Others/Netty/Netty-EventLoop/">阅读全文</a></p>
+    </article>
+    
+    <article class="post">
+        <header>
+            <h1 class="post-title">
+                <a href="https://sangzhenya.github.io/post/Others/Netty/Netty-%E4%B8%89%E5%A4%A7%E7%BB%84%E4%BB%B6/" title=""></a>
+            </h1>
+        </header>
+        <date class="post-meta meta-date">
+            1年1月1日
+        </date>
+        
+        <div class="post-content">
+            ChannelPipeline, ChannelHandler 和 ChannelHandlerContext 三者的关系是每当 ServerSocket 创建一个新的连接，就会创建一个 Socket 对应的就是目标客户端。每一个新创建的 Socket 都将会分配一个全新的 ChannelPipeline。每个 ChannelPipeline 包含多个 ChannelHandlerContext，其是一个双向链表，包装了通过 addLast 方法添加的 ChannelHandler。 ChannelSocket 和……
+        </div>
+        <p class="readmore"><a href="https://sangzhenya.github.io/post/Others/Netty/Netty-%E4%B8%89%E5%A4%A7%E7%BB%84%E4%BB%B6/">阅读全文</a></p>
+    </article>
+    
+    <article class="post">
+        <header>
+            <h1 class="post-title">
+                <a href="https://sangzhenya.github.io/post/Others/Netty/Netty-%E4%B8%BB%E8%A6%81%E7%BB%84%E4%BB%B6%E5%8F%8A-TCP-%E7%B2%98%E5%8C%85%E5%92%8C%E6%8B%86%E5%8C%85/" title=""></a>
+            </h1>
+        </header>
+        <date class="post-meta meta-date">
+            1年1月1日
+        </date>
+        
+        <div class="post-content">
+            Netty Netty 的主要组件有 Channel， EventLoop，ChannelFuture，ChannelHandler，ChannelPipeline 等。 ChannelHandler 其中 ChannelHandler 是处理出入站数据的业务逻辑容器。例如通过实现 ChannelInboundHandler 接口，就可以接收入站事件和数据。当要给客户端端发送响应的时候，也可以从 ChannelInboundHandler 中写数据。……
+        </div>
+        <p class="readmore"><a href="https://sangzhenya.github.io/post/Others/Netty/Netty-%E4%B8%BB%E8%A6%81%E7%BB%84%E4%BB%B6%E5%8F%8A-TCP-%E7%B2%98%E5%8C%85%E5%92%8C%E6%8B%86%E5%8C%85/">阅读全文</a></p>
+    </article>
+    
+    <article class="post">
+        <header>
+            <h1 class="post-title">
+                <a href="https://sangzhenya.github.io/post/Others/Netty/Netty-%E5%85%A5%E9%97%A8/" title=""></a>
+            </h1>
+        </header>
+        <date class="post-meta meta-date">
+            1年1月1日
+        </date>
+        
+        <div class="post-content">
+            Netty 入门 Netty 是由 JBOSS 提供的一个 Java 开源框架，现在是 GitHub 上的独立项目。其是一个异步的，基于事件驱动的网络应用框架，也来快速开发高性能，高可用的网络 IO 程序。主要针对在 TCP 协议下，面向 Clients 端的高并发应用，或者在 P2P 场景下的大量数据持续传输的应用。本质上还是一个 NIO 框架，适用于服务器通讯相关的多种应用场景……
+        </div>
+        <p class="readmore"><a href="https://sangzhenya.github.io/post/Others/Netty/Netty-%E5%85%A5%E9%97%A8/">阅读全文</a></p>
+    </article>
+    
+    
+
+
+
+<ol class="page-navigator">
+    
+    <li class="prev">
+        <a href="https://sangzhenya.github.io/page/4/">上一页</a>
+    </li>
+    
+
+    
+
+    
+        
+        
+    
+    
+
+    
+        
+        
+        <li >
+            <a href="https://sangzhenya.github.io/">1</a>
+        </li>
+        
+    
+        
+        <li>
+            <span>...</span>
+        </li>
+        
+    
+        
+        
+        <li >
+            <a href="https://sangzhenya.github.io/page/3/">3</a>
+        </li>
+        
+    
+        
+        
+        <li >
+            <a href="https://sangzhenya.github.io/page/4/">4</a>
+        </li>
+        
+    
+        
+        
+        <li  class="current">
+            <a href="https://sangzhenya.github.io/page/5/">5</a>
+        </li>
+        
+    
+        
+        
+        <li >
+            <a href="https://sangzhenya.github.io/page/6/">6</a>
+        </li>
+        
+    
+        
+        
+        <li >
+            <a href="https://sangzhenya.github.io/page/7/">7</a>
+        </li>
+        
+    
+        
+        <li>
+            <span>...</span>
+        </li>
+        
+    
+        
+        
+        <li >
+            <a href="https://sangzhenya.github.io/page/13/">13</a>
+        </li>
+        
+    
+
+    
+    
+
+    <li class="next">
+        <a href="https://sangzhenya.github.io/page/6/">下一页</a>
+    </li>
+    
+</ol>
+
+
+
+
+</div>
+
+                </div>
+
+                <div id="secondary">
+    <section class="widget">
+        <form id="search" action='//www.google.com/search' method="get" accept-charset="utf-8" target="_blank" _lpchecked="1">
+      
+      <input type="text" name="q" maxlength="20" placeholder="Search">
+      <input type="hidden" name="sitesearch" value="https://sangzhenya.github.io/">
+      <button type="submit" class="submit icon-search"></button>
+</form>
+    </section>
+    
+    <section class="widget">
+        <h3 class="widget-title">最近文章</h3>
+<ul class="widget-list">
+    
+    <li>
+        <a href="https://sangzhenya.github.io/post/Java/jdk8/Java-8-Stream/" title="Java 8 Stream">Java 8 Stream</a>
+    </li>
+    
+    <li>
+        <a href="https://sangzhenya.github.io/post/Java/jdk8/Java-8-Lambda/" title="Java 8 Lambda">Java 8 Lambda</a>
+    </li>
+    
+    <li>
+        <a href="https://sangzhenya.github.io/post/Java/juc/Java-ConcurrentHashMap/" title="Java ConcurrentHashMap">Java ConcurrentHashMap</a>
+    </li>
+    
+    <li>
+        <a href="https://sangzhenya.github.io/post/Java/juc/Java-CAS/" title="Java CAS">Java CAS</a>
+    </li>
+    
+    <li>
+        <a href="https://sangzhenya.github.io/post/Java/juc/Java-volatile/" title="Java volatile">Java volatile</a>
+    </li>
+    
+    <li>
+        <a href="https://sangzhenya.github.io/post/Java/juc/Java-ReentrantLock/" title="Java ReentrantLock">Java ReentrantLock</a>
+    </li>
+    
+    <li>
+        <a href="https://sangzhenya.github.io/post/Java/juc/Java-%E5%B9%B6%E5%8F%91%E6%8E%A7%E5%88%B6/" title="Java 并发控制">Java 并发控制</a>
+    </li>
+    
+    <li>
+        <a href="https://sangzhenya.github.io/post/Java/juc/Java-AQS/" title="Java AQS">Java AQS</a>
+    </li>
+    
+    <li>
+        <a href="https://sangzhenya.github.io/post/DataBase/MyBatis/MyBaits-%E4%B8%8E-Spring-Boot/" title=""></a>
+    </li>
+    
+    <li>
+        <a href="https://sangzhenya.github.io/post/DataBase/MyBatis/SQL-%E6%98%A0%E5%B0%84/" title=""></a>
+    </li>
+    
+</ul>
+    </section>
+
+    
+
+    <section class="widget">
+        <h3 class="widget-title">分类</h3>
+<ul class="widget-list">
+    
+    <li><a href="https://sangzhenya.github.io/categories/Java/">Java (8)</a></li>
+    
+    <li><a href="https://sangzhenya.github.io/categories/%E5%85%B3%E4%BA%8E/">关于 (1)</a></li>
+    
+</ul>
+    </section>
+
+    <section class="widget">
+        <h3 class="widget-title">标签</h3>
+<div class="tagcloud">
+    
+    <a href="https://sangzhenya.github.io/tags/JDK8/">JDK8</a>
+    
+    <a href="https://sangzhenya.github.io/tags/JUC/">JUC</a>
+    
+    <a href="https://sangzhenya.github.io/tags/JVM/">JVM</a>
+    
+    <a href="https://sangzhenya.github.io/tags/java/">java</a>
+    
+    <a href="https://sangzhenya.github.io/tags/%E5%85%B3%E4%BA%8E/">关于</a>
+    
+    <a href="https://sangzhenya.github.io/tags/%E9%9B%86%E5%90%88/">集合</a>
+    
+</div>
+    </section>
+
+    
+
+    <section class="widget">
+        <h3 class="widget-title">其它</h3>
+        <ul class="widget-list">
+            <li><a href="https://sangzhenya.github.io/index.xml">文章 RSS</a></li>
+        </ul>
+    </section>
+</div>
+            </div>
+        </div>
+    </div>
+    <footer id="footer">
+    <div class="container">
+        &copy; 2020 <a href="https://sangzhenya.github.io/">新月的博客 By 新月</a>.
+        Powered by <a rel="nofollow noreferer noopener" href="https://gohugo.io" target="_blank">Hugo</a>.
+        Theme based on <a href="https://github.com/flysnow-org/maupassant-hugo" target="_blank">maupassant</a>.
+        
+    </div>
+</footer>
+
+
+
+<a id="rocket" href="#top"></a>
+<script type="text/javascript" src='https://sangzhenya.github.io/js/totop.js?v=0.0.0' async=""></script>
+
+
+
+
+
+
+</body>
+
+</html>

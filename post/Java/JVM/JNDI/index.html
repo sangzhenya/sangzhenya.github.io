@@ -1,0 +1,368 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <title> | 新月的博客</title>
+    <meta property="og:title" content=" - 新月的博客">
+    <meta property="og:type" content="article">
+        
+        
+    <meta name="Keywords" content="">
+    <meta name="description" content="">
+        
+    <meta name="author" content="新月">
+    <meta property="og:url" content="https://sangzhenya.github.io/post/Java/JVM/JNDI/">
+    <link rel="shortcut icon" href="https://sangzhenya.github.io/favicon.ico" type="image/x-icon">
+
+    <link rel="stylesheet" href='https://sangzhenya.github.io/css/normalize.css'>
+    <link rel="stylesheet" href='https://sangzhenya.github.io/css/style.css'>
+    <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+
+    
+
+
+    
+    
+</head>
+
+
+<body>
+    <header id="header" class="clearfix">
+    <div class="container">
+        <div class="col-group">
+            <div class="site-name ">
+                
+                    <a id="logo" href="https://sangzhenya.github.io/">
+                        新月的博客
+                    </a>
+                
+                <p class="description">晚来天欲雪，能饮一杯无？</p>
+            </div>
+            <div>
+                <nav id="nav-menu" class="clearfix">
+                    <a class="current" href="https://sangzhenya.github.io/">首页</a>
+                    
+                    <a  href="https://sangzhenya.github.io/archives/" title="归档">归档</a>
+                    
+                    <a  href="https://sangzhenya.github.io/about/" title="关于">关于</a>
+                    
+                </nav>
+            </div>
+        </div>
+    </div>
+</header>
+
+    <div id="body">
+        <div class="container">
+            <div class="col-group">
+
+                <div class="col-8" id="main">
+                    
+<div class="res-cons">
+    
+    <article class="post">
+        <header>
+            <h1 class="post-title"></h1>
+        </header>
+        <date class="post-meta meta-date">
+            1年1月1日
+        </date>
+        
+        
+        
+        <div class="post-content">
+            <h2 id="java-jndi">Java JNDI</h2>
+<p>JNDI 即 Java Naming and Direcotry Interface 即 Java 命名与目录接口。是为 Java 编程的客户端提供的一个统一的命名服务和目录系统接口，不依赖于任何特定的服务实现。JDNI 的架构包含一个 API和一个 service provider interface(SPI)。Java 程序使用 JNDI API 去访问不同的命名服务和目录系统接口。SPI 则使得不同的命名服务和目录系统的能够透明的镶嵌进来，进而使得 Java 程序可以通过这些 JNDI API 访问不同的服务。架构如下：</p>
+<p><img src="https://i.loli.net/2019/08/28/LvnRHXyStFm8PY7.png" alt="JNDI 架构"></p>
+<p>如果要使用 JNDI，首先要有 JNDI 的类并且有至少一个 servier provider, JDK 中包含了下面一些命名服务和目录系统的 service:</p>
+<ol>
+<li>Lightweight Directory Access Protocol (LDAP)</li>
+<li>Common Object Request Broker Architecture (CORBA) Common Object Services (COS) name service</li>
+<li>Java Remote Method Invocation (RMI) Registry</li>
+<li>Domain Name Service (DNS)</li>
+</ol>
+<h3 id="naming-包">Naming 包</h3>
+<p><code>javax.name</code> 包中包含了一系列访问命名服务的类和接口。其中 <code>Context</code> 是一个核心的接口，用于 looking up, binding/unbindiing, renaming objects 和 creating and destorying subcontexts.</p>
+<ul>
+<li>
+<p>Lookup, 最常使用的方法 <code>lookup()</code> ，可以根据提供的名称返回绑定在这个名称的上的 Object。</p>
+</li>
+<li>
+<p>Binding, <code>listBindings()</code> 返回一个 name-to-object 绑定的集合，一个 binding 是一个包含了名称和绑定对象的元祖，<code>list()</code> 和 <code>listBindings()</code> 类似，只是其提供的是所有名名称的集合，对于只想获取绑定了哪些名称，而不是想要真正的获取这些对象而言是很合适的。</p>
+</li>
+<li>
+<p>Name, 是一个泛型名称接口，零到多个组件的有序序列。</p>
+</li>
+<li>
+<p>References，对象在命名服务与目录系统中存储方法可能各种各样，而 reference 是对象紧凑的一种表现形式， JNDI 定义了 Reference 类去表示 reference。一个 reference 包含了去创建一个对象的所需要的信息，</p>
+</li>
+</ul>
+<p>在  JNDI 中，所有的命名服务和目录系统的都是相对于上下文执行的，所以 JNDI 定义了 <code>InitialContext</code> 作为一个命名服务和目录系统的起始点，只有在此之后才可以使用去 look up 其他 context 和  objects。</p>
+<p>简单来讲命名服务就是值与值之间的映射或者说是一组数据的别名，一组计算机容易认识的值的别名。</p>
+<h3 id="jndi-的使用的一个例子">JNDI 的使用的一个例子</h3>
+<p>访问 MySQL 数据库的时候首先要要根据驱动类名称获取 MySQL 的 JDBC 驱动，然后使用 JDBC URL 连接到数据库，才能继续进行数据操作：</p>
+<div class="highlight"><div style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4">
+<table style="border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">1
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">2
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">3
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">4
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#998;font-style:italic">// 获取驱动
+</span><span style="color:#998;font-style:italic"></span>Class<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">forName</span><span style="color:#000;font-weight:bold">(</span><span style="color:#d14">&#34;com.mysql.jdbc.Driver&#34;</span><span style="color:#000;font-weight:bold">,</span> <span style="color:#000;font-weight:bold">true</span><span style="color:#000;font-weight:bold">,</span> Thread<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">currentThread</span><span style="color:#000;font-weight:bold">().</span><span style="color:#008080">getContextClassLoader</span><span style="color:#000;font-weight:bold">());</span> 
+<span style="color:#998;font-style:italic">// 建立
+</span><span style="color:#998;font-style:italic"></span>conn<span style="color:#000;font-weight:bold">=</span>DriverManager<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">getConnection</span><span style="color:#000;font-weight:bold">(</span><span style="color:#a61717;background-color:#e3d2d2">&#34;</span>jdbc<span style="color:#000;font-weight:bold">:</span>mysql<span style="color:#000;font-weight:bold">:</span><span style="color:#998;font-style:italic">//localhost:3306/demo?user=demo&amp;password=demo 
+</span></code></pre></td></tr></table>
+</div>
+</div><p>考虑到数据库驱动，服务器，用户名和口令以及一些其他配置都可能更改，所以显然这样硬编码是不好的。有了 JNDI 之后就可以在 J2EE 中容器中配置 JNDI 参数，定义一个数据源并设置名称，程序中通过数据源名称引用数据源进而访问数据库。</p>
+<p>例如在 Tomcat 中配置 JNDI 数据源，是在 tomcat 的 <code>/conf/context.xml</code> 文件中配置 JNDI  数据源，程序便可以通过名称找到对应的数据源对象。配置如下：</p>
+<div class="highlight"><div style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4">
+<table style="border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 1
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 2
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 3
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 4
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 5
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 6
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 7
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 8
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 9
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">10
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">11
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">12
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-xml" data-lang="xml"><span style="color:#998;font-style:italic">&lt;!-- JDBC数据源 --&gt;</span>
+<span style="color:#000080">&lt;Resource</span> <span style="color:#008080">name=</span><span style="color:#d14">&#34;jndi-demo&#34;</span>
+  <span style="color:#008080">auth=</span><span style="color:#d14">&#34;Container&#34;</span> 
+  <span style="color:#008080">type=</span><span style="color:#d14">&#34;javax.sql.DataSource&#34;</span>
+  <span style="color:#008080">driverClassName=</span><span style="color:#d14">&#34;com.mysql.jdbc.Driver&#34;</span>
+  <span style="color:#008080">url=</span><span style="color:#d14">&#34;jdbc:mysql://localhost:3306/demo&#34;</span>
+  <span style="color:#008080">username=</span><span style="color:#d14">&#34;demo&#34;</span>
+  <span style="color:#008080">password=</span><span style="color:#d14">&#34;demo&#34;</span>
+  <span style="color:#008080">maxActiv =</span><span style="color:#d14">&#34;20&#34;</span>
+  <span style="color:#008080">maxIdle=</span><span style="color:#d14">&#34;1&#34;</span>
+  <span style="color:#008080">maxWait=</span><span style="color:#d14">&#34;1&#34;</span>
+<span style="color:#000080">/&gt;</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>上述文件定义了一个名称叫做 <code>jndi-demo</code>  的数据源，当然可以定义多个 Resource 去连接不同的数据库。</p>
+<p><code>web.xml</code> 中需要如下配置：</p>
+<div class="highlight"><div style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4">
+<table style="border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">1
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">2
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">3
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">4
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">5
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">6
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-xml" data-lang="xml"><span style="color:#000080">&lt;resource-ref&gt;</span>
+  <span style="color:#000080">&lt;description&gt;</span>jndi demo<span style="color:#000080">&lt;/description&gt;</span>
+  <span style="color:#000080">&lt;res-ref-name&gt;</span>jndi-demo<span style="color:#000080">&lt;/res-ref-name&gt;</span>
+  <span style="color:#000080">&lt;res-type&gt;</span>javax.sql.DataSource<span style="color:#000080">&lt;/res-type&gt;</span>
+  <span style="color:#000080">&lt;res-auth&gt;</span>Container<span style="color:#000080">&lt;/res-auth&gt;</span>
+<span style="color:#000080">&lt;/resource-ref&gt;</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>程序中则直接通过下面的方式引用：</p>
+<div class="highlight"><div style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4">
+<table style="border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">1
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">2
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">3
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java">Context context <span style="color:#000;font-weight:bold">=</span> <span style="color:#000;font-weight:bold">new</span> InitialContext<span style="color:#000;font-weight:bold">();</span>
+DataSource dataSource <span style="color:#000;font-weight:bold">=</span> <span style="color:#000;font-weight:bold">(</span>DataSource<span style="color:#000;font-weight:bold">)</span>context<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">lookup</span><span style="color:#000;font-weight:bold">(</span><span style="color:#d14">&#34;java:comp/env/jndi-demo&#34;</span><span style="color:#000;font-weight:bold">);</span>
+Connection Connection conn <span style="color:#000;font-weight:bold">=</span> dataSource<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">getConnection</span><span style="color:#000;font-weight:bold">();</span>
+</code></pre></td></tr></table>
+</div>
+</div><p><em><code>java:comp/env</code> 是一个 JNDI 的节点，在这个节点上你可以找到当前 J2EE 容器组件的配置信息</em></p>
+<p>如果使用了 Spring 容器，则可以在 配置文件中 dataSource Bean 中进行如下的配置：</p>
+<div class="highlight"><div style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4">
+<table style="border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">1
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">2
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">3
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">4
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">5
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-xml" data-lang="xml"><span style="color:#000080">&lt;bean</span> <span style="color:#008080">id=</span><span style="color:#d14">&#34;dataSource&#34;</span> <span style="color:#008080">class=</span><span style="color:#d14">&#34;org.springframework.jndi.JndiObjectFactoryBean&#34;</span><span style="color:#000080">&gt;</span>
+    <span style="color:#000080">&lt;property</span> <span style="color:#008080">name=</span><span style="color:#d14">&#34;jndiName&#34;</span><span style="color:#000080">&gt;</span>
+        <span style="color:#000080">&lt;value&gt;</span>java:comp/env/jndi-demo<span style="color:#000080">&lt;/value&gt;</span>
+    <span style="color:#000080">&lt;/property&gt;</span>
+<span style="color:#000080">&lt;/bean&gt;</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>如果使用的是 SpringBoot 则在配置中对 dataSource 的配置如下：</p>
+<pre><code class="language-properties" data-lang="properties">spring.datasource.jndi-name=java:comp/env/jndi-demo
+</code></pre><p>参考：</p>
+<ol>
+<li><a href="https://jiges.github.io/2017/12/08/JNDI%E6%98%AF%E4%BB%80%E4%B9%88/">JNDI是什么</a></li>
+</ol>
+
+        </div>
+
+        
+
+
+        
+
+
+        <div class="post-meta meta-tags">
+            
+            没有标签
+            
+        </div>
+    </article>
+    
+    
+
+    
+    
+</div>
+
+                </div>
+
+                <div id="secondary">
+    <section class="widget">
+        <form id="search" action='//www.google.com/search' method="get" accept-charset="utf-8" target="_blank" _lpchecked="1">
+      
+      <input type="text" name="q" maxlength="20" placeholder="Search">
+      <input type="hidden" name="sitesearch" value="https://sangzhenya.github.io/">
+      <button type="submit" class="submit icon-search"></button>
+</form>
+    </section>
+    
+    <section class="widget">
+        <h3 class="widget-title">最近文章</h3>
+<ul class="widget-list">
+    
+    <li>
+        <a href="https://sangzhenya.github.io/post/Java/jdk8/Java-8-Stream/" title="Java 8 Stream">Java 8 Stream</a>
+    </li>
+    
+    <li>
+        <a href="https://sangzhenya.github.io/post/Java/jdk8/Java-8-Lambda/" title="Java 8 Lambda">Java 8 Lambda</a>
+    </li>
+    
+    <li>
+        <a href="https://sangzhenya.github.io/post/Java/juc/Java-ConcurrentHashMap/" title="Java ConcurrentHashMap">Java ConcurrentHashMap</a>
+    </li>
+    
+    <li>
+        <a href="https://sangzhenya.github.io/post/Java/juc/Java-CAS/" title="Java CAS">Java CAS</a>
+    </li>
+    
+    <li>
+        <a href="https://sangzhenya.github.io/post/Java/juc/Java-volatile/" title="Java volatile">Java volatile</a>
+    </li>
+    
+    <li>
+        <a href="https://sangzhenya.github.io/post/Java/juc/Java-ReentrantLock/" title="Java ReentrantLock">Java ReentrantLock</a>
+    </li>
+    
+    <li>
+        <a href="https://sangzhenya.github.io/post/Java/juc/Java-%E5%B9%B6%E5%8F%91%E6%8E%A7%E5%88%B6/" title="Java 并发控制">Java 并发控制</a>
+    </li>
+    
+    <li>
+        <a href="https://sangzhenya.github.io/post/Java/juc/Java-AQS/" title="Java AQS">Java AQS</a>
+    </li>
+    
+    <li>
+        <a href="https://sangzhenya.github.io/post/DataBase/MyBatis/MyBaits-%E4%B8%8E-Spring-Boot/" title=""></a>
+    </li>
+    
+    <li>
+        <a href="https://sangzhenya.github.io/post/DataBase/MyBatis/SQL-%E6%98%A0%E5%B0%84/" title=""></a>
+    </li>
+    
+</ul>
+    </section>
+
+    
+
+    <section class="widget">
+        <h3 class="widget-title">分类</h3>
+<ul class="widget-list">
+    
+    <li><a href="https://sangzhenya.github.io/categories/Java/">Java (8)</a></li>
+    
+    <li><a href="https://sangzhenya.github.io/categories/%E5%85%B3%E4%BA%8E/">关于 (1)</a></li>
+    
+</ul>
+    </section>
+
+    <section class="widget">
+        <h3 class="widget-title">标签</h3>
+<div class="tagcloud">
+    
+    <a href="https://sangzhenya.github.io/tags/JDK8/">JDK8</a>
+    
+    <a href="https://sangzhenya.github.io/tags/JUC/">JUC</a>
+    
+    <a href="https://sangzhenya.github.io/tags/JVM/">JVM</a>
+    
+    <a href="https://sangzhenya.github.io/tags/java/">java</a>
+    
+    <a href="https://sangzhenya.github.io/tags/%E5%85%B3%E4%BA%8E/">关于</a>
+    
+    <a href="https://sangzhenya.github.io/tags/%E9%9B%86%E5%90%88/">集合</a>
+    
+</div>
+    </section>
+
+    
+
+    <section class="widget">
+        <h3 class="widget-title">其它</h3>
+        <ul class="widget-list">
+            <li><a href="https://sangzhenya.github.io/index.xml">文章 RSS</a></li>
+        </ul>
+    </section>
+</div>
+            </div>
+        </div>
+    </div>
+    <footer id="footer">
+    <div class="container">
+        &copy; 2020 <a href="https://sangzhenya.github.io/">新月的博客 By 新月</a>.
+        Powered by <a rel="nofollow noreferer noopener" href="https://gohugo.io" target="_blank">Hugo</a>.
+        Theme based on <a href="https://github.com/flysnow-org/maupassant-hugo" target="_blank">maupassant</a>.
+        
+    </div>
+</footer>
+
+
+    
+    <script type="text/javascript">
+        window.MathJax = {
+            tex2jax: {
+                inlineMath: [['$', '$']],
+                processEscapes: true
+                }
+            };
+    </script>
+    <script src='https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-MML-AM_CHTML' async></script>
+
+
+<a id="rocket" href="#top"></a>
+<script type="text/javascript" src='https://sangzhenya.github.io/js/totop.js?v=0.0.0' async=""></script>
+
+
+
+
+
+
+</body>
+
+</html>
