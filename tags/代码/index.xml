@@ -21,6 +21,15 @@
     </item>
     
     <item>
+      <title>《重构》读书笔记</title>
+      <link>https://sangzhenya.github.io/post/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/%E9%87%8D%E6%9E%84%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/</link>
+      <pubDate>Sun, 06 Jan 2019 09:00:00 +0800</pubDate>
+      
+      <guid>https://sangzhenya.github.io/post/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/%E9%87%8D%E6%9E%84%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/</guid>
+      <description>**为何重构：**重构改进软件设计，重构使软件更容易理解，重构找到Bug， 重构提高编程速度。良好的设计师快速开发的根本。 何时重构： 事不过三，三则重构 添加功能时重构 修补错误时重构 复查代码时重构 代码的坏味道 重复代码 同一个类中有两段相同的表达式：抽取方法，提炼出重复代码。 互为兄弟的子类</description>
+    </item>
+    
+    <item>
       <title>《编写可读代码的艺术》读书笔记</title>
       <link>https://sangzhenya.github.io/post/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/%E7%BC%96%E5%86%99%E5%8F%AF%E8%AF%BB%E4%BB%A3%E7%A0%81%E7%9A%84%E8%89%BA%E6%9C%AF%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/</link>
       <pubDate>Sat, 05 Jan 2019 09:00:00 +0800</pubDate>
