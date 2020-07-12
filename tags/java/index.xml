@@ -21,15 +21,6 @@
     </item>
     
     <item>
-      <title>Java OOM</title>
-      <link>https://sangzhenya.github.io/post/Java/JVM/Java-OOM/</link>
-      <pubDate>Sat, 07 Mar 2020 09:00:00 +0800</pubDate>
-      
-      <guid>https://sangzhenya.github.io/post/Java/JVM/Java-OOM/</guid>
-      <description>StackOverflowError 1 2 3 4 5 6 7 8 9 public class StackOverFlowErrorDemo { public static void main(String[] args) { stackOverFlow(); } private static void stackOverFlow() { stackOverFlow(); } } 递归调用过多，导致溢出。 1 2 3 4 5 6 7 8 9 10 11 12 Exception in thread &amp;#34;main&amp;#34; java.lang.StackOverflowError at demo.oom.StackOverFlowErrorDemo.stackOverFlow(StackOverFlowErrorDemo.java:13) at demo.oom.StackOverFlowErrorDemo.stackOverFlow(StackOverFlowErrorDemo.java:13) at demo.oom.StackOverFlowErrorDemo.stackOverFlow(StackOverFlowErrorDemo.java:13) at demo.oom.StackOverFlowErrorDemo.stackOverFlow(StackOverFlowErrorDemo.java:13) at demo.oom.StackOverFlowErrorDemo.stackOverFlow(StackOverFlowErrorDemo.java:13) at demo.oom.StackOverFlowErrorDemo.stackOverFlow(StackOverFlowErrorDemo.java:13) at demo.oom.StackOverFlowErrorDemo.stackOverFlow(StackOverFlowErrorDemo.java:13) at demo.oom.StackOverFlowErrorDemo.stackOverFlow(StackOverFlowErrorDemo.java:13) at demo.oom.StackOverFlowErrorDemo.stackOverFlow(StackOverFlowErrorDemo.java:13) at demo.oom.StackOverFlowErrorDemo.stackOverFlow(StackOverFlowErrorDemo.java:13) at demo.oom.StackOverFlowErrorDemo.stackOverFlow(StackOverFlowErrorDemo.java:13) OutOfMemoryError: Java heap space 1 2 3 4 5 6 7 8 9 public class JavaHeapSpaceDemo { public static void main(String[] args) { String string = &amp;#34;demo&amp;#34;; while (true) { string += string + new Random().nextInt(100000000); string.intern(); } } } 内存不足导致，堆内存溢出 1 2 3 4 5 6 Exception</description>
-    </item>
-    
-    <item>
       <title>Java JVM</title>
       <link>https://sangzhenya.github.io/post/Java/JVM/Java-JVM/</link>
       <pubDate>Tue, 03 Mar 2020 09:00:00 +0800</pubDate>
@@ -99,6 +90,15 @@
       
       <guid>https://sangzhenya.github.io/post/Java/JVM/Java-%E5%8F%8C%E4%BA%B2%E5%A7%94%E6%B4%BE%E6%A8%A1%E5%9E%8B/</guid>
       <description>类加载机制 类从被加载到虚拟机内存开始，到卸载出内存为止，整个生命周期包括：加载 -&amp;gt; 验证 -&amp;gt; 准备 -&amp;gt; 解析 -&amp;gt; 初始化 -&amp;gt; 使用 -&amp;gt; 卸载 7个阶段。其中 验证、准备、解析三个阶段可以统称为连接。如图所示： 以上过程中加载、验证、准备、初始化和卸载5个阶段的顺序是确定的，但是解析阶段则不一定，在一些情况下可</description>
+    </item>
+    
+    <item>
+      <title>Java OOM</title>
+      <link>https://sangzhenya.github.io/post/Java/JVM/Java-OOM/</link>
+      <pubDate>Thu, 07 Mar 2019 09:00:00 +0800</pubDate>
+      
+      <guid>https://sangzhenya.github.io/post/Java/JVM/Java-OOM/</guid>
+      <description>StackOverflowError 1 2 3 4 5 6 7 8 9 public class StackOverFlowErrorDemo { public static void main(String[] args) { stackOverFlow(); } private static void stackOverFlow() { stackOverFlow(); } } 递归调用过多，导致溢出。 1 2 3 4 5 6 7 8 9 10 11 12 Exception in thread &amp;#34;main&amp;#34; java.lang.StackOverflowError at demo.oom.StackOverFlowErrorDemo.stackOverFlow(StackOverFlowErrorDemo.java:13) at demo.oom.StackOverFlowErrorDemo.stackOverFlow(StackOverFlowErrorDemo.java:13) at demo.oom.StackOverFlowErrorDemo.stackOverFlow(StackOverFlowErrorDemo.java:13) at demo.oom.StackOverFlowErrorDemo.stackOverFlow(StackOverFlowErrorDemo.java:13) at demo.oom.StackOverFlowErrorDemo.stackOverFlow(StackOverFlowErrorDemo.java:13) at demo.oom.StackOverFlowErrorDemo.stackOverFlow(StackOverFlowErrorDemo.java:13) at demo.oom.StackOverFlowErrorDemo.stackOverFlow(StackOverFlowErrorDemo.java:13) at demo.oom.StackOverFlowErrorDemo.stackOverFlow(StackOverFlowErrorDemo.java:13) at demo.oom.StackOverFlowErrorDemo.stackOverFlow(StackOverFlowErrorDemo.java:13) at demo.oom.StackOverFlowErrorDemo.stackOverFlow(StackOverFlowErrorDemo.java:13) at demo.oom.StackOverFlowErrorDemo.stackOverFlow(StackOverFlowErrorDemo.java:13) OutOfMemoryError: Java heap space 1 2 3 4 5 6 7 8 9 public class JavaHeapSpaceDemo { public static void main(String[] args) { String string = &amp;#34;demo&amp;#34;; while (true) { string += string + new Random().nextInt(100000000); string.intern(); } } } 内存不足导致，堆内存溢出 1 2 3 4 5 6 Exception</description>
     </item>
     
     <item>

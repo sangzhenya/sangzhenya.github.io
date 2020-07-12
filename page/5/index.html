@@ -67,29 +67,6 @@
     <article class="post">
         <header>
             <h1 class="post-title">
-                <a href="https://sangzhenya.github.io/post/Others/Linux-%E5%91%BD%E4%BB%A4/" title="Linux 命令">Linux 命令</a>
-            </h1>
-        </header>
-        <date class="post-meta meta-date">
-            2019年4月21日
-        </date>
-        
-        <div class="post-meta">
-            <span>|</span>
-            
-            <span class="meta-category"><a href='https://sangzhenya.github.io/categories/%E5%85%B6%E4%BB%96'>其他</a></span>
-            
-        </div>
-        
-        <div class="post-content">
-            强制卸载软件： 1 2 3 4 sudo mv /var/lib/dpkg/info/{packagename}.* /tmp/ sudo dpkg --remove --force-remove-reinstreq {packagename} sudo apt-get remove {packagename} sudo apt-get autoremove &amp;&amp; sudo apt-get autoclean 常用命令： top 命令： load average: 三个值分别是系统 1分钟，5分钟，15分钟系统的负载平均值。如果三个值相加，除以3，乘以 100%的结果大于 60%，则表明系统压力过大。 uptime 命令精简版，显示系统负载情况。 vmstat 命令； vmstat -n 2 3 每 2 秒查询一次，……
-        </div>
-        <p class="readmore"><a href="https://sangzhenya.github.io/post/Others/Linux-%E5%91%BD%E4%BB%A4/">阅读全文</a></p>
-    </article>
-    
-    <article class="post">
-        <header>
-            <h1 class="post-title">
                 <a href="https://sangzhenya.github.io/post/Others/Jenkins-%E8%87%AA%E5%8A%A8%E9%83%A8%E7%BD%B2/" title="Jenkins 自动部署">Jenkins 自动部署</a>
             </h1>
         </header>
@@ -294,6 +271,29 @@
         <p class="readmore"><a href="https://sangzhenya.github.io/post/Others/Netty/Netty-%E4%B8%BB%E8%A6%81%E7%BB%84%E4%BB%B6/">阅读全文</a></p>
     </article>
     
+    <article class="post">
+        <header>
+            <h1 class="post-title">
+                <a href="https://sangzhenya.github.io/post/Others/Netty/Netty-%E5%BF%83%E8%B7%B3%E6%9C%BA%E5%88%B6/" title="Netty 心跳机制">Netty 心跳机制</a>
+            </h1>
+        </header>
+        <date class="post-meta meta-date">
+            2019年4月1日
+        </date>
+        
+        <div class="post-meta">
+            <span>|</span>
+            
+            <span class="meta-category"><a href='https://sangzhenya.github.io/categories/Netty'>Netty</a></span>
+            
+        </div>
+        
+        <div class="post-content">
+            Netty 提供了一个重要的服务心跳机制 heartbeat。通过心跳检查对方是否有效，这是 RPC 框架中必不可少的功能。接下来分析相关源码的实现。 Netty 提供了 IdleStateHandler, ReadTimeoutHandler, WriteTimeoutHandler 三个 Handler 检测连接的有效性。 IdleStateHandler：当连接的空闲时间（读/写）太长时，将会触发一个 IdleStateEvent 事件，然后可以通过 ChannelInboundHandler 中重写 userEventTrigged 方……
+        </div>
+        <p class="readmore"><a href="https://sangzhenya.github.io/post/Others/Netty/Netty-%E5%BF%83%E8%B7%B3%E6%9C%BA%E5%88%B6/">阅读全文</a></p>
+    </article>
+    
     
 
 
@@ -411,10 +411,6 @@
     </li>
     
     <li>
-        <a href="https://sangzhenya.github.io/post/Java/JVM/Java-OOM/" title="Java OOM">Java OOM</a>
-    </li>
-    
-    <li>
         <a href="https://sangzhenya.github.io/post/Java/JVM/Java-JVM/" title="Java JVM">Java JVM</a>
     </li>
     
@@ -444,6 +440,10 @@
     
     <li>
         <a href="https://sangzhenya.github.io/post/%E5%BE%AE%E6%9C%8D%E5%8A%A1/dubbo/Dubbo-%E5%8E%9F%E7%90%86/" title="Dubbo 原理">Dubbo 原理</a>
+    </li>
+    
+    <li>
+        <a href="https://sangzhenya.github.io/post/Java/JVM/Java-%E5%8F%8C%E4%BA%B2%E5%A7%94%E6%B4%BE%E6%A8%A1%E5%9E%8B/" title="Java 双亲委派模型">Java 双亲委派模型</a>
     </li>
     
 </ul>

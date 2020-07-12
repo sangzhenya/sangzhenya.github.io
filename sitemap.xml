@@ -43,11 +43,6 @@
   </url>
   
   <url>
-    <loc>https://sangzhenya.github.io/post/Java/JVM/Java-OOM/</loc>
-    <lastmod>2020-03-07T09:00:00+08:00</lastmod>
-  </url>
-  
-  <url>
     <loc>https://sangzhenya.github.io/post/Java/JVM/Java-JVM/</loc>
     <lastmod>2020-03-03T09:00:00+08:00</lastmod>
   </url>
@@ -530,6 +525,11 @@
   <url>
     <loc>https://sangzhenya.github.io/post/Spring/Spring-Boot/Spring-Boot-MyBatis-%E5%A4%9A%E6%95%B0%E6%8D%AE%E6%BA%90%E9%85%8D%E7%BD%AE/</loc>
     <lastmod>2019-03-09T09:00:00+08:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://sangzhenya.github.io/post/Java/JVM/Java-OOM/</loc>
+    <lastmod>2019-03-07T09:00:00+08:00</lastmod>
   </url>
   
   <url>

@@ -69,31 +69,6 @@
     <article class="post">
         <header>
             <h1 class="post-title">
-                <a href="https://sangzhenya.github.io/post/Others/Netty/Netty-%E5%BF%83%E8%B7%B3%E6%9C%BA%E5%88%B6/" title="Netty 心跳机制">Netty 心跳机制</a>
-            </h1>
-        </header>
-        <date class="post-meta meta-date">
-            2019年4月1日
-        </date>
-        
-        <div class="post-meta">
-            <span>|</span>
-            
-            <span class="meta-category"><a href='https://sangzhenya.github.io/categories/Netty'>Netty</a></span>
-            
-        </div>
-        
-        <div class="post-content">
-            Netty 提供了一个重要的服务心跳机制 heartbeat。通过心跳检查对方是否有效，这是 RPC 框架中必不可少的功能。接下来分析相关源码的实现。 Netty 提供了 IdleStateHandler, ReadTimeoutHandler, WriteTimeoutHandler 三个 Handler 检测连接的有效性。 IdleStateHandler：当连接的空闲时间（读/写）太长时，将会触发一个 IdleStateEvent 事件，然后可以通过 ChannelInboundHandler 中重写 userEventTrigged 方……
-        </div>
-        <p class="readmore"><a href="https://sangzhenya.github.io/post/Others/Netty/Netty-%E5%BF%83%E8%B7%B3%E6%9C%BA%E5%88%B6/">阅读全文</a></p>
-    </article>
-    
-    
-    
-    <article class="post">
-        <header>
-            <h1 class="post-title">
                 <a href="https://sangzhenya.github.io/post/Others/Netty/Netty-%E5%BC%82%E6%AD%A5%E7%BA%BF%E7%A8%8B%E6%B1%A0/" title="Netty 异步线程池">Netty 异步线程池</a>
             </h1>
         </header>
@@ -316,6 +291,31 @@
     
     
     
+    <article class="post">
+        <header>
+            <h1 class="post-title">
+                <a href="https://sangzhenya.github.io/post/Spring/Spring-Boot/Spring-Boot-MyBatis-%E5%A4%9A%E6%95%B0%E6%8D%AE%E6%BA%90%E9%85%8D%E7%BD%AE/" title="Spring Boot MyBatis 多数据源配置">Spring Boot MyBatis 多数据源配置</a>
+            </h1>
+        </header>
+        <date class="post-meta meta-date">
+            2019年3月9日
+        </date>
+        
+        <div class="post-meta">
+            <span>|</span>
+            
+            <span class="meta-category"><a href='https://sangzhenya.github.io/categories/Spring'>Spring</a></span>
+            
+        </div>
+        
+        <div class="post-content">
+            主要有两种配置方式：第一种是自定义配置 SqlSessionFactory ，第二种是使用 AbstractRoutingDataSource + AOP 的方式实现 自定义 SqlSessionFactory 首先关闭 Spring Boot 对于 DataSourceAutoConfiguration: 1 2 3 @SpringBootApplication(exclude = { DataSourceAutoConfiguration.class }) 然后配置 DataSourceConfig，例如这边有两个数据库连接： 1 2 3 4 5 6 7 8 9 10 11 12 13 14 @Configuration public class DataSourceConfig { @Bean(name = &#34;db1&#34;) @ConfigurationProperties(prefix = &#34;spring.datasource.db1&#34;) public DataSource db1Source() { return DataSourceBuilder.create().build(); } @Bean(name = &#34;db2&#34;) @ConfigurationProperties(prefix = &#34;spring.datasource.db2&#34;) public DataSource db2Source() { return DataSourceBuilder.create().build(); } } 然后在配……
+        </div>
+        <p class="readmore"><a href="https://sangzhenya.github.io/post/Spring/Spring-Boot/Spring-Boot-MyBatis-%E5%A4%9A%E6%95%B0%E6%8D%AE%E6%BA%90%E9%85%8D%E7%BD%AE/">阅读全文</a></p>
+    </article>
+    
+    
+    
 
 
 
@@ -432,10 +432,6 @@
     </li>
     
     <li>
-        <a href="https://sangzhenya.github.io/post/Java/JVM/Java-OOM/" title="Java OOM">Java OOM</a>
-    </li>
-    
-    <li>
         <a href="https://sangzhenya.github.io/post/Java/JVM/Java-JVM/" title="Java JVM">Java JVM</a>
     </li>
     
@@ -465,6 +461,10 @@
     
     <li>
         <a href="https://sangzhenya.github.io/post/%E5%BE%AE%E6%9C%8D%E5%8A%A1/dubbo/Dubbo-%E5%8E%9F%E7%90%86/" title="Dubbo 原理">Dubbo 原理</a>
+    </li>
+    
+    <li>
+        <a href="https://sangzhenya.github.io/post/Java/JVM/Java-%E5%8F%8C%E4%BA%B2%E5%A7%94%E6%B4%BE%E6%A8%A1%E5%9E%8B/" title="Java 双亲委派模型">Java 双亲委派模型</a>
     </li>
     
 </ul>

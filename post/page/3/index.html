@@ -69,31 +69,6 @@
     <article class="post">
         <header>
             <h1 class="post-title">
-                <a href="https://sangzhenya.github.io/post/%E5%BE%AE%E6%9C%8D%E5%8A%A1/Docker/" title="Docker 入门">Docker 入门</a>
-            </h1>
-        </header>
-        <date class="post-meta meta-date">
-            2020年1月1日
-        </date>
-        
-        <div class="post-meta">
-            <span>|</span>
-            
-            <span class="meta-category"><a href='https://sangzhenya.github.io/categories/%E5%BE%AE%E6%9C%8D%E5%8A%A1'>微服务</a></span>
-            
-        </div>
-        
-        <div class="post-content">
-            基本概念 Docker 镜像是一个只读的模板。镜像可以用来创建 Docker 容器，一个镜像可以创建多个容器。仓库是存放镜像文件的地方，仓库注册服务器上存放着多个仓库。 镜像可以类比为 Java 的类，而容器可以类比为对象。 Docker 工作原理 Docker 是一个 Client-Server 结构的系统，Docker 守护进程运行在主机上，然后通过 Socket 连接客户端访问，守护……
-        </div>
-        <p class="readmore"><a href="https://sangzhenya.github.io/post/%E5%BE%AE%E6%9C%8D%E5%8A%A1/Docker/">阅读全文</a></p>
-    </article>
-    
-    
-    
-    <article class="post">
-        <header>
-            <h1 class="post-title">
                 <a href="https://sangzhenya.github.io/post/MQ/RocketMQ/" title="Rocket MQ">Rocket MQ</a>
             </h1>
         </header>
@@ -316,6 +291,31 @@
     
     
     
+    <article class="post">
+        <header>
+            <h1 class="post-title">
+                <a href="https://sangzhenya.github.io/post/DataBase/MyBatis/MyBatis-SQL-%E6%98%A0%E5%B0%84/" title="MyBatis SQL 映射">MyBatis SQL 映射</a>
+            </h1>
+        </header>
+        <date class="post-meta meta-date">
+            2019年5月15日
+        </date>
+        
+        <div class="post-meta">
+            <span>|</span>
+            
+            <span class="meta-category"><a href='https://sangzhenya.github.io/categories/MyBaits'>MyBaits</a></span>
+            
+        </div>
+        
+        <div class="post-content">
+            一个包含增删改查的 MyBatis Mapper 文件如下： 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 &lt;?xml version=&#34;1.0&#34; encoding=&#34;UTF-8&#34; ?&gt; &lt;!DOCTYPE mapper PUBLIC &#34;-//mybatis.org//DTD Mapper 3.0//EN&#34; &#34;http://mybatis.org/dtd/mybatis-3-mapper.dtd&#34;&gt; &lt;mapper namespace=&#34;com.xinyue.imybatis.mapper.UserMapper&#34;&gt; &lt;select id=&#34;getUserById&#34; resultType=&#34;User&#34; databaseId=&#34;mysql&#34;&gt; select id, name, password, first_name firstName, last_name lastName from user where id = #{id} &lt;/select&gt; &lt;insert id=&#34;createUser&#34; parameterType=&#34;User&#34;&gt; insert into user (name, password, first_name, last_name) values (#{name}, #{password}, #{firstName}, #{lastName}) &lt;/insert&gt; &lt;update id=&#34;updateUser&#34;&gt; update user set name = #{name}, password=#{password}, first_name=#{firstName} where id=#{id} &lt;/update&gt; &lt;delete id=&#34;deleteUser&#34;&gt; delete from user where id = #{id} &lt;/delete&gt; &lt;/mapper&gt; 一个简单的测试样例如下： 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 @Test public void testCreate() { try {……
+        </div>
+        <p class="readmore"><a href="https://sangzhenya.github.io/post/DataBase/MyBatis/MyBatis-SQL-%E6%98%A0%E5%B0%84/">阅读全文</a></p>
+    </article>
+    
+    
+    
 
 
 
@@ -418,10 +418,6 @@
     </li>
     
     <li>
-        <a href="https://sangzhenya.github.io/post/Java/JVM/Java-OOM/" title="Java OOM">Java OOM</a>
-    </li>
-    
-    <li>
         <a href="https://sangzhenya.github.io/post/Java/JVM/Java-JVM/" title="Java JVM">Java JVM</a>
     </li>
     
@@ -451,6 +447,10 @@
     
     <li>
         <a href="https://sangzhenya.github.io/post/%E5%BE%AE%E6%9C%8D%E5%8A%A1/dubbo/Dubbo-%E5%8E%9F%E7%90%86/" title="Dubbo 原理">Dubbo 原理</a>
+    </li>
+    
+    <li>
+        <a href="https://sangzhenya.github.io/post/Java/JVM/Java-%E5%8F%8C%E4%BA%B2%E5%A7%94%E6%B4%BE%E6%A8%A1%E5%9E%8B/" title="Java 双亲委派模型">Java 双亲委派模型</a>
     </li>
     
 </ul>

@@ -21,15 +21,6 @@
     </item>
     
     <item>
-      <title>Java OOM</title>
-      <link>https://sangzhenya.github.io/post/Java/JVM/Java-OOM/</link>
-      <pubDate>Sat, 07 Mar 2020 09:00:00 +0800</pubDate>
-      
-      <guid>https://sangzhenya.github.io/post/Java/JVM/Java-OOM/</guid>
-      <description>StackOverflowError 1 2 3 4 5 6 7 8 9 public class StackOverFlowErrorDemo { public static void main(String[] args) { stackOverFlow(); } private static void stackOverFlow() { stackOverFlow(); } } 递归调用过多，导致溢出。 1 2 3 4 5 6 7 8 9 10 11 12 Exception in thread &amp;#34;main&amp;#34; java.lang.StackOverflowError at demo.oom.StackOverFlowErrorDemo.stackOverFlow(StackOverFlowErrorDemo.java:13) at demo.oom.StackOverFlowErrorDemo.stackOverFlow(StackOverFlowErrorDemo.java:13) at demo.oom.StackOverFlowErrorDemo.stackOverFlow(StackOverFlowErrorDemo.java:13) at demo.oom.StackOverFlowErrorDemo.stackOverFlow(StackOverFlowErrorDemo.java:13) at demo.oom.StackOverFlowErrorDemo.stackOverFlow(StackOverFlowErrorDemo.java:13) at demo.oom.StackOverFlowErrorDemo.stackOverFlow(StackOverFlowErrorDemo.java:13) at demo.oom.StackOverFlowErrorDemo.stackOverFlow(StackOverFlowErrorDemo.java:13) at demo.oom.StackOverFlowErrorDemo.stackOverFlow(StackOverFlowErrorDemo.java:13) at demo.oom.StackOverFlowErrorDemo.stackOverFlow(StackOverFlowErrorDemo.java:13) at demo.oom.StackOverFlowErrorDemo.stackOverFlow(StackOverFlowErrorDemo.java:13) at demo.oom.StackOverFlowErrorDemo.stackOverFlow(StackOverFlowErrorDemo.java:13) OutOfMemoryError: Java heap space 1 2 3 4 5 6 7 8 9 public class JavaHeapSpaceDemo { public static void main(String[] args) { String string = &amp;#34;demo&amp;#34;; while (true) { string += string + new Random().nextInt(100000000); string.intern(); } } } 内存不足导致，堆内存溢出 1 2 3 4 5 6 Exception</description>
-    </item>
-    
-    <item>
       <title>Java JVM</title>
       <link>https://sangzhenya.github.io/post/Java/JVM/Java-JVM/</link>
       <pubDate>Tue, 03 Mar 2020 09:00:00 +0800</pubDate>
@@ -558,6 +549,15 @@
       
       <guid>https://sangzhenya.github.io/post/Spring/Spring-Boot/Spring-Boot-MyBatis-%E5%A4%9A%E6%95%B0%E6%8D%AE%E6%BA%90%E9%85%8D%E7%BD%AE/</guid>
       <description>主要有两种配置方式：第一种是自定义配置 SqlSessionFactory ，第二种是使用 AbstractRoutingDataSource + AOP 的方式实现 自定义 SqlSessionFactory 首先关闭 Spring Boot 对于 DataSourceAutoConfiguration: 1 2 3 @SpringBootApplication(exclude = { DataSourceAutoConfiguration.class }) 然后配置 DataSourceConfig，例如这边有两个数据库连接： 1 2 3 4 5 6 7 8 9 10 11 12 13 14 @Configuration public class DataSourceConfig { @Bean(name = &amp;#34;db1&amp;#34;) @ConfigurationProperties(prefix = &amp;#34;spring.datasource.db1&amp;#34;) public DataSource db1Source() { return DataSourceBuilder.create().build(); } @Bean(name = &amp;#34;db2&amp;#34;) @ConfigurationProperties(prefix = &amp;#34;spring.datasource.db2&amp;#34;) public DataSource db2Source() { return DataSourceBuilder.create().build(); } } 然后在配</description>
+    </item>
+    
+    <item>
+      <title>Java OOM</title>
+      <link>https://sangzhenya.github.io/post/Java/JVM/Java-OOM/</link>
+      <pubDate>Thu, 07 Mar 2019 09:00:00 +0800</pubDate>
+      
+      <guid>https://sangzhenya.github.io/post/Java/JVM/Java-OOM/</guid>
+      <description>StackOverflowError 1 2 3 4 5 6 7 8 9 public class StackOverFlowErrorDemo { public static void main(String[] args) { stackOverFlow(); } private static void stackOverFlow() { stackOverFlow(); } } 递归调用过多，导致溢出。 1 2 3 4 5 6 7 8 9 10 11 12 Exception in thread &amp;#34;main&amp;#34; java.lang.StackOverflowError at demo.oom.StackOverFlowErrorDemo.stackOverFlow(StackOverFlowErrorDemo.java:13) at demo.oom.StackOverFlowErrorDemo.stackOverFlow(StackOverFlowErrorDemo.java:13) at demo.oom.StackOverFlowErrorDemo.stackOverFlow(StackOverFlowErrorDemo.java:13) at demo.oom.StackOverFlowErrorDemo.stackOverFlow(StackOverFlowErrorDemo.java:13) at demo.oom.StackOverFlowErrorDemo.stackOverFlow(StackOverFlowErrorDemo.java:13) at demo.oom.StackOverFlowErrorDemo.stackOverFlow(StackOverFlowErrorDemo.java:13) at demo.oom.StackOverFlowErrorDemo.stackOverFlow(StackOverFlowErrorDemo.java:13) at demo.oom.StackOverFlowErrorDemo.stackOverFlow(StackOverFlowErrorDemo.java:13) at demo.oom.StackOverFlowErrorDemo.stackOverFlow(StackOverFlowErrorDemo.java:13) at demo.oom.StackOverFlowErrorDemo.stackOverFlow(StackOverFlowErrorDemo.java:13) at demo.oom.StackOverFlowErrorDemo.stackOverFlow(StackOverFlowErrorDemo.java:13) OutOfMemoryError: Java heap space 1 2 3 4 5 6 7 8 9 public class JavaHeapSpaceDemo { public static void main(String[] args) { String string = &amp;#34;demo&amp;#34;; while (true) { string += string + new Random().nextInt(100000000); string.intern(); } } } 内存不足导致，堆内存溢出 1 2 3 4 5 6 Exception</description>
     </item>
     
     <item>
