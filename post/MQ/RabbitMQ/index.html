@@ -86,7 +86,8 @@
         
         
         <div class="post-content">
-            <h3 id="概述">概述</h3>
+            <p>[toc]</p>
+<h3 id="概述">概述</h3>
 <p>多数应用中可以通过消息服务中间件来提升系统异步通信、扩展解耦的能力。其有两个重要的概念：消息代理和目的地。当消息发送者发送消息后，将由消息代理接管，消息代理保证消息传递到指定的目的地。</p>
 <p>主要有两种形式：</p>
 <ol>
@@ -114,14 +115,15 @@
 <li>Connection，网络连接，例如一个 TCP 连接。</li>
 <li>Channel，信道，多路复用连接中的一条独立的双向数据流通道。信道是建立在真实的 TCP 连接内的虚拟连接，AMQP 命令都是通过信道发送出去的，不管是发布消息，订阅队列还是接收消息，这些动作都是通过信道完成。因为对于操作系统来说建立和销毁 TCP 都是非常昂贵的开销，所以引入了信道的概念，以复用一条 TCP 连接。</li>
 <li>Consumer 消息消费者，表示一个从消息队列中取得消息的客户端应用程序。</li>
-<li>Virtual Host 虚拟主机，表示一批交换器、消息队列和相关对象。虚拟主机是共享相同的身份认证和加密环境的独立服务器域。每个 vhost 本质上就是一个mini 的 RabbitMQ 的服务器，用于自己的队列，交换器，绑定和权限机制。vhost 是 AMQP 概念的基础，必须在连接的时候指定。RabbitMQ 默认 vhost 是 /。</li>
-<li>. Broker 表示消息队列服务器实体。</li>
+<li>Virtual Host 虚拟主机，表示一批交换器、消息队列和相关对象。类似数据库的一个 DB。虚拟主机是共享相同的身份认证和加密环境的独立服务器域。每个 vhost 本质上就是一个mini 的 RabbitMQ 的服务器，用于自己的队列，交换器，绑定和权限机制。vhost 是 AMQP 概念的基础，必须在连接的时候指定。RabbitMQ 默认 vhost 是 /。</li>
+<li>Broker 表示消息队列服务器实体。</li>
 </ol>
 <p>结构图如下：</p>
 <p><img src="https://i.loli.net/2020/07/02/7Rpt26EzYDixM3j.png" alt="结构图"></p>
 <p>RabbitMQ 启动后默认使用两个端口，一个 15672 作为 Web 管理端口，一个是 5672 作为通讯端口。</p>
-<h3 id="rabbit-mq-运行机制">Rabbit MQ 运行机制</h3>
-<p>首先看一下 AMQP 中的消息路由，其和 Java 开发者熟悉的 JMS 存在一些差别，AMQP 中增加了 Exchange 和 Binding 的校色。生产中把消息发布到 Exchange上，消息最终到达队列并被消费者接收，而 Binding 决定交换器的消息应该发送到哪个队列。结构如下：</p>
+<h3 id="rabbit-mq-工作模式">Rabbit MQ 工作模式</h3>
+<p>Rabbit MQ 可以不使用 Exchange 而直接将 Message 发送到 Queue，Consumer 从 Queue 中读取数据，就是简单的消息队列模式，当然一个 Queue 可以设置一个或者多个 Consumer，相同 Queue 直接的 Consumer 是竞争关系。</p>
+<p>另外看一下 AMQP 中的消息路由，其和 Java 开发者熟悉的 JMS 存在一些差别，AMQP 中增加了 Exchange 和 Binding 的校色。生产中把消息发布到 Exchange上，消息最终到达队列并被消费者接收，而 Binding 决定交换器的消息应该发送到哪个队列。结构如下：</p>
 <p><img src="https://i.loli.net/2020/07/04/mGzcrdZAPMaCFgU.png" alt="结构如下"></p>
 <h4 id="exchange-的类型">Exchange 的类型</h4>
 <p>主要有四种：Direct、Fanout、Topic 和 Headers。</p>
@@ -132,6 +134,219 @@
 <p>Topic Exchange：其通过模式匹配分配消息，可以将 Routing Key 和某个模式进行匹配，此时对象需要绑定到一个模式上。它将 Routing Key 和 Binding Key 的单子切分成单词，这些单子之间使用 <code>.</code> 分割。同样识别两个通配符，<code>#</code> 表示 0 个或多个单词，<code>*</code> 表示匹配一个单词。</p>
 <p><img src="https://i.loli.net/2020/07/04/dDxSAmW9IFM6nf8.png" alt="Topic Exchange"></p>
 <p>Headers Exchange：其匹配的是 AMQP 消息的 Header，而不是使用路由键，Headers Exchange 和 Direct Exchange 几乎一致，但是性能却差很多，所以一般情况使用不到。</p>
+<h4 id="生产者和消费者流转过程">生产者和消费者流转过程</h4>
+<p>生产者流转过程：</p>
+<ol>
+<li>客户端与代理服务器 Broker 建立连接。会调用 <code>newConnection</code> 方法，该方法会封装 Protocol Header 0-9-1 的报文，以此通知 Broker 在本次交互采用的是 AMQPO-9-1 协议，然后 Broker 返回  <code>Connection.Start</code> 来建立连接。</li>
+<li>客户端调用 <code>connect.createChannel</code> 方法，此方法开启信道，其包装的 <code>Channel.open</code> 命令发送给 Broker，等待 <code>Channel.basicPublish</code> 方法，对应的 AMQP 命令为 <code>Basic.Publish</code> 这个命令包含 Content Header 和 Content Body 两部分，Content Header 包含消息体属性：投递模式，优先级等。Content Body 就是消息体。</li>
+<li>客户端发送完消息需要关闭资源的时候，设计到 <code>Channel.Close</code>, <code>Channel.Close-Ok</code>, <code>Connection.Close</code>, <code>Connection.Close-Ok</code> 的命令交互。</li>
+</ol>
+<p>流程图如下：</p>
+<p><img src="https://i.loli.net/2020/07/18/dyagoKul3npZ6DU.png" alt="image-20200718090606068"></p>
+<p>消费者流转过程：</p>
+<ol>
+<li>客户端与代理服务器 Broker 建立连接。与生产者一样</li>
+<li>客户端开启信道。与生产者一样。</li>
+<li>在真正消息之前，消费者客户端需要向 Broker 发送 <code>Basic.Consume</code> 方法，将 Channel 设置为接收模式，之后 Broker 回执 <code>Basic.Consume-OK</code> 告诉消费者准备好接收消息。</li>
+<li>Broker 向消费者推送消息，即 <code>Basic.Deliver</code> 命令，这个命令和 <code>Basic.Publish</code> 命令一样会带有 Content Header  和 Content  Body。</li>
+<li>消费者接收并正确消费之后，向 Broker 发送确认 <code>Basic.ACK</code> 命令。</li>
+<li>客户端接收完消息关闭资源。与生产者一样。</li>
+</ol>
+<p>流程图如下：</p>
+<p><img src="https://i.loli.net/2020/07/18/UvsDzNfILuhn1T9.png" alt="image-20200718090745729"></p>
+<h3 id="rabbitmq-的几个概念">RabbitMQ 的几个概念</h3>
+<h4 id="过期时间">过期时间</h4>
+<p>RabbitMQ 可以对消息设置过期时间 TTL ，在这个时间内可以被消费者消费，过期之后自动删除。Rabbit MQ 可以通过两种方式设置 TTL：</p>
+<ol>
+<li>设置 Queue 属性设置，则 Queue 中所有的消息都有相同的 TTL。</li>
+<li>对消息进行单独设置，每条消息的 TTL 可以不同。</li>
+</ol>
+<p>在 Web 控制台中新建 Queue 的时候可以直接设置参数如下：</p>
+<p><img src="https://i.loli.net/2020/07/18/U84eEWuVAnQJ7gi.png" alt="image-20200718112330186"></p>
+<p>通过代码声明 Queue 的时候可以使用如下：</p>
+<div class="highlight"><div style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4">
+<table style="border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">1
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">2
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java">Queue queue <span style="color:#000;font-weight:bold">=</span> <span style="color:#000;font-weight:bold">new</span> Queue<span style="color:#000;font-weight:bold">(</span><span style="color:#d14">&#34;demo-ttl&#34;</span><span style="color:#000;font-weight:bold">,</span> <span style="color:#000;font-weight:bold">true</span><span style="color:#000;font-weight:bold">,</span> <span style="color:#000;font-weight:bold">false</span><span style="color:#000;font-weight:bold">,</span> <span style="color:#000;font-weight:bold">false</span><span style="color:#000;font-weight:bold">,</span> Collections<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">singletonMap</span><span style="color:#000;font-weight:bold">(</span><span style="color:#d14">&#34;x-message-ttl&#34;</span><span style="color:#000;font-weight:bold">,</span> 12000<span style="color:#000;font-weight:bold">));</span>
+amqpAdmin<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">declareQueue</span><span style="color:#000;font-weight:bold">(</span>queue<span style="color:#000;font-weight:bold">);</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>对于单独 Message 设置可以通过 MessageProperties 的 expiration 属性设置，如下：</p>
+<div class="highlight"><div style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4">
+<table style="border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">1
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">2
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java">MessageProperties messageProperties <span style="color:#000;font-weight:bold">=</span> <span style="color:#000;font-weight:bold">new</span> MessageProperties<span style="color:#000;font-weight:bold">();</span>
+messageProperties<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">setExpiration</span><span style="color:#000;font-weight:bold">(</span><span style="color:#d14">&#34;12000&#34;</span><span style="color:#000;font-weight:bold">);</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>上面 TTL 的单位都是毫秒，如果同时指定了 Queue 与 Message 的 TTL，两者中最小的那个起作用。</p>
+<h4 id="死信队列">死信队列</h4>
+<p>首先看一下 DLX (Dead Letter Exchange) 即死信交换机。当有一个消息变为死信的时候，其能被重新发送到另外一个交换机中。这交换机就是 DLX，绑定 DLX 的队列被称为死信队列。消息变为死信的原因有以下几种可能：消息被拒绝；消息过期；队列达到最大长度。</p>
+<p>DLX 也是一个正常的交换机，和一般的交换机没有区别，其能在任何队列上被指定。当这个队列存在死信的时候，RabbitMQ 就会自动将这个消息重新发布到设置的 DLX 上去，进而被路由到另外一个队列中（死信队列）。</p>
+<p>在 Web 控制台设置如下：</p>
+<p>首先有一个正常的 Exchange 例如 <strong>demo.direct</strong>，一个 DLX 例如： <strong>demo.dlx</strong>。然后一个正常的 Queue 例如：<strong>demo.news.queue</strong>，在创建该 Queue 的时候设置 <code>x-dead-letter-exchange</code> 属性指向 DLX。如下图所示：</p>
+<p><img src="https://i.loli.net/2020/07/18/Ogy7MtLHhZ4NeTE.png" alt="image-20200718115747273"></p>
+<p>然后需要一个死信队列例如：<strong>demo.news.dlx</strong>。并使用 <code>demo-ttl-dlx</code> 绑定 key 绑定到 DLX (demo.dlx)。然后将正常的 Exchange (demo.direct) 和 正常的 Queue (demo.news.queue) 使用 <code>demo-ttl-dlx</code> 绑定 key 绑定。</p>
+<p>然后向 demo.direct 上发送路由 key 为 <code>demo-ttl-dlx</code> 的 Message 并设置 TTL，在 TTL 的时间范围内可以看到在 demo.news.queue 上存在该消息。当超过了 TTL 之后可以看到该消息已经被发送到了 demo.news.dlx 上。</p>
+<p><img src="https://i.loli.net/2020/07/18/1JaEzft2xoIpPrS.png" alt="image-20200718121118663"></p>
+<p>这里和正常创建唯一的不同即是通过 properties 指定死信队列的位置，在代码中同样也是通过配置属性指定：</p>
+<div class="highlight"><div style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4">
+<table style="border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">1
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">2
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java">Queue queue <span style="color:#000;font-weight:bold">=</span> <span style="color:#000;font-weight:bold">new</span> Queue<span style="color:#000;font-weight:bold">(</span><span style="color:#d14">&#34;demo-news.queue&#34;</span><span style="color:#000;font-weight:bold">,</span> <span style="color:#000;font-weight:bold">true</span><span style="color:#000;font-weight:bold">,</span> <span style="color:#000;font-weight:bold">false</span><span style="color:#000;font-weight:bold">,</span> <span style="color:#000;font-weight:bold">false</span><span style="color:#000;font-weight:bold">,</span> Collections<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">singletonMap</span><span style="color:#000;font-weight:bold">(</span><span style="color:#d14">&#34;x-dead-letter-exchange&#34;</span><span style="color:#000;font-weight:bold">,</span> <span style="color:#d14">&#34;demo.dlx&#34;</span><span style="color:#000;font-weight:bold">));</span>
+amqpAdmin<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">declareQueue</span><span style="color:#000;font-weight:bold">(</span>queue<span style="color:#000;font-weight:bold">);</span>
+</code></pre></td></tr></table>
+</div>
+</div><h4 id="延迟队列">延迟队列</h4>
+<p>延迟队列顾名思义即存储延迟消息的队列，即消息发送出去以后不想立刻被消费者拿到，而是等待特定的时间后，消费者才能拿到这个消息进行消费。在 RabbitMQ 没有直接提供这样的方式，但是可以通过 TTL + DLX 的方式实现，为正常 Queue（或者说中转 Queue）设置一个 TTL，然后设置其 DLX，在 DLX 上绑定到真正消费消息的 Queue 上。这样就实现了延迟队列。</p>
+<h4 id="消息确认">消息确认</h4>
+<p>确保消息被送达有两种方式：发布确认和事务。但是二者只能选择一个，如果使用事务则不能使用确认模式，反之亦然。</p>
+<h5 id="使用消息确认">使用消息确认</h5>
+<p>如果要启用消息确认可以在配置文件中配置：</p>
+<div class="highlight"><div style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4">
+<table style="border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">1
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">2
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">3
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">4
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yaml" data-lang="yaml"><span style="color:#000;font-weight:bold">spring</span>:<span style="color:#bbb">
+</span><span style="color:#bbb">  </span><span style="color:#000;font-weight:bold">rabbitmq</span>:<span style="color:#bbb">
+</span><span style="color:#bbb">    </span><span style="color:#000;font-weight:bold">publisher-confirm-type</span>:<span style="color:#bbb"> </span>correlated<span style="color:#bbb"> </span><span style="color:#998;font-style:italic"># 是否到 Broker Callback</span><span style="color:#bbb">
+</span><span style="color:#bbb">    </span><span style="color:#000;font-weight:bold">publisher-returns</span>:<span style="color:#bbb"> </span><span style="color:#000;font-weight:bold">true</span><span style="color:#bbb"> </span><span style="color:#998;font-style:italic"># 是否到 Queue Callback</span><span style="color:#bbb">
+</span></code></pre></td></tr></table>
+</div>
+</div><p>然后可以在 <code>rabbitTemplate</code> 设置相应的 <code>callback</code> 如下所示：</p>
+<div class="highlight"><div style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4">
+<table style="border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 1
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 2
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 3
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 4
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 5
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 6
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 7
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 8
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 9
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">10
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">11
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">12
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">13
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">14
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">15
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">16
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">17
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">18
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">19
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">20
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">21
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">22
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">23
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">24
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">25
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java">String demoRoutingKey <span style="color:#000;font-weight:bold">=</span> <span style="color:#d14">&#34;usa.news&#34;</span><span style="color:#000;font-weight:bold">;</span>
+String demoExchange <span style="color:#000;font-weight:bold">=</span> <span style="color:#d14">&#34;demo.direct&#34;</span><span style="color:#000;font-weight:bold">;</span>
+<span style="color:#458;font-weight:bold">byte</span><span style="color:#000;font-weight:bold">[]</span> messageBody <span style="color:#000;font-weight:bold">=</span> <span style="color:#000;font-weight:bold">new</span> ObjectMapper<span style="color:#000;font-weight:bold">().</span><span style="color:#008080">writeValueAsBytes</span><span style="color:#000;font-weight:bold">(</span>Collections<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">singletonMap</span><span style="color:#000;font-weight:bold">(</span><span style="color:#d14">&#34;id&#34;</span><span style="color:#000;font-weight:bold">,</span> 1<span style="color:#000;font-weight:bold">));</span>
+MessageProperties messageProperties <span style="color:#000;font-weight:bold">=</span> <span style="color:#000;font-weight:bold">new</span> MessageProperties<span style="color:#000;font-weight:bold">();</span>
+messageProperties<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">setReceivedRoutingKey</span><span style="color:#000;font-weight:bold">(</span>demoRoutingKey<span style="color:#000;font-weight:bold">);</span>
+messageProperties<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">setReceivedExchange</span><span style="color:#000;font-weight:bold">(</span>demoExchange<span style="color:#000;font-weight:bold">);</span>
+Message sendMessage <span style="color:#000;font-weight:bold">=</span> <span style="color:#000;font-weight:bold">new</span> Message<span style="color:#000;font-weight:bold">(</span>messageBody<span style="color:#000;font-weight:bold">,</span> messageProperties<span style="color:#000;font-weight:bold">);</span>
+rabbitTemplate<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">setConfirmCallback</span><span style="color:#000;font-weight:bold">((</span>correlationData<span style="color:#000;font-weight:bold">,</span> ack<span style="color:#000;font-weight:bold">,</span> cause<span style="color:#000;font-weight:bold">)</span> <span style="color:#000;font-weight:bold">-&gt;</span> <span style="color:#000;font-weight:bold">{</span>
+  log<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">info</span><span style="color:#000;font-weight:bold">(</span>ack<span style="color:#000;font-weight:bold">);</span>
+  log<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">info</span><span style="color:#000;font-weight:bold">(</span>cause<span style="color:#000;font-weight:bold">);</span>
+  log<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">info</span><span style="color:#000;font-weight:bold">(</span>correlationData<span style="color:#000;font-weight:bold">);</span>
+<span style="color:#000;font-weight:bold">});</span>
+rabbitTemplate<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">setReturnCallback</span><span style="color:#000;font-weight:bold">((</span>message<span style="color:#000;font-weight:bold">,</span> replyCode<span style="color:#000;font-weight:bold">,</span> replyText<span style="color:#000;font-weight:bold">,</span> exchange<span style="color:#000;font-weight:bold">,</span> routingKey<span style="color:#000;font-weight:bold">)</span> <span style="color:#000;font-weight:bold">-&gt;</span> <span style="color:#000;font-weight:bold">{</span>
+  log<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">info</span><span style="color:#000;font-weight:bold">(</span>message<span style="color:#000;font-weight:bold">);</span>
+  log<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">info</span><span style="color:#000;font-weight:bold">(</span>replyCode<span style="color:#000;font-weight:bold">);</span>
+  log<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">info</span><span style="color:#000;font-weight:bold">(</span>replyText<span style="color:#000;font-weight:bold">);</span>
+  log<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">info</span><span style="color:#000;font-weight:bold">(</span>exchange<span style="color:#000;font-weight:bold">);</span>
+  log<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">info</span><span style="color:#000;font-weight:bold">(</span>routingKey<span style="color:#000;font-weight:bold">);</span>
+<span style="color:#000;font-weight:bold">});</span>
+<span style="color:#998;font-style:italic">// 如果配置了 publisher-returns 且没有配置 mandatory 为 false 则默认 mandatory 为 true
+</span><span style="color:#998;font-style:italic">//rabbitTemplate.setMandatory(true);
+</span><span style="color:#998;font-style:italic"></span>CorrelationData correlationData <span style="color:#000;font-weight:bold">=</span> <span style="color:#000;font-weight:bold">new</span> CorrelationData<span style="color:#000;font-weight:bold">();</span>
+correlationData<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">setId</span><span style="color:#000;font-weight:bold">(</span>UUID<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">randomUUID</span><span style="color:#000;font-weight:bold">().</span><span style="color:#008080">toString</span><span style="color:#000;font-weight:bold">());</span>
+correlationData<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">setReturnedMessage</span><span style="color:#000;font-weight:bold">(</span>sendMessage<span style="color:#000;font-weight:bold">);</span>
+rabbitTemplate<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">send</span><span style="color:#000;font-weight:bold">(</span>demoExchange<span style="color:#000;font-weight:bold">,</span> demoRoutingKey<span style="color:#000;font-weight:bold">,</span> sendMessage<span style="color:#000;font-weight:bold">,</span> correlationData<span style="color:#000;font-weight:bold">);</span>
+</code></pre></td></tr></table>
+</div>
+</div><h5 id="使用事务">使用事务</h5>
+<p>如果业务处理伴随着消息的发送，那么业务处理失败后，事务回滚，且消息不发送出去。简单示例代码如下：</p>
+<div class="highlight"><div style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4">
+<table style="border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">1
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">2
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">3
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">4
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">5
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">6
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">7
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">8
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#3c5d5d;font-weight:bold">@Configuration</span>
+<span style="color:#000;font-weight:bold">public</span> <span style="color:#000;font-weight:bold">class</span> <span style="color:#458;font-weight:bold">RabbitConfig</span> <span style="color:#000;font-weight:bold">{</span>
+  	<span style="color:#998;font-style:italic">// 引入事务管理器
+</span><span style="color:#998;font-style:italic"></span>    <span style="color:#3c5d5d;font-weight:bold">@Bean</span>
+    <span style="color:#000;font-weight:bold">public</span> TransactionManager <span style="color:#900;font-weight:bold">transactionManager</span><span style="color:#000;font-weight:bold">(</span>ConnectionFactory connectionFactory<span style="color:#000;font-weight:bold">)</span> <span style="color:#000;font-weight:bold">{</span>
+        <span style="color:#000;font-weight:bold">return</span> <span style="color:#000;font-weight:bold">new</span> RabbitTransactionManager<span style="color:#000;font-weight:bold">(</span>connectionFactory<span style="color:#000;font-weight:bold">);</span>
+    <span style="color:#000;font-weight:bold">}</span>
+<span style="color:#000;font-weight:bold">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><div class="highlight"><div style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4">
+<table style="border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">1
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">2
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">3
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">4
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">5
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">6
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">7
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#998;font-style:italic">// 标注以事务模式发送消息
+</span><span style="color:#998;font-style:italic"></span><span style="color:#3c5d5d;font-weight:bold">@Transactional</span><span style="color:#000;font-weight:bold">(</span>rollbackFor <span style="color:#000;font-weight:bold">=</span> Exception<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">class</span><span style="color:#000;font-weight:bold">)</span>
+<span style="color:#000;font-weight:bold">public</span> <span style="color:#458;font-weight:bold">void</span> <span style="color:#900;font-weight:bold">testTransacted</span><span style="color:#000;font-weight:bold">()</span> <span style="color:#000;font-weight:bold">{</span>
+  rabbitTemplate<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">setChannelTransacted</span><span style="color:#000;font-weight:bold">(</span><span style="color:#000;font-weight:bold">true</span><span style="color:#000;font-weight:bold">);</span>
+  rabbitTemplate<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">convertAndSend</span><span style="color:#000;font-weight:bold">(</span><span style="color:#d14">&#34;demo.direct&#34;</span><span style="color:#000;font-weight:bold">,</span> <span style="color:#d14">&#34;usa.news&#34;</span><span style="color:#000;font-weight:bold">,</span> <span style="color:#d14">&#34;12123&#34;</span><span style="color:#000;font-weight:bold">);</span>
+  <span style="color:#998;font-style:italic">//        int a = 1 / 0;
+</span><span style="color:#998;font-style:italic"></span><span style="color:#000;font-weight:bold">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>如果使用了事务那么在发送之前会调用 Channel 的 <code>txSelect</code> 方法主要是将 Channel 设置成事务模式，事务成功后会调用 <code>txCommit</code> 提交事务，失败则调用 <code>txRollback</code> 回滚事务。</p>
+<h4 id="消息追踪">消息追踪</h4>
+<p>消息中心的消息追踪需要通过 Trace 实现，Trace 是 RabbitMQ 用于记录每一次发送的消息，方便使用 RabbitMQ 开发调试。可通过插件形式提供可视化解码。Trace 启动后自动会创建 amq.rabbitmq.trace Exchange，每个队列都会自动绑定该 Exchange，绑定后发送给队列的消息都会记录到 Trace 日志中。</p>
+<p>常用的命令如下：</p>
+<ol>
+<li>rabbitmq-plugins list</li>
+<li>rabbitmq-plugins enable rabbitmq_tracing</li>
+<li>rabbitmq-plugins disable rabbitmq_tracing</li>
+<li>rabbitmqctl trace_on</li>
+<li>rabbitmqctl trace_off</li>
+<li>rabbitmqctl set_user_tags guest administrator</li>
+</ol>
+<p>在 enable 的 rabbitmq_tracing 后，在 Web 管理的 admin 界面就可以看到了 tracing tab。</p>
+<p><img src="https://i.loli.net/2020/07/18/xEYOU9cKrwIe1XJ.png" alt="image-20200718163525694"></p>
+<p>然后可以添加一个 Trace</p>
+<p><img src="https://i.loli.net/2020/07/18/72LjJ8g4GKwlQqF.png" alt="image-20200718163550603"></p>
+<p>然后就会显示所有 Trace 了：</p>
+<p><img src="https://i.loli.net/2020/07/18/3FoM54xTJcYpUag.png" alt="image-20200718163608828"></p>
+<p>点击 demo-trace.log 便可以查看 Trace 的信息</p>
+<p><img src="https://i.loli.net/2020/07/18/j8ykWQdm9IeoJTD.png" alt="image-20200718163836919"></p>
 <h3 id="spring-boot-中使用-rabbitmq">Spring Boot 中使用 RabbitMQ</h3>
 <p>首先如果要使用 RabbitMQ 则需要在 POM 文件引入相关的依赖如下：</p>
 <div class="highlight"><div style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4">
@@ -147,6 +362,25 @@
   <span style="color:#000080">&lt;artifactId&gt;</span>spring-boot-starter-amqp<span style="color:#000080">&lt;/artifactId&gt;</span>
 <span style="color:#000080">&lt;/dependency&gt;</span>
 </code></pre></td></tr></table>
+</div>
+</div><p>属性配置如下：</p>
+<div class="highlight"><div style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4">
+<table style="border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">1
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">2
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">3
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">4
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">5
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">6
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yaml" data-lang="yaml"><span style="color:#000;font-weight:bold">spring</span>:<span style="color:#bbb">
+</span><span style="color:#bbb">  </span><span style="color:#000;font-weight:bold">rabbitmq</span>:<span style="color:#bbb">
+</span><span style="color:#bbb">    </span><span style="color:#000;font-weight:bold">addresses</span>:<span style="color:#bbb"> </span>localhost<span style="color:#bbb">
+</span><span style="color:#bbb">    </span><span style="color:#000;font-weight:bold">username</span>:<span style="color:#bbb"> </span>guest<span style="color:#bbb">
+</span><span style="color:#bbb">    </span><span style="color:#000;font-weight:bold">password</span>:<span style="color:#bbb"> </span>guest<span style="color:#bbb">
+</span><span style="color:#bbb">    </span><span style="color:#000;font-weight:bold">virtual-host</span>:<span style="color:#bbb"> </span>/<span style="color:#bbb">
+</span></code></pre></td></tr></table>
 </div>
 </div><p>需要使用 <code>@EnableRabbit</code> 注解启用，然后看一下自动配置的原理。从 <code>RabbitAutoConfiguration</code> 开始，其为容器中引入了 <code>rabbitConnectionFactory</code>  连接工厂，连接到 RabbitMQ Server, <code>RabbitTemplate</code> 用于发送接收 MQ 数据（类似 JDBC Template 等 Template）, <code>AmqpAdmin</code>  管理 AMPQ 创建删除 Exchange，Queue，Binding 等等。另外还为容器中引入了<code>RabbitAnnotationDrivenConfiguration</code> Config 类，这个配置类引入了一些配置信息。</p>
 <p><code>RabbitTemplate</code> 默认使用的是 <code>MessageConverter</code> 是 <code>SimpleMessageConverter</code>。</p>
@@ -313,7 +547,160 @@
 <span style="color:#000;font-weight:bold">}</span>
 </code></pre></td></tr></table>
 </div>
+</div><h3 id="rabbitmq-集群">RabbitMQ 集群</h3>
+<h4 id="rabbitmq-自定义监控">RabbitMQ 自定义监控</h4>
+<p>RabbitMQ 提供了很多 resultFul 风格的 api 接口，可以通过这些接口带错对应的集群数据，可以通过这种方式定制监控系统。</p>
+<table>
+<thead>
+<tr>
+<th>HTTP API URL</th>
+<th>HTTP请求类型</th>
+<th>接口含义</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>/api/connections</td>
+<td>GET</td>
+<td>获取当前RabbitMQ集群下所有打开的连接</td>
+</tr>
+<tr>
+<td>/api/nodes</td>
+<td>GET</td>
+<td>获取当前RabbitMQ集群下所有节点实例的状态信息</td>
+</tr>
+<tr>
+<td>/api/vhosts/{vhost}/connections</td>
+<td>GET</td>
+<td>获取某一个虚拟机主机下的所有打开的connection连接</td>
+</tr>
+<tr>
+<td>/api/connections/{name}/channels</td>
+<td>GET</td>
+<td>获取某一个连接下所有的管道信息</td>
+</tr>
+<tr>
+<td>/api/vhosts/{vhost}/channels</td>
+<td>GET</td>
+<td>获取某一个虚拟机主机下的管道信息</td>
+</tr>
+<tr>
+<td>/api/consumers/{vhost}</td>
+<td>GET</td>
+<td>获取某一个虚拟机主机下的所有消费者信息</td>
+</tr>
+<tr>
+<td>/api/exchanges/{vhost}</td>
+<td>GET</td>
+<td>获取某一个虚拟机主机下面的所有交换器信息</td>
+</tr>
+<tr>
+<td>/api/queues/{vhost}</td>
+<td>GET</td>
+<td>获取某一个虚拟机主机下的所有队列信息</td>
+</tr>
+<tr>
+<td>/api/users</td>
+<td>GET</td>
+<td>获取集群中所有的用户信息</td>
+</tr>
+<tr>
+<td>/api/users/{name}</td>
+<td>GET/PUT/DELETE</td>
+<td>获取/更新/删除指定用户信息</td>
+</tr>
+<tr>
+<td>/api/users/{user}/permissions</td>
+<td>GET</td>
+<td>获取当前指定用户的所有权限信息</td>
+</tr>
+<tr>
+<td>/api/permissions/{vhost}/{user}</td>
+<td>GET/PUT/DELETE</td>
+<td>获取/更新/删除指定虚拟主机下特定用户的权限</td>
+</tr>
+<tr>
+<td>/api/exchanges/{vhost}/{name}/publish</td>
+<td>POST</td>
+<td>在指定的虚拟机主机和交换器上发布一个消息</td>
+</tr>
+<tr>
+<td>/api/queues/{vhost}/{name}/get</td>
+<td>POST</td>
+<td>测在指定虚拟机主机和队列名中获取消息，同时该动作会修改队列状态试</td>
+</tr>
+<tr>
+<td>/api/healthchecks/node/{node}</td>
+<td>GET</td>
+<td>获取指定节点的健康检查状态</td>
+</tr>
+<tr>
+<td>/api/nodes/{node}/memory</td>
+<td>GET</td>
+<td>获取指定节点的内存使用信息</td>
+</tr>
+</tbody>
+</table>
+<p>可以通过 http://localhost:15672/api/index.html 页面看到相关的信息。可以通过程序获取这些监控数据，做自定义监控。</p>
+<h4 id="rabbitmq-集群架构">RabbitMQ 集群架构</h4>
+<p>RabbitMQ 集群架构有两种模式：</p>
+<h5 id="主备模式">主备模式</h5>
+<p>用来实现 RabbitMQ 的高可用集群，一般是在并发和数据不是特别多的时候使用，当主节点挂掉以后从备份节点中选择一个节点作为主节点对外提供服务。</p>
+<p><img src="https://i.loli.net/2020/07/18/mZW3TCKFztNJQUi.png" alt=""></p>
+<p>消费者通过 HA Proxy 访问主节点，当主节点挂掉以后 HAProxy 会帮助我们把备份节点切换成主节点对外提供服务。</p>
+<p>HA 的部分配置如下：</p>
+<div class="highlight"><div style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4">
+<table style="border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">1
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">2
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell">server s1 ip1:port check inter <span style="color:#099">5000</span> rise <span style="color:#099">2</span> fall <span style="color:#099">2</span> <span style="color:#998;font-style:italic">#主节点</span>
+server s2 ip2:port backup check inter <span style="color:#099">5000</span> rise <span style="color:#099">2</span> fall <span style="color:#998;font-style:italic">#2 备份节点</span>
+</code></pre></td></tr></table>
 </div>
+</div><p>inter 代表每 5 秒钟对集群做一次健康检查， raise 2 代表 2 次正常则服务可用，2 次 失败代表服务失败服务不可用，backup 代表备份节点。</p>
+<h5 id="远程模式">远程模式</h5>
+<p>主要用来实现双活，简称 Shovel 模式，即让我们可以把消息复制到不同的数据中心，让两个地域集群互联。</p>
+<p><img src="https://i.loli.net/2020/07/18/4hkwLCIzNyVZO1Q.png" alt=""></p>
+<h5 id="镜像模式">镜像模式</h5>
+<p>镜像队列也被称为 Mirror 队列，主要用来保证 MQ 消息的可靠性，其通过消息复制的方式保证消息 100% 不丢失，同时该集群模式也是企业中使用最多的模式。</p>
+<p><img src="https://i.loli.net/2020/07/19/Ng2AxHuKowhLbyO.png" alt="image-20200719000814483"></p>
+<p>使用 HAProxy 做负载均衡，同时因为当前节点也可能挂掉，所以受用 KeepAlive 漂移到另一个 HAProxy 节点提供服务。任意一个 MQ 节点收到用户发过来的消息都会将消息复制给其他节点，任意一个节点挂掉，在其他节点都存在该消息，消息并不会随着一个节点挂掉而消失。</p>
+<p>备注：HAProxy 是一款提供高可用性，负载均衡基于 TCP和HTTP应用代理软件，借助 HAProxy 可以快速可靠的提供基于 TCP/HTTP应用的代理解决方案。其适用于大型 web 站点，这些站点通常又需要会话保持或七层处理。HAProxy 可以支持数以万计的并发连接并且 HAProxy 的运行模式使得它可以很简单安全的整合进架构中，同时可以保护 Web 服务器不暴露在网络上。</p>
+<p>KeepAlived 是一个高性能的服务器可用或热备解决方案，KeepAlived 主要来防止服务器单点故障的发生问题，可以通过其与 Nginx，HAProxy 等反向代理的负载均衡配合实现 Web 服务端的高可用，KeepAlived 以 VRRP 协议为实现基础，用 VRRP 协议来实现高可用性，VRRP 协议是用来实现路由器冗余的协议，VRRP 协议将两台或多台路由器设备虚拟成一个设备，对外提供一个虚拟路由 IP (一个或多个)。</p>
+<h5 id="多活模式">多活模式</h5>
+<p>多活模式主要用来实现异地数据复制，Shovel 模式其实也可以实现，但是其配置比较繁琐且受到版本的限制，如果做异地多活可以使用多活模式，即借助 Federation 插件来实现集群与集群之间或者节点与节点之间的消息复制。</p>
+<p><img src="https://i.loli.net/2020/07/18/etDumdvLgFEpNPI.png" alt="image-20200718235404692"></p>
+<p>当用户发送一条 MQ 消息过来使用 LBS 做负载均衡，到了集群 1，集群 1 在接收到该消息后就会使用 Federation 插件把该条消息复制集群 2，集群一般情况都使用镜像队列的方式而不是使用集群与集群之间的复制，只需要将集群 1 的某一个节点的数据复制到集群 2 的某一个节点上，然后集群 2 的节点会使用镜像队列的方式自己去同步到所有的节点上。</p>
+<h3 id="rabbitmq-其他">RabbitMQ 其他</h3>
+<h4 id="消息堆积">消息堆积</h4>
+<p>当生产消息的速度长时间远远大于消费速度的时候就会造成消息堆积。</p>
+<p>消息堆积坑影响：导致新消息无法进入队列，就消息无法丢失，消息等待消费时间过长。</p>
+<p>出现堆积情况的有以下几种情况：生产者突然大量发布消息，消费者消费失败，消费者出现性能瓶颈。</p>
+<p>解决方案：排查消费者性能瓶颈，增加消费者的多线程处理，部署增加多个消费者。</p>
+<h4 id="消息丢失">消息丢失</h4>
+<p>实际生产环境中可能出现一条消息因为一些原因丢失，导致消息没有消费成功，从而造成数据不一致等问题，主要场景分为：消息在生产者丢失，消息在 RabbitMQ 丢失，消息在消费丢失。</p>
+<h5 id="在生产者丢失">在生产者丢失</h5>
+<p>采用 RabbitMQ 发送消息缺乏机制，当消息成功被 MQ 接收到的时候，会给生产者发送一个确认消息，表示接收成功，确认模式一般有以下三种：普通确认模式，批量确认模式，异步监听确认模式。Spring 中使用异步监听确认模式，边发消息边确认，不影响主线程任务执行。</p>
+<h5 id="在-rabbitmq-丢失">在 RabbitMQ 丢失</h5>
+<p>一般采用持久化交换机，队列，消息。确保 MQ 服务器重启时依然能够从磁盘回复对应的交换机，队列和消息。Spring 中默认开启了交换机，队列和消息的持久化。</p>
+<h5 id="在消费丢失">在消费丢失</h5>
+<p>设置手动回复 MQ 服务器，当消费者出现异常或者服务宕机的时候，MQ 服务器不会删除该消息，而是把消息重新绑定给队列的消费者，如果该队列只绑定了一个消费者，那么消息会一直保存在 MQ 服务器，直到消费者能够正常消费为止。MQ 重发消息主要场景有： 1 消费者未响应 ACK，主动关闭频道或连接；2 消费者未响应 ACK，消费者服务挂掉。</p>
+<p>ACK 模式：</p>
+<ul>
+<li><code>nack</code>/<code>reject</code> with <code>requeue=1</code>:  Message 会重新放到 Queue 中，用在消费端临时出现故障。</li>
+<li><code>nack</code>/<code>reject</code> with <code>requeue=0</code>：如果配置了 DLX 会将 Message 放到 DLX 中，如果没有配置消息会被丢失</li>
+<li><code>ack</code> 从 Queue 中删除消息。</li>
+</ul>
+<p>reject 和 nack 的区别是，reject 只能针对于单条消息。</p>
+<h4 id="有序消息消费">有序消息消费</h4>
+<p>对于多个消费者产生的乱序消费情况，可以采取使用多个 Queue  每个 Queue 设置一个 Consumer，将需要顺序的处理的 Message 经过 hash 计算后放到同样的 Queue 中进行处理。</p>
+<p>对于一个消费者采用多线程而出现乱序消费的情况，可以采用上面类似的方式，使用多个内存队列，多个线程分别从对应的内存队列中读取，想要顺序处理的 Message 放到相同的内存队列中。</p>
+<h4 id="重复消息">重复消息</h4>
+<p>如果消费消息的业务时幂等性的，即使出现重复消息也不会出现问题。对于不支持幂等性的操作，可以每次消费完之后将消息 ID 保存到数据库中，每次消费之前查看该消息，如果消息 ID 已经存在则表明已经消费过了，不再进行消费。可以使用 Redis，其有 setnx 命令可以使用。</p>
+<h3 id="heading"></h3>
+
         </div>
 
         
