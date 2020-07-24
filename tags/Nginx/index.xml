@@ -2,30 +2,30 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>Nginx on 新月的博客</title>
-    <link>http://programya.com/tags/Nginx/</link>
+    <link>https://programya.com/tags/Nginx/</link>
     <description>Recent content in Nginx on 新月的博客</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>zh-CN</language>
     <lastBuildDate>Thu, 11 Apr 2019 09:00:00 +0800</lastBuildDate>
     
-	<atom:link href="http://programya.com/tags/Nginx/index.xml" rel="self" type="application/rss+xml" />
+	<atom:link href="https://programya.com/tags/Nginx/index.xml" rel="self" type="application/rss+xml" />
     
     
     <item>
       <title>Nginx Root</title>
-      <link>http://programya.com/post/Others/Nginx/Nginx-Root/</link>
+      <link>https://programya.com/post/Others/Nginx/Nginx-Root/</link>
       <pubDate>Thu, 11 Apr 2019 09:00:00 +0800</pubDate>
       
-      <guid>http://programya.com/post/Others/Nginx/Nginx-Root/</guid>
+      <guid>https://programya.com/post/Others/Nginx/Nginx-Root/</guid>
       <description>proxy_pass proxy_pass 一般有四种设置方式, 例如访问 index.html 页面： 1 代理 URL： http://127.0.0.1/index.html 1 2 3 location /proxy/ { proxy_pass http://127.0.0.1/; } 2 代理 URL： http://127.0.0.1/proxy/index.html 1 2 3 location /proxy/ { proxy_pass http://127.0.0.1; } 3 代理 URL：http://127.0.0.1/demo/index.html 1 2 3 location /proxy/ { proxy_pass http://127.0.0.1/demo/; } 4 代理 URL：http://127.0.0.1/proxy/demo/ind</description>
     </item>
     
     <item>
       <title>Nginx</title>
-      <link>http://programya.com/post/Others/Nginx/Nginx/</link>
+      <link>https://programya.com/post/Others/Nginx/Nginx/</link>
       <pubDate>Tue, 09 Apr 2019 09:00:00 +0800</pubDate>
       
-      <guid>http://programya.com/post/Others/Nginx/Nginx/</guid>
+      <guid>https://programya.com/post/Others/Nginx/Nginx/</guid>
       <description>Nginx 是一个高性能的 HTTP 和反向代理服务器，占用内存少，并发能力强，可以作为静态页面的 Web 服务器，同时支持 CGI 协议的动态语言，例如 perl、php 等。但是不支持 Java，Java 程序只能通过 Tomcat 的配合完成。Nginx 专为性能优化开发，性能是其最重要的考量，非常注重效率，能够经受住高负载的考研。</description>
     </item>
     

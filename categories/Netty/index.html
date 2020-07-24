@@ -15,12 +15,12 @@
     <meta name="description" content="Netty">
         
     <meta name="author" content="新月">
-    <meta property="og:url" content="http://programya.com/categories/Netty/">
-    <link rel="shortcut icon" href="http://programya.com/favicon.ico" type="image/x-icon">
+    <meta property="og:url" content="https://programya.com/categories/Netty/">
+    <link rel="shortcut icon" href="https://programya.com/favicon.ico" type="image/x-icon">
 
-    <link rel="stylesheet" href='http://programya.com/css/normalize.css'>
-    <link rel="stylesheet" href='http://programya.com/css/style.css'>
-    <link rel="alternate" type="application/rss+xml+xml" href="http://programya.com/categories/Netty/index.xml" title="新月的博客" />
+    <link rel="stylesheet" href='https://programya.com/css/normalize.css'>
+    <link rel="stylesheet" href='https://programya.com/css/style.css'>
+    <link rel="alternate" type="application/rss+xml+xml" href="https://programya.com/categories/Netty/index.xml" title="新月的博客" />
     <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
 
     
@@ -37,7 +37,7 @@
         <div class="col-group">
             <div class="site-name ">
                 
-                    <a id="logo" href="http://programya.com/">
+                    <a id="logo" href="https://programya.com/">
                         新月的博客
                     </a>
                 
@@ -45,11 +45,11 @@
             </div>
             <div>
                 <nav id="nav-menu" class="clearfix">
-                    <a class="" href="http://programya.com/">首页</a>
+                    <a class="" href="https://programya.com/">首页</a>
                     
-                    <a  href="http://programya.com/archives/" title="归档">归档</a>
+                    <a  href="https://programya.com/archives/" title="归档">归档</a>
                     
-                    <a  href="http://programya.com/about/" title="关于">关于</a>
+                    <a  href="https://programya.com/about/" title="关于">关于</a>
                     
                 </nav>
             </div>
@@ -76,7 +76,7 @@
     <article class="post">
         <header>
             <h1 class="post-title">
-                <a href="http://programya.com/post/Others/Netty/Netty-Java-IO-%E6%A8%A1%E5%9E%8B/">Netty Java IO 模型</a>
+                <a href="https://programya.com/post/Others/Netty/Netty-Java-IO-%E6%A8%A1%E5%9E%8B/">Netty Java IO 模型</a>
             </h1>
         </header>
         <date class="post-meta meta-date">
@@ -86,20 +86,20 @@
         <div class="post-meta meta-category">
             |
             
-            <a href='http://programya.com/categories/Netty'>Netty</a>
+            <a href='https://programya.com/categories/Netty'>Netty</a>
             
         </div>
         
         <div class="post-content">
             Java 模型简单的理解就是使用什么样的通道惊醒数据的发送和接收，这很大程度上决定了程序通讯的性能。Java 支持 3 种网络编程模型 IO：BIO，NIO，AIO。 BIO 是同步阻塞模型，服务器实现模式为一个连接对应一个线程，即客户端有请求的时候服务端就需要启动一个线程进行处理，如果这个连接不作任何……
-            <p class="readmore"><a href="http://programya.com/post/Others/Netty/Netty-Java-IO-%E6%A8%A1%E5%9E%8B/">阅读全文</a></p>
+            <p class="readmore"><a href="https://programya.com/post/Others/Netty/Netty-Java-IO-%E6%A8%A1%E5%9E%8B/">阅读全文</a></p>
         </div>
     </article>
     
     <article class="post">
         <header>
             <h1 class="post-title">
-                <a href="http://programya.com/post/Others/Netty/Netty-EventLoop/">Netty EventLoop</a>
+                <a href="https://programya.com/post/Others/Netty/Netty-EventLoop/">Netty EventLoop</a>
             </h1>
         </header>
         <date class="post-meta meta-date">
@@ -109,20 +109,20 @@
         <div class="post-meta meta-category">
             |
             
-            <a href='http://programya.com/categories/Netty'>Netty</a>
+            <a href='https://programya.com/categories/Netty'>Netty</a>
             
         </div>
         
         <div class="post-content">
             NioEventLoop 的继承关系图如下： 首先看一下 SingleThreadEventLoop 类的 execute 方法： 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29 30 31 32 33 34 35 public void execute(Runnable task) { ObjectUtil.checkNotNull(task, &#34;task&#34;); execute(task, !(task instanceof LazyRunnable) &amp;&amp; wakesUpForTask(task)); } private void execute(Runnable task, boolean immediate) { boolean inEventLoop = inEventLoop(); // 将 task 添加到队列中 addTask(task); if (!inEventLoop) { // 如果该 EventLoop 线程不是当前线程则尝试启动线程 startThread(); if (isShutdown()) { boolean reject = false; try { // 如果启动失败，从 task 队列中移除……
-            <p class="readmore"><a href="http://programya.com/post/Others/Netty/Netty-EventLoop/">阅读全文</a></p>
+            <p class="readmore"><a href="https://programya.com/post/Others/Netty/Netty-EventLoop/">阅读全文</a></p>
         </div>
     </article>
     
     <article class="post">
         <header>
             <h1 class="post-title">
-                <a href="http://programya.com/post/Others/Netty/Netty-%E4%B8%BB%E8%A6%81%E7%BB%84%E4%BB%B6/">Netty 主要组件</a>
+                <a href="https://programya.com/post/Others/Netty/Netty-%E4%B8%BB%E8%A6%81%E7%BB%84%E4%BB%B6/">Netty 主要组件</a>
             </h1>
         </header>
         <date class="post-meta meta-date">
@@ -132,20 +132,20 @@
         <div class="post-meta meta-category">
             |
             
-            <a href='http://programya.com/categories/Netty'>Netty</a>
+            <a href='https://programya.com/categories/Netty'>Netty</a>
             
         </div>
         
         <div class="post-content">
             Netty 的主要组件有 Channel， EventLoop，ChannelFuture，ChannelHandler，ChannelPipeline 等。 ChannelHandler 其中 ChannelHandler 是处理出入站数据的业务逻辑容器。例如通过实现 ChannelInboundHandler 接口，就可以接收入站事件和数据。当要给客户端端发送响应的时候，也可以从 ChannelInboundHandler 中写数据。业……
-            <p class="readmore"><a href="http://programya.com/post/Others/Netty/Netty-%E4%B8%BB%E8%A6%81%E7%BB%84%E4%BB%B6/">阅读全文</a></p>
+            <p class="readmore"><a href="https://programya.com/post/Others/Netty/Netty-%E4%B8%BB%E8%A6%81%E7%BB%84%E4%BB%B6/">阅读全文</a></p>
         </div>
     </article>
     
     <article class="post">
         <header>
             <h1 class="post-title">
-                <a href="http://programya.com/post/Others/Netty/Netty-%E5%BF%83%E8%B7%B3%E6%9C%BA%E5%88%B6/">Netty 心跳机制</a>
+                <a href="https://programya.com/post/Others/Netty/Netty-%E5%BF%83%E8%B7%B3%E6%9C%BA%E5%88%B6/">Netty 心跳机制</a>
             </h1>
         </header>
         <date class="post-meta meta-date">
@@ -155,20 +155,20 @@
         <div class="post-meta meta-category">
             |
             
-            <a href='http://programya.com/categories/Netty'>Netty</a>
+            <a href='https://programya.com/categories/Netty'>Netty</a>
             
         </div>
         
         <div class="post-content">
             Netty 提供了一个重要的服务心跳机制 heartbeat。通过心跳检查对方是否有效，这是 RPC 框架中必不可少的功能。接下来分析相关源码的实现。 Netty 提供了 IdleStateHandler, ReadTimeoutHandler, WriteTimeoutHandler 三个 Handler 检测连接的有效性。 IdleStateHandler：当连接的空闲时间（读/写）太长时，将会触发一个 IdleStateEvent 事件，然后可以通过 ChannelInboundHandler 中重写 userEventTrigged 方……
-            <p class="readmore"><a href="http://programya.com/post/Others/Netty/Netty-%E5%BF%83%E8%B7%B3%E6%9C%BA%E5%88%B6/">阅读全文</a></p>
+            <p class="readmore"><a href="https://programya.com/post/Others/Netty/Netty-%E5%BF%83%E8%B7%B3%E6%9C%BA%E5%88%B6/">阅读全文</a></p>
         </div>
     </article>
     
     <article class="post">
         <header>
             <h1 class="post-title">
-                <a href="http://programya.com/post/Others/Netty/Netty-%E5%BC%82%E6%AD%A5%E7%BA%BF%E7%A8%8B%E6%B1%A0/">Netty 异步线程池</a>
+                <a href="https://programya.com/post/Others/Netty/Netty-%E5%BC%82%E6%AD%A5%E7%BA%BF%E7%A8%8B%E6%B1%A0/">Netty 异步线程池</a>
             </h1>
         </header>
         <date class="post-meta meta-date">
@@ -178,20 +178,20 @@
         <div class="post-meta meta-category">
             |
             
-            <a href='http://programya.com/categories/Netty'>Netty</a>
+            <a href='https://programya.com/categories/Netty'>Netty</a>
             
         </div>
         
         <div class="post-content">
             在 Netty 中做耗时的，不可预料的操作，比如数据库，网络请求，会严重影响 Netty 对 Socket 的处理速度。解决方案则是将任务添加到异步线程池中，主要有两种方式： handler 中加入线程池 context 中加入线程池 Handler 中加入线程池 在 Handler 中添加一个 EventExecutorGroup，需要创建线程的时候使用 group.submit 创建线程，整个流程则变成如……
-            <p class="readmore"><a href="http://programya.com/post/Others/Netty/Netty-%E5%BC%82%E6%AD%A5%E7%BA%BF%E7%A8%8B%E6%B1%A0/">阅读全文</a></p>
+            <p class="readmore"><a href="https://programya.com/post/Others/Netty/Netty-%E5%BC%82%E6%AD%A5%E7%BA%BF%E7%A8%8B%E6%B1%A0/">阅读全文</a></p>
         </div>
     </article>
     
     <article class="post">
         <header>
             <h1 class="post-title">
-                <a href="http://programya.com/post/Others/Netty/Netty-%E4%B8%89%E5%A4%A7%E7%BB%84%E4%BB%B6/">Netty 三大组件</a>
+                <a href="https://programya.com/post/Others/Netty/Netty-%E4%B8%89%E5%A4%A7%E7%BB%84%E4%BB%B6/">Netty 三大组件</a>
             </h1>
         </header>
         <date class="post-meta meta-date">
@@ -201,20 +201,20 @@
         <div class="post-meta meta-category">
             |
             
-            <a href='http://programya.com/categories/Netty'>Netty</a>
+            <a href='https://programya.com/categories/Netty'>Netty</a>
             
         </div>
         
         <div class="post-content">
             ChannelPipeline, ChannelHandler 和 ChannelHandlerContext 三者的关系是每当 ServerSocket 创建一个新的连接，就会创建一个 Socket 对应的就是目标客户端。每一个新创建的 Socket 都将会分配一个全新的 ChannelPipeline。每个 ChannelPipeline 包含多个 ChannelHandlerContext，其是一个双向链表，包装了通过 addLast 方法添加的 ChannelHandler。 ChannelSocket 和……
-            <p class="readmore"><a href="http://programya.com/post/Others/Netty/Netty-%E4%B8%89%E5%A4%A7%E7%BB%84%E4%BB%B6/">阅读全文</a></p>
+            <p class="readmore"><a href="https://programya.com/post/Others/Netty/Netty-%E4%B8%89%E5%A4%A7%E7%BB%84%E4%BB%B6/">阅读全文</a></p>
         </div>
     </article>
     
     <article class="post">
         <header>
             <h1 class="post-title">
-                <a href="http://programya.com/post/Others/Netty/Netty-%E5%85%A5%E9%97%A8/">Netty 入门</a>
+                <a href="https://programya.com/post/Others/Netty/Netty-%E5%85%A5%E9%97%A8/">Netty 入门</a>
             </h1>
         </header>
         <date class="post-meta meta-date">
@@ -224,20 +224,20 @@
         <div class="post-meta meta-category">
             |
             
-            <a href='http://programya.com/categories/Netty'>Netty</a>
+            <a href='https://programya.com/categories/Netty'>Netty</a>
             
         </div>
         
         <div class="post-content">
             Netty 是由 JBOSS 提供的一个 Java 开源框架，现在是 GitHub 上的独立项目。其是一个异步的，基于事件驱动的网络应用框架，也来快速开发高性能，高可用的网络 IO 程序。主要针对在 TCP 协议下，面向 Clients 端的高并发应用，或者在 P2P 场景下的大量数据持续传输的应用。本质上还是一个 NIO 框架，适用于服务器通讯相关的多种应用场景。 在分……
-            <p class="readmore"><a href="http://programya.com/post/Others/Netty/Netty-%E5%85%A5%E9%97%A8/">阅读全文</a></p>
+            <p class="readmore"><a href="https://programya.com/post/Others/Netty/Netty-%E5%85%A5%E9%97%A8/">阅读全文</a></p>
         </div>
     </article>
     
     <article class="post">
         <header>
             <h1 class="post-title">
-                <a href="http://programya.com/post/Others/Netty/Netty-%E5%90%AF%E5%8A%A8%E6%B3%A8%E5%86%8C%E6%BA%90%E7%A0%81/">Netty 源码</a>
+                <a href="https://programya.com/post/Others/Netty/Netty-%E5%90%AF%E5%8A%A8%E6%B3%A8%E5%86%8C%E6%BA%90%E7%A0%81/">Netty 源码</a>
             </h1>
         </header>
         <date class="post-meta meta-date">
@@ -247,20 +247,20 @@
         <div class="post-meta meta-category">
             |
             
-            <a href='http://programya.com/categories/Netty'>Netty</a>
+            <a href='https://programya.com/categories/Netty'>Netty</a>
             
         </div>
         
         <div class="post-content">
             一个 Server 端的 Sample Code 如下： 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29 30 31 32 33 34 35 36 37 38 39 40 41 42 43 44 45 46 47 48 49 50 public final class EchoServer { static final boolean SSL = System.getProperty(&#34;ssl&#34;) != null; static final int PORT = Integer.parseInt(System.getProperty(&#34;port&#34;, &#34;8007&#34;)); public static void main(String[] args) throws Exception { // 配置 SSL 的信息 final SslContext sslCtx; if (SSL) { SelfSignedCertificate ssc = new SelfSignedCertificate(); sslCtx = SslContextBuilder.forServer(ssc.certificate(), ssc.privateKey()).build(); } else { sslCtx = null; } // 配置 Server 的信息 EventLoopGroup bossGroup = new NioEventLoopGroup(1); EventLoopGroup workerGroup = new NioEventLoopGroup(); final EchoServerHandler serverHandler = new EchoServerHandler();……
-            <p class="readmore"><a href="http://programya.com/post/Others/Netty/Netty-%E5%90%AF%E5%8A%A8%E6%B3%A8%E5%86%8C%E6%BA%90%E7%A0%81/">阅读全文</a></p>
+            <p class="readmore"><a href="https://programya.com/post/Others/Netty/Netty-%E5%90%AF%E5%8A%A8%E6%B3%A8%E5%86%8C%E6%BA%90%E7%A0%81/">阅读全文</a></p>
         </div>
     </article>
     
     <article class="post">
         <header>
             <h1 class="post-title">
-                <a href="http://programya.com/post/Others/Netty/Netty-%E6%A0%B8%E5%BF%83/">Netty 核心</a>
+                <a href="https://programya.com/post/Others/Netty/Netty-%E6%A0%B8%E5%BF%83/">Netty 核心</a>
             </h1>
         </header>
         <date class="post-meta meta-date">
@@ -270,20 +270,20 @@
         <div class="post-meta meta-category">
             |
             
-            <a href='http://programya.com/categories/Netty'>Netty</a>
+            <a href='https://programya.com/categories/Netty'>Netty</a>
             
         </div>
         
         <div class="post-content">
             Bootstrap 和 ServerBootstrap Bootstrap 即导引，一个 Netty 应用通常由一个 Boostrap 开始，主要作用是配置整个 Netty 程序，串联各个组件，Netty 中的 Bootstrap 类是客户端程序的启动引导类，ServerBootstrap 是服务端启动引导类。常用方法如下： 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 // 服务端用来设置两个 Event Group public ServerBootstrap group(EventLoopGroup parentGroup, EventLoopGroup childGroup); // 客户端用来设置一个……
-            <p class="readmore"><a href="http://programya.com/post/Others/Netty/Netty-%E6%A0%B8%E5%BF%83/">阅读全文</a></p>
+            <p class="readmore"><a href="https://programya.com/post/Others/Netty/Netty-%E6%A0%B8%E5%BF%83/">阅读全文</a></p>
         </div>
     </article>
     
     <article class="post">
         <header>
             <h1 class="post-title">
-                <a href="http://programya.com/post/Others/Netty/Netty-%E7%BA%BF%E7%A8%8B%E6%A8%A1%E5%9E%8B/">Netty 线程模型</a>
+                <a href="https://programya.com/post/Others/Netty/Netty-%E7%BA%BF%E7%A8%8B%E6%A8%A1%E5%9E%8B/">Netty 线程模型</a>
             </h1>
         </header>
         <date class="post-meta meta-date">
@@ -293,13 +293,13 @@
         <div class="post-meta meta-category">
             |
             
-            <a href='http://programya.com/categories/Netty'>Netty</a>
+            <a href='https://programya.com/categories/Netty'>Netty</a>
             
         </div>
         
         <div class="post-content">
             目前主要存在两种线程模型：传统阻塞 IO 服务模型和 Reactor 模式。其中 Reactor 模式根据处理资源池线程的数量不同有三种典型的实现： 单 Reactor 单线程 单 Reactor 多线程 主从 Reactor 多线程 Netty 是根据主从 Reactor 多线程模型做了一点的改进，其中的主从Reactor 多线程模型有多个 Reactor。 传统阻塞 IO 服务模型 黄色表示对象，蓝色表示线……
-            <p class="readmore"><a href="http://programya.com/post/Others/Netty/Netty-%E7%BA%BF%E7%A8%8B%E6%A8%A1%E5%9E%8B/">阅读全文</a></p>
+            <p class="readmore"><a href="https://programya.com/post/Others/Netty/Netty-%E7%BA%BF%E7%A8%8B%E6%A8%A1%E5%9E%8B/">阅读全文</a></p>
         </div>
     </article>
     
@@ -319,7 +319,7 @@
         <form id="search" action='//www.google.com/search' method="get" accept-charset="utf-8" target="_blank" _lpchecked="1">
       
       <input type="text" name="q" maxlength="20" placeholder="Search">
-      <input type="hidden" name="sitesearch" value="http://programya.com/">
+      <input type="hidden" name="sitesearch" value="https://programya.com/">
       <button type="submit" class="submit icon-search"></button>
 </form>
     </section>
@@ -329,43 +329,43 @@
 <ul class="widget-list">
     
     <li>
-        <a href="http://programya.com/post/Java/JVM/Java-JNDI/" title="Java JNDI">Java JNDI</a>
+        <a href="https://programya.com/post/Java/JVM/Java-JNDI/" title="Java JNDI">Java JNDI</a>
     </li>
     
     <li>
-        <a href="http://programya.com/post/Java/JVM/Java-JVM/" title="Java JVM">Java JVM</a>
+        <a href="https://programya.com/post/Java/JVM/Java-JVM/" title="Java JVM">Java JVM</a>
     </li>
     
     <li>
-        <a href="http://programya.com/post/Java/JVM/Java-HotSpot-GC-%E7%AE%97%E6%B3%95%E5%AE%9E%E7%8E%B0/" title="Java HotSpot GC 算法实现">Java HotSpot GC 算法实现</a>
+        <a href="https://programya.com/post/Java/JVM/Java-HotSpot-GC-%E7%AE%97%E6%B3%95%E5%AE%9E%E7%8E%B0/" title="Java HotSpot GC 算法实现">Java HotSpot GC 算法实现</a>
     </li>
     
     <li>
-        <a href="http://programya.com/post/Java/JVM/Java-GC-2/" title="Java GC 2">Java GC 2</a>
+        <a href="https://programya.com/post/Java/JVM/Java-GC-2/" title="Java GC 2">Java GC 2</a>
     </li>
     
     <li>
-        <a href="http://programya.com/post/Java/JVM/Java-GC-1/" title="Java GC 1">Java GC 1</a>
+        <a href="https://programya.com/post/Java/JVM/Java-GC-1/" title="Java GC 1">Java GC 1</a>
     </li>
     
     <li>
-        <a href="http://programya.com/post/Java/JVM/Java-%E8%99%9A%E6%8B%9F%E6%9C%BA%E5%86%85%E5%AD%98%E6%A8%A1%E5%9E%8B/" title="Java 虚拟机内存模型">Java 虚拟机内存模型</a>
+        <a href="https://programya.com/post/Java/JVM/Java-%E8%99%9A%E6%8B%9F%E6%9C%BA%E5%86%85%E5%AD%98%E6%A8%A1%E5%9E%8B/" title="Java 虚拟机内存模型">Java 虚拟机内存模型</a>
     </li>
     
     <li>
-        <a href="http://programya.com/post/Java/JVM/Java-%E9%80%83%E9%80%B8%E5%88%86%E6%9E%90/" title="Java 逃逸分析">Java 逃逸分析</a>
+        <a href="https://programya.com/post/Java/JVM/Java-%E9%80%83%E9%80%B8%E5%88%86%E6%9E%90/" title="Java 逃逸分析">Java 逃逸分析</a>
     </li>
     
     <li>
-        <a href="http://programya.com/post/Spring/Spring-Security/Spring-Security/" title="Spring Security">Spring Security</a>
+        <a href="https://programya.com/post/Spring/Spring-Security/Spring-Security/" title="Spring Security">Spring Security</a>
     </li>
     
     <li>
-        <a href="http://programya.com/post/Java/JVM/Java-%E5%9B%9B%E7%A7%8D%E5%BC%95%E7%94%A8%E7%B1%BB%E5%9E%8B/" title="Java 四种引用类型">Java 四种引用类型</a>
+        <a href="https://programya.com/post/Java/JVM/Java-%E5%9B%9B%E7%A7%8D%E5%BC%95%E7%94%A8%E7%B1%BB%E5%9E%8B/" title="Java 四种引用类型">Java 四种引用类型</a>
     </li>
     
     <li>
-        <a href="http://programya.com/post/%E5%BE%AE%E6%9C%8D%E5%8A%A1/dubbo/Dubbo-%E5%8E%9F%E7%90%86/" title="Dubbo 原理">Dubbo 原理</a>
+        <a href="https://programya.com/post/%E5%BE%AE%E6%9C%8D%E5%8A%A1/dubbo/Dubbo-%E5%8E%9F%E7%90%86/" title="Dubbo 原理">Dubbo 原理</a>
     </li>
     
 </ul>
@@ -377,31 +377,31 @@
         <h3 class="widget-title">分类</h3>
 <ul class="widget-list">
     
-    <li><a href="http://programya.com/categories/Java/">Java (22)</a></li>
+    <li><a href="https://programya.com/categories/Java/">Java (22)</a></li>
     
-    <li><a href="http://programya.com/categories/MQ/">MQ (3)</a></li>
+    <li><a href="https://programya.com/categories/MQ/">MQ (3)</a></li>
     
-    <li><a href="http://programya.com/categories/MyBaits/">MyBaits (7)</a></li>
+    <li><a href="https://programya.com/categories/MyBaits/">MyBaits (7)</a></li>
     
-    <li><a href="http://programya.com/categories/MySQL/">MySQL (4)</a></li>
+    <li><a href="https://programya.com/categories/MySQL/">MySQL (4)</a></li>
     
-    <li><a href="http://programya.com/categories/Netty/">Netty (10)</a></li>
+    <li><a href="https://programya.com/categories/Netty/">Netty (10)</a></li>
     
-    <li><a href="http://programya.com/categories/Nginx/">Nginx (2)</a></li>
+    <li><a href="https://programya.com/categories/Nginx/">Nginx (2)</a></li>
     
-    <li><a href="http://programya.com/categories/Redis/">Redis (2)</a></li>
+    <li><a href="https://programya.com/categories/Redis/">Redis (2)</a></li>
     
-    <li><a href="http://programya.com/categories/Spring/">Spring (37)</a></li>
+    <li><a href="https://programya.com/categories/Spring/">Spring (37)</a></li>
     
-    <li><a href="http://programya.com/categories/%E5%85%B3%E4%BA%8E/">关于 (1)</a></li>
+    <li><a href="https://programya.com/categories/%E5%85%B3%E4%BA%8E/">关于 (1)</a></li>
     
-    <li><a href="http://programya.com/categories/%E5%85%B6%E4%BB%96/">其他 (8)</a></li>
+    <li><a href="https://programya.com/categories/%E5%85%B6%E4%BB%96/">其他 (8)</a></li>
     
-    <li><a href="http://programya.com/categories/%E5%BE%AE%E6%9C%8D%E5%8A%A1/">微服务 (11)</a></li>
+    <li><a href="https://programya.com/categories/%E5%BE%AE%E6%9C%8D%E5%8A%A1/">微服务 (11)</a></li>
     
-    <li><a href="http://programya.com/categories/%E7%AE%97%E6%B3%95/">算法 (3)</a></li>
+    <li><a href="https://programya.com/categories/%E7%AE%97%E6%B3%95/">算法 (3)</a></li>
     
-    <li><a href="http://programya.com/categories/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/">读书笔记 (7)</a></li>
+    <li><a href="https://programya.com/categories/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/">读书笔记 (7)</a></li>
     
 </ul>
     </section>
@@ -410,89 +410,89 @@
         <h3 class="widget-title">标签</h3>
 <div class="tagcloud">
     
-    <a href="http://programya.com/tags/Active-MQ/">Active MQ</a>
+    <a href="https://programya.com/tags/Active-MQ/">Active MQ</a>
     
-    <a href="http://programya.com/tags/Cookie/">Cookie</a>
+    <a href="https://programya.com/tags/Cookie/">Cookie</a>
     
-    <a href="http://programya.com/tags/Debug/">Debug</a>
+    <a href="https://programya.com/tags/Debug/">Debug</a>
     
-    <a href="http://programya.com/tags/Docker/">Docker</a>
+    <a href="https://programya.com/tags/Docker/">Docker</a>
     
-    <a href="http://programya.com/tags/Dubbo/">Dubbo</a>
+    <a href="https://programya.com/tags/Dubbo/">Dubbo</a>
     
-    <a href="http://programya.com/tags/Git/">Git</a>
+    <a href="https://programya.com/tags/Git/">Git</a>
     
-    <a href="http://programya.com/tags/JDK8/">JDK8</a>
+    <a href="https://programya.com/tags/JDK8/">JDK8</a>
     
-    <a href="http://programya.com/tags/JPA/">JPA</a>
+    <a href="https://programya.com/tags/JPA/">JPA</a>
     
-    <a href="http://programya.com/tags/JUC/">JUC</a>
+    <a href="https://programya.com/tags/JUC/">JUC</a>
     
-    <a href="http://programya.com/tags/JVM/">JVM</a>
+    <a href="https://programya.com/tags/JVM/">JVM</a>
     
-    <a href="http://programya.com/tags/java/">java</a>
+    <a href="https://programya.com/tags/java/">java</a>
     
-    <a href="http://programya.com/tags/Jenkins/">Jenkins</a>
+    <a href="https://programya.com/tags/Jenkins/">Jenkins</a>
     
-    <a href="http://programya.com/tags/Kafka/">Kafka</a>
+    <a href="https://programya.com/tags/Kafka/">Kafka</a>
     
-    <a href="http://programya.com/tags/Kubernetes/">Kubernetes</a>
+    <a href="https://programya.com/tags/Kubernetes/">Kubernetes</a>
     
-    <a href="http://programya.com/tags/Linux/">Linux</a>
+    <a href="https://programya.com/tags/Linux/">Linux</a>
     
-    <a href="http://programya.com/tags/Maven/">Maven</a>
+    <a href="https://programya.com/tags/Maven/">Maven</a>
     
-    <a href="http://programya.com/tags/MyBaits/">MyBaits</a>
+    <a href="https://programya.com/tags/MyBaits/">MyBaits</a>
     
-    <a href="http://programya.com/tags/MySQL/">MySQL</a>
+    <a href="https://programya.com/tags/MySQL/">MySQL</a>
     
-    <a href="http://programya.com/tags/Netty/">Netty</a>
+    <a href="https://programya.com/tags/Netty/">Netty</a>
     
-    <a href="http://programya.com/tags/Nginx/">Nginx</a>
+    <a href="https://programya.com/tags/Nginx/">Nginx</a>
     
-    <a href="http://programya.com/tags/Rabbit-MQ/">Rabbit MQ</a>
+    <a href="https://programya.com/tags/Rabbit-MQ/">Rabbit MQ</a>
     
-    <a href="http://programya.com/tags/Redis/">Redis</a>
+    <a href="https://programya.com/tags/Redis/">Redis</a>
     
-    <a href="http://programya.com/tags/Rocket-MQ/">Rocket MQ</a>
+    <a href="https://programya.com/tags/Rocket-MQ/">Rocket MQ</a>
     
-    <a href="http://programya.com/tags/Session/">Session</a>
+    <a href="https://programya.com/tags/Session/">Session</a>
     
-    <a href="http://programya.com/tags/Spring/">Spring</a>
+    <a href="https://programya.com/tags/Spring/">Spring</a>
     
-    <a href="http://programya.com/tags/Spring-Boot/">Spring Boot</a>
+    <a href="https://programya.com/tags/Spring-Boot/">Spring Boot</a>
     
-    <a href="http://programya.com/tags/Spring-Cloud/">Spring Cloud</a>
+    <a href="https://programya.com/tags/Spring-Cloud/">Spring Cloud</a>
     
-    <a href="http://programya.com/tags/Spring-Data/">Spring Data</a>
+    <a href="https://programya.com/tags/Spring-Data/">Spring Data</a>
     
-    <a href="http://programya.com/tags/Spring-MVC/">Spring MVC</a>
+    <a href="https://programya.com/tags/Spring-MVC/">Spring MVC</a>
     
-    <a href="http://programya.com/tags/Spring-Security/">Spring Security</a>
+    <a href="https://programya.com/tags/Spring-Security/">Spring Security</a>
     
-    <a href="http://programya.com/tags/Spring-%E6%B3%A8%E8%A7%A3/">Spring 注解</a>
+    <a href="https://programya.com/tags/Spring-%E6%B3%A8%E8%A7%A3/">Spring 注解</a>
     
-    <a href="http://programya.com/tags/Tmux/">Tmux</a>
+    <a href="https://programya.com/tags/Tmux/">Tmux</a>
     
-    <a href="http://programya.com/tags/Zookeeper/">Zookeeper</a>
+    <a href="https://programya.com/tags/Zookeeper/">Zookeeper</a>
     
-    <a href="http://programya.com/tags/java/">java</a>
+    <a href="https://programya.com/tags/java/">java</a>
     
-    <a href="http://programya.com/tags/%E4%BB%A3%E7%A0%81/">代码</a>
+    <a href="https://programya.com/tags/%E4%BB%A3%E7%A0%81/">代码</a>
     
-    <a href="http://programya.com/tags/%E5%85%B3%E4%BA%8E/">关于</a>
+    <a href="https://programya.com/tags/%E5%85%B3%E4%BA%8E/">关于</a>
     
-    <a href="http://programya.com/tags/%E5%BE%AE%E6%9C%8D%E5%8A%A1/">微服务</a>
+    <a href="https://programya.com/tags/%E5%BE%AE%E6%9C%8D%E5%8A%A1/">微服务</a>
     
-    <a href="http://programya.com/tags/%E6%BA%90%E7%A0%81/">源码</a>
+    <a href="https://programya.com/tags/%E6%BA%90%E7%A0%81/">源码</a>
     
-    <a href="http://programya.com/tags/%E7%AE%97%E6%B3%95/">算法</a>
+    <a href="https://programya.com/tags/%E7%AE%97%E6%B3%95/">算法</a>
     
-    <a href="http://programya.com/tags/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/">设计模式</a>
+    <a href="https://programya.com/tags/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/">设计模式</a>
     
-    <a href="http://programya.com/tags/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/">读书笔记</a>
+    <a href="https://programya.com/tags/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/">读书笔记</a>
     
-    <a href="http://programya.com/tags/%E9%9B%86%E5%90%88/">集合</a>
+    <a href="https://programya.com/tags/%E9%9B%86%E5%90%88/">集合</a>
     
 </div>
     </section>
@@ -502,7 +502,7 @@
     <section class="widget">
         <h3 class="widget-title">其它</h3>
         <ul class="widget-list">
-            <li><a href="http://programya.com/index.xml">文章 RSS</a></li>
+            <li><a href="https://programya.com/index.xml">文章 RSS</a></li>
         </ul>
     </section>
 </div>
@@ -511,7 +511,7 @@
     </div>
     <footer id="footer">
     <div class="container">
-        &copy; 2020 <a href="http://programya.com/">新月的博客 By 新月</a>.
+        &copy; 2020 <a href="https://programya.com/">新月的博客 By 新月</a>.
         Powered by <a rel="nofollow noreferer noopener" href="https://gohugo.io" target="_blank">Hugo</a>.
         Theme based on <a href="https://github.com/flysnow-org/maupassant-hugo" target="_blank">maupassant</a>.
         
@@ -521,7 +521,7 @@
 
 
 <a id="rocket" href="#top"></a>
-<script type="text/javascript" src='http://programya.com/js/totop.js?v=0.0.0' async=""></script>
+<script type="text/javascript" src='https://programya.com/js/totop.js?v=0.0.0' async=""></script>
 
 
 

@@ -2,30 +2,30 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>Spring Security on 新月的博客</title>
-    <link>http://programya.com/tags/Spring-Security/</link>
+    <link>https://programya.com/tags/Spring-Security/</link>
     <description>Recent content in Spring Security on 新月的博客</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>zh-CN</language>
     <lastBuildDate>Sat, 15 Feb 2020 09:00:00 +0800</lastBuildDate>
     
-	<atom:link href="http://programya.com/tags/Spring-Security/index.xml" rel="self" type="application/rss+xml" />
+	<atom:link href="https://programya.com/tags/Spring-Security/index.xml" rel="self" type="application/rss+xml" />
     
     
     <item>
       <title>Spring Security</title>
-      <link>http://programya.com/post/Spring/Spring-Security/Spring-Security/</link>
+      <link>https://programya.com/post/Spring/Spring-Security/Spring-Security/</link>
       <pubDate>Sat, 15 Feb 2020 09:00:00 +0800</pubDate>
       
-      <guid>http://programya.com/post/Spring/Spring-Security/Spring-Security/</guid>
+      <guid>https://programya.com/post/Spring/Spring-Security/Spring-Security/</guid>
       <description>[toc] 权限相关概念 权限管理一般是值根据系统设置的安全规则或者安全策略，用户只能访问被授权的资源。权限管理的前置条件是用户和密码的认证系统。其中认证 是通过用户名和密码成功登陆系统后，让系统得到当前用户的角色身份；授权 则是系统根据当前用户的角色，给其授予可以操作的的权限资源。 主要有三个对</description>
     </item>
     
     <item>
       <title>Spring Security 入门</title>
-      <link>http://programya.com/post/Spring/Spring-Security/Spring-Security-%E5%85%A5%E9%97%A8/</link>
+      <link>https://programya.com/post/Spring/Spring-Security/Spring-Security-%E5%85%A5%E9%97%A8/</link>
       <pubDate>Fri, 15 Feb 2019 09:00:00 +0800</pubDate>
       
-      <guid>http://programya.com/post/Spring/Spring-Security/Spring-Security-%E5%85%A5%E9%97%A8/</guid>
+      <guid>https://programya.com/post/Spring/Spring-Security/Spring-Security-%E5%85%A5%E9%97%A8/</guid>
       <description>Spring Security 就是通过一条过滤器链使用认证和授权的工作。如下图所示： 其中 FilterSecurityInterceptor 中会根据 config 配置的内容，判断是否可以访问对应的资源，如果不可以则会抛出异常。然后在 ExceptionTranslationFilter 中会捕获异常并作出响应的处理。 Spring Security 几个重要的概念如下： SecurityContextHolder Spring Security 提供的 SecurityContextHolder 类让程序可以方便访问 SecurityContext。其采用的是 ThreadLocal 方</description>
     </item>
     

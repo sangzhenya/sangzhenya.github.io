@@ -2,21 +2,21 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>Rocket MQ on 新月的博客</title>
-    <link>http://programya.com/tags/Rocket-MQ/</link>
+    <link>https://programya.com/tags/Rocket-MQ/</link>
     <description>Recent content in Rocket MQ on 新月的博客</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>zh-CN</language>
     <lastBuildDate>Wed, 05 Jun 2019 09:00:00 +0800</lastBuildDate>
     
-	<atom:link href="http://programya.com/tags/Rocket-MQ/index.xml" rel="self" type="application/rss+xml" />
+	<atom:link href="https://programya.com/tags/Rocket-MQ/index.xml" rel="self" type="application/rss+xml" />
     
     
     <item>
       <title>Rocket MQ</title>
-      <link>http://programya.com/post/MQ/RocketMQ/</link>
+      <link>https://programya.com/post/MQ/RocketMQ/</link>
       <pubDate>Wed, 05 Jun 2019 09:00:00 +0800</pubDate>
       
-      <guid>http://programya.com/post/MQ/RocketMQ/</guid>
+      <guid>https://programya.com/post/MQ/RocketMQ/</guid>
       <description>RocketMQ 原始文档地址 基本概念 首先 RocketMQ 是由 Producer、Broker、Consumer 三部分组成。其中 Producer 负责生产消息，Consumer 负责消费消息，Broker 负责存储消息。Broker 在实际部署中对应一台服务器，每个 Broker 可以存储多个 Topic 的消息，每个 Topic 的消息也可以分片存储在不同的 Broker 上。Me</description>
     </item>
     

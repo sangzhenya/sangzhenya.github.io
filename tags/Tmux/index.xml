@@ -2,21 +2,21 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>Tmux on 新月的博客</title>
-    <link>http://programya.com/tags/Tmux/</link>
+    <link>https://programya.com/tags/Tmux/</link>
     <description>Recent content in Tmux on 新月的博客</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>zh-CN</language>
     <lastBuildDate>Wed, 01 May 2019 09:00:00 +0800</lastBuildDate>
     
-	<atom:link href="http://programya.com/tags/Tmux/index.xml" rel="self" type="application/rss+xml" />
+	<atom:link href="https://programya.com/tags/Tmux/index.xml" rel="self" type="application/rss+xml" />
     
     
     <item>
       <title>Tmux</title>
-      <link>http://programya.com/post/Others/Tmux/</link>
+      <link>https://programya.com/post/Others/Tmux/</link>
       <pubDate>Wed, 01 May 2019 09:00:00 +0800</pubDate>
       
-      <guid>http://programya.com/post/Others/Tmux/</guid>
+      <guid>https://programya.com/post/Others/Tmux/</guid>
       <description>Tmux 是一个终端复用器类自由软件，用户可以通过 tmux 在一个终端内管理多个分离的会话，窗口及面板，对于同时使用多个命令行，或多个任务时非常方便。 tmux 主要由以下几个模块组成： server 服务，tmux 运行的基础服务，以下的模块均依赖此服务 session 会话，一个服务可以包含多个会话 window 窗口，一个会话可以包含多个窗口 panel</description>
     </item>
     
