@@ -2,111 +2,111 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>JVM on 新月的博客</title>
-    <link>https://sangzhenya.github.io/tags/JVM/</link>
+    <link>http://programya.com/tags/JVM/</link>
     <description>Recent content in JVM on 新月的博客</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>zh-CN</language>
     <lastBuildDate>Wed, 11 Mar 2020 09:00:00 +0800</lastBuildDate>
     
-	<atom:link href="https://sangzhenya.github.io/tags/JVM/index.xml" rel="self" type="application/rss+xml" />
+	<atom:link href="http://programya.com/tags/JVM/index.xml" rel="self" type="application/rss+xml" />
     
     
     <item>
       <title>Java JNDI</title>
-      <link>https://sangzhenya.github.io/post/Java/JVM/Java-JNDI/</link>
+      <link>http://programya.com/post/Java/JVM/Java-JNDI/</link>
       <pubDate>Wed, 11 Mar 2020 09:00:00 +0800</pubDate>
       
-      <guid>https://sangzhenya.github.io/post/Java/JVM/Java-JNDI/</guid>
+      <guid>http://programya.com/post/Java/JVM/Java-JNDI/</guid>
       <description>JNDI 即 Java Naming and Direcotry Interface 即 Java 命名与目录接口。是为 Java 编程的客户端提供的一个统一的命名服务和目录系统接口，不依赖于任何特定的服务实现。JDNI 的架构包含一个 API和一个 service provider interface(SPI)。Java 程序使用 JNDI API 去访问不同的命名服务和目录系统接口。SPI 则使得不同的命名服务和目录系统</description>
     </item>
     
     <item>
       <title>Java JVM</title>
-      <link>https://sangzhenya.github.io/post/Java/JVM/Java-JVM/</link>
+      <link>http://programya.com/post/Java/JVM/Java-JVM/</link>
       <pubDate>Tue, 03 Mar 2020 09:00:00 +0800</pubDate>
       
-      <guid>https://sangzhenya.github.io/post/Java/JVM/Java-JVM/</guid>
+      <guid>http://programya.com/post/Java/JVM/Java-JVM/</guid>
       <description>MinorGC 的过程 复制 &amp;ndash;&amp;gt; 清空 &amp;ndash;&amp;gt; 互换 eden, SurviorFrom 复制到 SurviorTo, 年龄 + 1 首先 当 Eden 区满的时候回触发一次 GC，把仍然存活的对象复制到 SurviorFrom 区，当 Eden 去再次触发GC的时候会扫描 Eden区和From区域，对这个两个区域进行垃圾回收，经过这次回收后还存活的对象则直接复制到 To 区域（如果对象的年龄已经达到了老年的标准，则复制到</description>
     </item>
     
     <item>
       <title>Java HotSpot GC 算法实现</title>
-      <link>https://sangzhenya.github.io/post/Java/JVM/Java-HotSpot-GC-%E7%AE%97%E6%B3%95%E5%AE%9E%E7%8E%B0/</link>
+      <link>http://programya.com/post/Java/JVM/Java-HotSpot-GC-%E7%AE%97%E6%B3%95%E5%AE%9E%E7%8E%B0/</link>
       <pubDate>Sun, 01 Mar 2020 09:00:00 +0800</pubDate>
       
-      <guid>https://sangzhenya.github.io/post/Java/JVM/Java-HotSpot-GC-%E7%AE%97%E6%B3%95%E5%AE%9E%E7%8E%B0/</guid>
+      <guid>http://programya.com/post/Java/JVM/Java-HotSpot-GC-%E7%AE%97%E6%B3%95%E5%AE%9E%E7%8E%B0/</guid>
       <description>枚举根节点 可达性分析对执行时间的敏感体现在 GC 停顿上，因为分析工作必须在一个能确保一致性的快照中进行，即整个分析期间整个执行系统看起来就像冻结在某个时间点上，不能出现分析过程中对象引用关系还在不断变化的情况，否则分析结果的准确性就无法得到保证。这也是导致 GC 进行时必须停顿所有 Java 执行线</description>
     </item>
     
     <item>
       <title>Java GC 2</title>
-      <link>https://sangzhenya.github.io/post/Java/JVM/Java-GC-2/</link>
+      <link>http://programya.com/post/Java/JVM/Java-GC-2/</link>
       <pubDate>Tue, 25 Feb 2020 09:00:00 +0800</pubDate>
       
-      <guid>https://sangzhenya.github.io/post/Java/JVM/Java-GC-2/</guid>
+      <guid>http://programya.com/post/Java/JVM/Java-GC-2/</guid>
       <description>几种垃圾回收器： Serial 串行垃圾回收器 为单线程环境设计且只可以使用一个线程进行垃圾回收，会暂停所有用户线程，直到收集结束。所以不适合服务器环境。 Serial 串行收集器是最古老，最稳定已经效率最高的收集器，只使用一个线程去回收，但是其在垃圾回收过程中可能产生较长的停顿（Stop-The-Word 状</description>
     </item>
     
     <item>
       <title>Java GC 1</title>
-      <link>https://sangzhenya.github.io/post/Java/JVM/Java-GC-1/</link>
+      <link>http://programya.com/post/Java/JVM/Java-GC-1/</link>
       <pubDate>Fri, 21 Feb 2020 09:00:00 +0800</pubDate>
       
-      <guid>https://sangzhenya.github.io/post/Java/JVM/Java-GC-1/</guid>
+      <guid>http://programya.com/post/Java/JVM/Java-GC-1/</guid>
       <description>随着程序的运行，内存中的实例对象、变量等占据的内存越来越多，如果不及时进行回收，会降低成勋运行的效率，甚至引发系统异常。线程私有部分如程序计数器、虚拟机栈和本地方法栈三个部分随着线程而生，随着线程而灭所以不需要内存回收，垃圾回收的主要部分在堆中。考虑垃圾回收的时候需要思考 3 件事情</description>
     </item>
     
     <item>
       <title>Java 虚拟机内存模型</title>
-      <link>https://sangzhenya.github.io/post/Java/JVM/Java-%E8%99%9A%E6%8B%9F%E6%9C%BA%E5%86%85%E5%AD%98%E6%A8%A1%E5%9E%8B/</link>
+      <link>http://programya.com/post/Java/JVM/Java-%E8%99%9A%E6%8B%9F%E6%9C%BA%E5%86%85%E5%AD%98%E6%A8%A1%E5%9E%8B/</link>
       <pubDate>Mon, 17 Feb 2020 09:00:00 +0800</pubDate>
       
-      <guid>https://sangzhenya.github.io/post/Java/JVM/Java-%E8%99%9A%E6%8B%9F%E6%9C%BA%E5%86%85%E5%AD%98%E6%A8%A1%E5%9E%8B/</guid>
+      <guid>http://programya.com/post/Java/JVM/Java-%E8%99%9A%E6%8B%9F%E6%9C%BA%E5%86%85%E5%AD%98%E6%A8%A1%E5%9E%8B/</guid>
       <description>Java 虚拟机运行的时候会把它所管理的内存分划分为若干个不同的数据区域。按照线程之间是否可以共享分为两个部分。线程私有区包含：程序计数器、虚拟机栈、本地方法栈；线程共享区包含：堆、元数据区、直接内存。线程私有区的生命周期和线程相同。 Java 内存模型如下图所示： 线程私有区 程序计数器 程序计数器 是</description>
     </item>
     
     <item>
       <title>Java 逃逸分析</title>
-      <link>https://sangzhenya.github.io/post/Java/JVM/Java-%E9%80%83%E9%80%B8%E5%88%86%E6%9E%90/</link>
+      <link>http://programya.com/post/Java/JVM/Java-%E9%80%83%E9%80%B8%E5%88%86%E6%9E%90/</link>
       <pubDate>Sat, 15 Feb 2020 09:00:00 +0800</pubDate>
       
-      <guid>https://sangzhenya.github.io/post/Java/JVM/Java-%E9%80%83%E9%80%B8%E5%88%86%E6%9E%90/</guid>
+      <guid>http://programya.com/post/Java/JVM/Java-%E9%80%83%E9%80%B8%E5%88%86%E6%9E%90/</guid>
       <description>当一个对象在方法中被定义后，它可能被外部方法锁引用，例如作为调用参数传递到其他方法中，成为方法逃逸。甚至可能被外部线程访问到，例如赋值给类变量或可以在其他线程中访问的实例变量，称为线程逃逸。逃逸分析的基本行为就是分析对象动态作用区域。 如果分析到一个对象不会逃逸到方法或者线程之外，</description>
     </item>
     
     <item>
       <title>Java 四种引用类型</title>
-      <link>https://sangzhenya.github.io/post/Java/JVM/Java-%E5%9B%9B%E7%A7%8D%E5%BC%95%E7%94%A8%E7%B1%BB%E5%9E%8B/</link>
+      <link>http://programya.com/post/Java/JVM/Java-%E5%9B%9B%E7%A7%8D%E5%BC%95%E7%94%A8%E7%B1%BB%E5%9E%8B/</link>
       <pubDate>Tue, 11 Feb 2020 09:00:00 +0800</pubDate>
       
-      <guid>https://sangzhenya.github.io/post/Java/JVM/Java-%E5%9B%9B%E7%A7%8D%E5%BC%95%E7%94%A8%E7%B1%BB%E5%9E%8B/</guid>
+      <guid>http://programya.com/post/Java/JVM/Java-%E5%9B%9B%E7%A7%8D%E5%BC%95%E7%94%A8%E7%B1%BB%E5%9E%8B/</guid>
       <description>强引用 当内存不足的时候， JVM 开始回收垃圾，对于强引用的对象，就算是出现了 OOM 也不会对该对象进行回收，死都不回收。 强引用是我们常见的普通对象引用，只要还有一个强引用指向一个对象，就表明对象还活着，垃圾收集器不会回收这种对象。在 Java 中最常见的就是强引用，把一个对象赋给一个引用变量，这个引用</description>
     </item>
     
     <item>
       <title>Java 双亲委派模型</title>
-      <link>https://sangzhenya.github.io/post/Java/JVM/Java-%E5%8F%8C%E4%BA%B2%E5%A7%94%E6%B4%BE%E6%A8%A1%E5%9E%8B/</link>
+      <link>http://programya.com/post/Java/JVM/Java-%E5%8F%8C%E4%BA%B2%E5%A7%94%E6%B4%BE%E6%A8%A1%E5%9E%8B/</link>
       <pubDate>Fri, 07 Feb 2020 09:00:00 +0800</pubDate>
       
-      <guid>https://sangzhenya.github.io/post/Java/JVM/Java-%E5%8F%8C%E4%BA%B2%E5%A7%94%E6%B4%BE%E6%A8%A1%E5%9E%8B/</guid>
+      <guid>http://programya.com/post/Java/JVM/Java-%E5%8F%8C%E4%BA%B2%E5%A7%94%E6%B4%BE%E6%A8%A1%E5%9E%8B/</guid>
       <description>类加载机制 类从被加载到虚拟机内存开始，到卸载出内存为止，整个生命周期包括：加载 -&amp;gt; 验证 -&amp;gt; 准备 -&amp;gt; 解析 -&amp;gt; 初始化 -&amp;gt; 使用 -&amp;gt; 卸载 7个阶段。其中 验证、准备、解析三个阶段可以统称为连接。如图所示： 以上过程中加载、验证、准备、初始化和卸载5个阶段的顺序是确定的，但是解析阶段则不一定，在一些情况下可</description>
     </item>
     
     <item>
       <title>Java OOM</title>
-      <link>https://sangzhenya.github.io/post/Java/JVM/Java-OOM/</link>
+      <link>http://programya.com/post/Java/JVM/Java-OOM/</link>
       <pubDate>Thu, 07 Mar 2019 09:00:00 +0800</pubDate>
       
-      <guid>https://sangzhenya.github.io/post/Java/JVM/Java-OOM/</guid>
+      <guid>http://programya.com/post/Java/JVM/Java-OOM/</guid>
       <description>StackOverflowError 1 2 3 4 5 6 7 8 9 public class StackOverFlowErrorDemo { public static void main(String[] args) { stackOverFlow(); } private static void stackOverFlow() { stackOverFlow(); } } 递归调用过多，导致溢出。 1 2 3 4 5 6 7 8 9 10 11 12 Exception in thread &amp;#34;main&amp;#34; java.lang.StackOverflowError at demo.oom.StackOverFlowErrorDemo.stackOverFlow(StackOverFlowErrorDemo.java:13) at demo.oom.StackOverFlowErrorDemo.stackOverFlow(StackOverFlowErrorDemo.java:13) at demo.oom.StackOverFlowErrorDemo.stackOverFlow(StackOverFlowErrorDemo.java:13) at demo.oom.StackOverFlowErrorDemo.stackOverFlow(StackOverFlowErrorDemo.java:13) at demo.oom.StackOverFlowErrorDemo.stackOverFlow(StackOverFlowErrorDemo.java:13) at demo.oom.StackOverFlowErrorDemo.stackOverFlow(StackOverFlowErrorDemo.java:13) at demo.oom.StackOverFlowErrorDemo.stackOverFlow(StackOverFlowErrorDemo.java:13) at demo.oom.StackOverFlowErrorDemo.stackOverFlow(StackOverFlowErrorDemo.java:13) at demo.oom.StackOverFlowErrorDemo.stackOverFlow(StackOverFlowErrorDemo.java:13) at demo.oom.StackOverFlowErrorDemo.stackOverFlow(StackOverFlowErrorDemo.java:13) at demo.oom.StackOverFlowErrorDemo.stackOverFlow(StackOverFlowErrorDemo.java:13) OutOfMemoryError: Java heap space 1 2 3 4 5 6 7 8 9 public class JavaHeapSpaceDemo { public static void main(String[] args) { String string = &amp;#34;demo&amp;#34;; while (true) { string += string + new Random().nextInt(100000000); string.intern(); } } } 内存不足导致，堆内存溢出 1 2 3 4 5 6 Exception</description>
     </item>
     
     <item>
       <title>Java volatile</title>
-      <link>https://sangzhenya.github.io/post/Java/JUC/Java-volatile/</link>
+      <link>http://programya.com/post/Java/JUC/Java-volatile/</link>
       <pubDate>Wed, 02 Jan 2019 08:00:00 +0800</pubDate>
       
-      <guid>https://sangzhenya.github.io/post/Java/JUC/Java-volatile/</guid>
+      <guid>http://programya.com/post/Java/JUC/Java-volatile/</guid>
       <description>JMM JVM: Java 虚拟机 JMM: Java 内存模型 Java 内存模型 Java Memory Model 本身是一种抽象的概念并不真实存在，它描述的是一组规则或规范，通过这组规范定义了程序中的各个变量（包括实例字段、静态字段和构成数组对象元素）的访问方式。 JMM 关于同步的规定： 线程解锁前，必须把共享变量的值刷回主内存 线程加锁前，必须读取主内存到自己</description>
     </item>
     

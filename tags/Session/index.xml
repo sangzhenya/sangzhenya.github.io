@@ -2,21 +2,21 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>Session on 新月的博客</title>
-    <link>https://sangzhenya.github.io/tags/Session/</link>
+    <link>http://programya.com/tags/Session/</link>
     <description>Recent content in Session on 新月的博客</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>zh-CN</language>
     <lastBuildDate>Thu, 25 Apr 2019 09:00:00 +0800</lastBuildDate>
     
-	<atom:link href="https://sangzhenya.github.io/tags/Session/index.xml" rel="self" type="application/rss+xml" />
+	<atom:link href="http://programya.com/tags/Session/index.xml" rel="self" type="application/rss+xml" />
     
     
     <item>
       <title>Cookie 和 Session</title>
-      <link>https://sangzhenya.github.io/post/Others/Session-%E5%92%8C-Cookie/</link>
+      <link>http://programya.com/post/Others/Session-%E5%92%8C-Cookie/</link>
       <pubDate>Thu, 25 Apr 2019 09:00:00 +0800</pubDate>
       
-      <guid>https://sangzhenya.github.io/post/Others/Session-%E5%92%8C-Cookie/</guid>
+      <guid>http://programya.com/post/Others/Session-%E5%92%8C-Cookie/</guid>
       <description>Cookie 和 Session Cookie Cookie 的作用 Cookie的作用像是去超市购物的时候办理的购物卡，里面村上了你的个人信息，下次来到超时后的时候，超市可以识别你的会员卡，直接购物。 由于 HTTP 是一种无状态协议，当用户的一次访问请求结束后，后端服务器无法知道下一次来访问的是否还是上次访问的用户。Cookie 的作用就是用</description>
     </item>
     

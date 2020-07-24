@@ -2,21 +2,21 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>Spring Data on 新月的博客</title>
-    <link>https://sangzhenya.github.io/tags/Spring-Data/</link>
+    <link>http://programya.com/tags/Spring-Data/</link>
     <description>Recent content in Spring Data on 新月的博客</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>zh-CN</language>
     <lastBuildDate>Mon, 28 Jan 2019 09:00:00 +0800</lastBuildDate>
     
-	<atom:link href="https://sangzhenya.github.io/tags/Spring-Data/index.xml" rel="self" type="application/rss+xml" />
+	<atom:link href="http://programya.com/tags/Spring-Data/index.xml" rel="self" type="application/rss+xml" />
     
     
     <item>
       <title>Spring Data</title>
-      <link>https://sangzhenya.github.io/post/Spring/Spring-Data/Spring-Data/</link>
+      <link>http://programya.com/post/Spring/Spring-Data/Spring-Data/</link>
       <pubDate>Mon, 28 Jan 2019 09:00:00 +0800</pubDate>
       
-      <guid>https://sangzhenya.github.io/post/Spring/Spring-Data/Spring-Data/</guid>
+      <guid>http://programya.com/post/Spring/Spring-Data/Spring-Data/</guid>
       <description>Spring Data 用于简化数据库访问，能够减少数据访问层的开发量，只需要声明持久层接口，其他都由 Spring Data JPA 完成。支持 NoSQL 和 关系数据存储，主要目的是使数据库的访问变得更加便捷。支持的 NoSQL 有 MongoDB， Neo4j, Redis 和 Hbase，支持数据库存储技术有 JDBC 和 JPA。 Repository 是一个空接口即标记接口，如果定义的接口继承了 Repository 则</description>
     </item>
     

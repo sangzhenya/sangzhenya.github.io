@@ -2,48 +2,48 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>MySQL on 新月的博客</title>
-    <link>https://sangzhenya.github.io/tags/MySQL/</link>
+    <link>http://programya.com/tags/MySQL/</link>
     <description>Recent content in MySQL on 新月的博客</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>zh-CN</language>
     <lastBuildDate>Thu, 23 May 2019 09:00:00 +0800</lastBuildDate>
     
-	<atom:link href="https://sangzhenya.github.io/tags/MySQL/index.xml" rel="self" type="application/rss+xml" />
+	<atom:link href="http://programya.com/tags/MySQL/index.xml" rel="self" type="application/rss+xml" />
     
     
     <item>
       <title>MySQL 锁及主从复制</title>
-      <link>https://sangzhenya.github.io/post/DataBase/MySQL/MySQL-%E9%94%81%E5%8F%8A%E4%B8%BB%E4%BB%8E%E5%A4%8D%E5%88%B6/</link>
+      <link>http://programya.com/post/DataBase/MySQL/MySQL-%E9%94%81%E5%8F%8A%E4%B8%BB%E4%BB%8E%E5%A4%8D%E5%88%B6/</link>
       <pubDate>Thu, 23 May 2019 09:00:00 +0800</pubDate>
       
-      <guid>https://sangzhenya.github.io/post/DataBase/MySQL/MySQL-%E9%94%81%E5%8F%8A%E4%B8%BB%E4%BB%8E%E5%A4%8D%E5%88%B6/</guid>
+      <guid>http://programya.com/post/DataBase/MySQL/MySQL-%E9%94%81%E5%8F%8A%E4%B8%BB%E4%BB%8E%E5%A4%8D%E5%88%B6/</guid>
       <description>锁 从数据操作的类型可以分为读锁和写锁，从对数据操作的粒度分可以分为表锁和行锁。 读写锁 读锁：共享锁针对同一份数据，多个读操作可以同时进行而不会互相影响。 写锁：排它锁，当前写操作没有完成前会阻断其他写锁和读锁。 行表锁 表锁: 偏读，偏向于 MyISAM 存储引擎，开销小，加锁快；锁粒度大，发生锁冲突的</description>
     </item>
     
     <item>
       <title>MySQL 索引及优化</title>
-      <link>https://sangzhenya.github.io/post/DataBase/MySQL/MySQL-%E7%B4%A2%E5%BC%95%E5%8F%8A%E4%BC%98%E5%8C%96/</link>
+      <link>http://programya.com/post/DataBase/MySQL/MySQL-%E7%B4%A2%E5%BC%95%E5%8F%8A%E4%BC%98%E5%8C%96/</link>
       <pubDate>Tue, 21 May 2019 09:00:00 +0800</pubDate>
       
-      <guid>https://sangzhenya.github.io/post/DataBase/MySQL/MySQL-%E7%B4%A2%E5%BC%95%E5%8F%8A%E4%BC%98%E5%8C%96/</guid>
+      <guid>http://programya.com/post/DataBase/MySQL/MySQL-%E7%B4%A2%E5%BC%95%E5%8F%8A%E4%BC%98%E5%8C%96/</guid>
       <description>索引 索引是帮助 MySQL 高效获取数据的数据结构，即本质上就是一种数据结构。数据库在存储数据之外还维护者满足特定查找算法的数据结构，这些数据结构以某种方式引用数据，这样就可以在数据结构上实现高级的查找算法，一种索引方式如下图所示： 一般来说索引文件本身也很大，所以并不会全部存储在内存中，往往</description>
     </item>
     
     <item>
       <title>MySQL 事务、视图、存储过程及 Join 查询</title>
-      <link>https://sangzhenya.github.io/post/DataBase/MySQL/MySQL-%E4%BA%8B%E5%8A%A1%E8%A7%86%E5%9B%BE%E5%AD%98%E5%82%A8%E8%BF%87%E7%A8%8B%E5%8F%8A-Join-%E6%9F%A5%E8%AF%A2/</link>
+      <link>http://programya.com/post/DataBase/MySQL/MySQL-%E4%BA%8B%E5%8A%A1%E8%A7%86%E5%9B%BE%E5%AD%98%E5%82%A8%E8%BF%87%E7%A8%8B%E5%8F%8A-Join-%E6%9F%A5%E8%AF%A2/</link>
       <pubDate>Sun, 19 May 2019 09:00:00 +0800</pubDate>
       
-      <guid>https://sangzhenya.github.io/post/DataBase/MySQL/MySQL-%E4%BA%8B%E5%8A%A1%E8%A7%86%E5%9B%BE%E5%AD%98%E5%82%A8%E8%BF%87%E7%A8%8B%E5%8F%8A-Join-%E6%9F%A5%E8%AF%A2/</guid>
+      <guid>http://programya.com/post/DataBase/MySQL/MySQL-%E4%BA%8B%E5%8A%A1%E8%A7%86%E5%9B%BE%E5%AD%98%E5%82%A8%E8%BF%87%E7%A8%8B%E5%8F%8A-Join-%E6%9F%A5%E8%AF%A2/</guid>
       <description>事务 对于 MySQL 中只有使用 Innodb 数据库搜索引擎的数据卷或表才支持事务，事务是用来维护数据库的完整性，保证成批的 SQL 语句要么全部执行，要么全部不执行。用来管理 insert, update, delete 语句，一般来说事务需要满足 4 个条件 ACID，即原子性 A，一致性 C，隔离性 I，持久性 D。 原子性：一个事务的所有操作要么全部完成，要么</description>
     </item>
     
     <item>
       <title>MySQL 查询优化</title>
-      <link>https://sangzhenya.github.io/post/DataBase/MySQL/MySQL-%E6%9F%A5%E8%AF%A2%E4%BC%98%E5%8C%96/</link>
+      <link>http://programya.com/post/DataBase/MySQL/MySQL-%E6%9F%A5%E8%AF%A2%E4%BC%98%E5%8C%96/</link>
       <pubDate>Fri, 17 May 2019 09:00:00 +0800</pubDate>
       
-      <guid>https://sangzhenya.github.io/post/DataBase/MySQL/MySQL-%E6%9F%A5%E8%AF%A2%E4%BC%98%E5%8C%96/</guid>
+      <guid>http://programya.com/post/DataBase/MySQL/MySQL-%E6%9F%A5%E8%AF%A2%E4%BC%98%E5%8C%96/</guid>
       <description>架构 MySQL 架构图如下： 连接层 最上层是一些客户端和连接服务，包含本地 Socket 通信和大多数基于客户端/服务端工具实现的类似 TCP/IP 的通讯。主要完成一些类似于连接处理、授权认证及相关安全的方案。在该层上引入了线程池的概念，为通过认证安全接入的客户端提供线程。同样在该层是基于 SSL 的安全连接。服务器也会为安</description>
     </item>
     

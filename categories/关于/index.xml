@@ -2,21 +2,21 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>关于 on 新月的博客</title>
-    <link>https://sangzhenya.github.io/categories/%E5%85%B3%E4%BA%8E/</link>
+    <link>http://programya.com/categories/%E5%85%B3%E4%BA%8E/</link>
     <description>Recent content in 关于 on 新月的博客</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>zh-CN</language>
     <lastBuildDate>Wed, 01 Jan 2020 00:00:00 +0000</lastBuildDate>
     
-	<atom:link href="https://sangzhenya.github.io/categories/%E5%85%B3%E4%BA%8E/index.xml" rel="self" type="application/rss+xml" />
+	<atom:link href="http://programya.com/categories/%E5%85%B3%E4%BA%8E/index.xml" rel="self" type="application/rss+xml" />
     
     
     <item>
       <title>关于我</title>
-      <link>https://sangzhenya.github.io/about/</link>
+      <link>http://programya.com/about/</link>
       <pubDate>Wed, 01 Jan 2020 00:00:00 +0000</pubDate>
       
-      <guid>https://sangzhenya.github.io/about/</guid>
+      <guid>http://programya.com/about/</guid>
       <description>风景很美、何不停下脚步看看。 如有任何对博客内容的疑问或者涉及到文章内容引用侵权的问题，请联系我邮件地址：sangzhenya@gmail.com。一定会及时处理回复，谢谢！</description>
     </item>
     

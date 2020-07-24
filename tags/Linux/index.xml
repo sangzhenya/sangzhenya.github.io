@@ -2,21 +2,21 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>Linux on 新月的博客</title>
-    <link>https://sangzhenya.github.io/tags/Linux/</link>
+    <link>http://programya.com/tags/Linux/</link>
     <description>Recent content in Linux on 新月的博客</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>zh-CN</language>
     <lastBuildDate>Sun, 21 Apr 2019 09:00:00 +0800</lastBuildDate>
     
-	<atom:link href="https://sangzhenya.github.io/tags/Linux/index.xml" rel="self" type="application/rss+xml" />
+	<atom:link href="http://programya.com/tags/Linux/index.xml" rel="self" type="application/rss+xml" />
     
     
     <item>
       <title>Linux 命令</title>
-      <link>https://sangzhenya.github.io/post/Others/Linux-%E5%91%BD%E4%BB%A4/</link>
+      <link>http://programya.com/post/Others/Linux-%E5%91%BD%E4%BB%A4/</link>
       <pubDate>Sun, 21 Apr 2019 09:00:00 +0800</pubDate>
       
-      <guid>https://sangzhenya.github.io/post/Others/Linux-%E5%91%BD%E4%BB%A4/</guid>
+      <guid>http://programya.com/post/Others/Linux-%E5%91%BD%E4%BB%A4/</guid>
       <description>强制卸载软件： 1 2 3 4 sudo mv /var/lib/dpkg/info/{packagename}.* /tmp/ sudo dpkg --remove --force-remove-reinstreq {packagename} sudo apt-get remove {packagename} sudo apt-get autoremove &amp;amp;&amp;amp; sudo apt-get autoclean 常用命令： top 命令： load average: 三个值分别是系统 1分钟，5分钟，15分钟系统的负载平均值。如果三个值相加，除以3，乘以 100%的结果大于 60%，则表明系统压力过大。 uptime 命令精简版，显示系统负载情况。 vmstat 命令； vmstat -n 2 3 每 2 秒查询一次，</description>
     </item>
     
