@@ -168,29 +168,6 @@
     <article class="post">
         <header>
             <h1 class="post-title">
-                <a href="https://programya.com/post/Spring/Spring-Security/Spring-Security-%E5%85%A5%E9%97%A8/">Spring Security 入门</a>
-            </h1>
-        </header>
-        <date class="post-meta meta-date">
-            2019年2月15日
-        </date>
-        
-        <div class="post-meta meta-category">
-            |
-            
-            <a href='https://programya.com/categories/Spring'>Spring</a>
-            
-        </div>
-        
-        <div class="post-content">
-            Spring Security 就是通过一条过滤器链使用认证和授权的工作。如下图所示： 其中 FilterSecurityInterceptor 中会根据 config 配置的内容，判断是否可以访问对应的资源，如果不可以则会抛出异常。然后在 ExceptionTranslationFilter 中会捕获异常并作出响应的处理。 Spring Security 几个重要的概念如下： SecurityContextHolder Spring Security 提供的 SecurityContextHolder 类让程序可以方便访问 SecurityContext。其采用的是 ThreadLocal 方……
-            <p class="readmore"><a href="https://programya.com/post/Spring/Spring-Security/Spring-Security-%E5%85%A5%E9%97%A8/">阅读全文</a></p>
-        </div>
-    </article>
-    
-    <article class="post">
-        <header>
-            <h1 class="post-title">
                 <a href="https://programya.com/post/Spring/Spring-MVC/Spring-MVC-Web-%E7%BB%84%E4%BB%B6/">Spring MVC Web 组件</a>
             </h1>
         </header>
@@ -303,6 +280,29 @@
         </div>
     </article>
     
+    <article class="post">
+        <header>
+            <h1 class="post-title">
+                <a href="https://programya.com/post/Spring/Spring-MVC/Spring-MVC-%E5%BC%82%E6%AD%A5%E5%A4%84%E7%90%86/">Spring MVC 异步处理</a>
+            </h1>
+        </header>
+        <date class="post-meta meta-date">
+            2019年2月3日
+        </date>
+        
+        <div class="post-meta meta-category">
+            |
+            
+            <a href='https://programya.com/categories/Spring'>Spring</a>
+            
+        </div>
+        
+        <div class="post-content">
+            在 Servlet 3.0 的时候增加了对异步的支持，在此之前 Servlet 采用 Thread Per Request 的方式处理请求。即如果一个请求如果进行耗时的操作例如 IO，数据库或者调用第三方的接口等等，其所对应的的线程将同步的等待响应操作的完成，所以此时线程并不能即使的释放线程放回线程池以供后续使用，在并发量大的情况下，这会带来性能问题。……
+            <p class="readmore"><a href="https://programya.com/post/Spring/Spring-MVC/Spring-MVC-%E5%BC%82%E6%AD%A5%E5%A4%84%E7%90%86/">阅读全文</a></p>
+        </div>
+    </article>
+    
 
     
 
@@ -361,6 +361,10 @@
 <ul class="widget-list">
     
     <li>
+        <a href="https://programya.com/post/Spring/Spring-Security/Spring-Security/" title="Spring Security">Spring Security</a>
+    </li>
+    
+    <li>
         <a href="https://programya.com/post/Java/JVM/Java-JNDI/" title="Java JNDI">Java JNDI</a>
     </li>
     
@@ -386,10 +390,6 @@
     
     <li>
         <a href="https://programya.com/post/Java/JVM/Java-%E9%80%83%E9%80%B8%E5%88%86%E6%9E%90/" title="Java 逃逸分析">Java 逃逸分析</a>
-    </li>
-    
-    <li>
-        <a href="https://programya.com/post/Spring/Spring-Security/Spring-Security/" title="Spring Security">Spring Security</a>
     </li>
     
     <li>
@@ -423,7 +423,7 @@
     
     <li><a href="https://programya.com/categories/Redis/">Redis (2)</a></li>
     
-    <li><a href="https://programya.com/categories/Spring/">Spring (37)</a></li>
+    <li><a href="https://programya.com/categories/Spring/">Spring (36)</a></li>
     
     <li><a href="https://programya.com/categories/%E5%85%B3%E4%BA%8E/">关于 (1)</a></li>
     
