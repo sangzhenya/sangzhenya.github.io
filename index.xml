@@ -21,6 +21,15 @@
     </item>
     
     <item>
+      <title>Spring Security JWT 和 OAuth2</title>
+      <link>https://programya.com/post/Spring/Spring-Security/Spring-Security-JWT-%E5%92%8C-OAuth2/</link>
+      <pubDate>Fri, 15 May 2020 09:00:00 +0800</pubDate>
+      
+      <guid>https://programya.com/post/Spring/Spring-Security/Spring-Security-JWT-%E5%92%8C-OAuth2/</guid>
+      <description>[toc] JWT JWT (JSON Web Token) 是出色的分布式身份校验方案，可以生成 Token，也可以解析校验 Token。 JWT 生成的 Token 由三部分组成： 头部 主要设置一些规范信息，签名部分的格式编码就在头部中声明 载荷 Token 中存有有效信息的部分，用户名，用户角色，过期时间等。 签名 将头部和载荷分别采用 base64加密后，用 “.” 相</description>
+    </item>
+    
+    <item>
       <title>Java JNDI</title>
       <link>https://programya.com/post/Java/JVM/Java-JNDI/</link>
       <pubDate>Wed, 11 Mar 2020 09:00:00 +0800</pubDate>

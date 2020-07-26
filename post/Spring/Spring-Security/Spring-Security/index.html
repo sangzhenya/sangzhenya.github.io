@@ -24,7 +24,8 @@
 
     <link rel="stylesheet" href='https://programya.com/css/normalize.css'>
     <link rel="stylesheet" href='https://programya.com/css/style.css'>
-    <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+    
+    <script type="text/javascript" src="https://cdn.bootcdn.net/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
 
     
 
@@ -259,21 +260,39 @@
 </div><p>默认会有一个密码打印在控制台中，测试的时候也可以直接在代码中定义一个用户：</p>
 <div class="highlight"><div style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4">
 <table style="border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
-<pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">1
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">2
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">3
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">4
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">5
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">6
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">7
+<pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 1
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 2
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 3
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 4
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 5
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 6
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 7
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 8
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 9
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">10
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">11
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">12
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">13
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">14
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">15
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">16
 </span></code></pre></td>
 <td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
-<pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#3c5d5d;font-weight:bold">@Bean</span>
+<pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#998;font-style:italic">// 方式 1
+</span><span style="color:#998;font-style:italic"></span><span style="color:#3c5d5d;font-weight:bold">@Bean</span>
 <span style="color:#3c5d5d;font-weight:bold">@Override</span>
 <span style="color:#000;font-weight:bold">public</span> UserDetailsService <span style="color:#900;font-weight:bold">userDetailsService</span><span style="color:#000;font-weight:bold">()</span> <span style="color:#000;font-weight:bold">{</span>
   UserDetails userDetails <span style="color:#000;font-weight:bold">=</span> User<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">withDefaultPasswordEncoder</span><span style="color:#000;font-weight:bold">().</span><span style="color:#008080">username</span><span style="color:#000;font-weight:bold">(</span><span style="color:#d14">&#34;xinyue&#34;</span><span style="color:#000;font-weight:bold">)</span>
-    <span style="color:#000;font-weight:bold">.</span><span style="color:#008080">password</span><span style="color:#000;font-weight:bold">(</span><span style="color:#d14">&#34;xinyue&#34;</span><span style="color:#000;font-weight:bold">).</span><span style="color:#008080">roles</span><span style="color:#000;font-weight:bold">(</span><span style="color:#d14">&#34;USERS&#34;</span><span style="color:#000;font-weight:bold">).</span><span style="color:#008080">build</span><span style="color:#000;font-weight:bold">();</span>
+    <span style="color:#000;font-weight:bold">.</span><span style="color:#008080">password</span><span style="color:#000;font-weight:bold">(</span><span style="color:#d14">&#34;xinyue&#34;</span><span style="color:#000;font-weight:bold">).</span><span style="color:#008080">roles</span><span style="color:#000;font-weight:bold">(</span><span style="color:#d14">&#34;ADMIN&#34;</span><span style="color:#000;font-weight:bold">).</span><span style="color:#008080">build</span><span style="color:#000;font-weight:bold">();</span>
   <span style="color:#000;font-weight:bold">return</span> <span style="color:#000;font-weight:bold">new</span> InMemoryUserDetailsManager<span style="color:#000;font-weight:bold">(</span>userDetails<span style="color:#000;font-weight:bold">);</span>
+<span style="color:#000;font-weight:bold">}</span>
+<span style="color:#998;font-style:italic">// 方式 2
+</span><span style="color:#998;font-style:italic"></span><span style="color:#3c5d5d;font-weight:bold">@Override</span>
+<span style="color:#000;font-weight:bold">protected</span> <span style="color:#458;font-weight:bold">void</span> <span style="color:#900;font-weight:bold">configure</span><span style="color:#000;font-weight:bold">(</span>AuthenticationManagerBuilder auth<span style="color:#000;font-weight:bold">)</span> <span style="color:#000;font-weight:bold">throws</span> Exception <span style="color:#000;font-weight:bold">{</span>
+  auth<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">inMemoryAuthentication</span><span style="color:#000;font-weight:bold">().</span><span style="color:#008080">withUser</span><span style="color:#000;font-weight:bold">(</span><span style="color:#d14">&#34;xinyue&#34;</span><span style="color:#000;font-weight:bold">)</span>
+    <span style="color:#000;font-weight:bold">.</span><span style="color:#008080">password</span><span style="color:#000;font-weight:bold">(</span><span style="color:#d14">&#34;{noop}123&#34;</span><span style="color:#000;font-weight:bold">)</span>
+    <span style="color:#000;font-weight:bold">.</span><span style="color:#008080">roles</span><span style="color:#000;font-weight:bold">(</span><span style="color:#d14">&#34;ADMIN&#34;</span><span style="color:#000;font-weight:bold">)</span>
+    <span style="color:#000;font-weight:bold">.</span><span style="color:#008080">authorities</span><span style="color:#000;font-weight:bold">(</span><span style="color:#d14">&#34;admin&#34;</span><span style="color:#000;font-weight:bold">,</span> <span style="color:#d14">&#34;demo&#34;</span><span style="color:#000;font-weight:bold">);</span>
 <span style="color:#000;font-weight:bold">}</span>
 </code></pre></td></tr></table>
 </div>
@@ -1667,6 +1686,8 @@
     <h2>See Also</h2>
     <ul class="listing">
         
+        <li><a href="https://programya.com/post/Spring/Spring-Security/Spring-Security-JWT-%E5%92%8C-OAuth2/">Spring Security JWT 和 OAuth2</a></li>
+        
         <li><a href="https://programya.com/post/Spring/Spring-Cloud/Spring-Cloud-Eureka-%E6%B3%A8%E5%86%8C%E4%B8%AD%E5%BF%83/">Spring Cloud Eureka</a></li>
         
         <li><a href="https://programya.com/post/Spring/Spring-Cloud/Spring-Cloud-Ribbon-%E8%B4%9F%E8%BD%BD%E5%9D%87%E8%A1%A1/">Spring Cloud Ribbon Feign Hystrix Zuul</a></li>
@@ -1674,8 +1695,6 @@
         <li><a href="https://programya.com/post/Spring/Spring-Cloud/Spring-Cloud-ConfigServer/">Spring Cloud Config Server</a></li>
         
         <li><a href="https://programya.com/post/Spring/Spring-Boot/Spring-Boot-MyBatis-%E5%A4%9A%E6%95%B0%E6%8D%AE%E6%BA%90%E9%85%8D%E7%BD%AE/">Spring Boot MyBatis 多数据源配置</a></li>
-        
-        <li><a href="https://programya.com/post/Spring/Spring-Boot/Spring-Boot-Actuator/">Spring Boot Actuator</a></li>
         
     </ul>
 </div>
@@ -1721,6 +1740,10 @@
     </li>
     
     <li>
+        <a href="https://programya.com/post/Spring/Spring-Security/Spring-Security-JWT-%E5%92%8C-OAuth2/" title="Spring Security JWT 和 OAuth2">Spring Security JWT 和 OAuth2</a>
+    </li>
+    
+    <li>
         <a href="https://programya.com/post/Java/JVM/Java-JNDI/" title="Java JNDI">Java JNDI</a>
     </li>
     
@@ -1752,10 +1775,6 @@
         <a href="https://programya.com/post/Java/JVM/Java-%E5%9B%9B%E7%A7%8D%E5%BC%95%E7%94%A8%E7%B1%BB%E5%9E%8B/" title="Java 四种引用类型">Java 四种引用类型</a>
     </li>
     
-    <li>
-        <a href="https://programya.com/post/%E5%BE%AE%E6%9C%8D%E5%8A%A1/dubbo/Dubbo-%E5%8E%9F%E7%90%86/" title="Dubbo 原理">Dubbo 原理</a>
-    </li>
-    
 </ul>
     </section>
 
@@ -1779,7 +1798,7 @@
     
     <li><a href="https://programya.com/categories/Redis/">Redis (2)</a></li>
     
-    <li><a href="https://programya.com/categories/Spring/">Spring (36)</a></li>
+    <li><a href="https://programya.com/categories/Spring/">Spring (37)</a></li>
     
     <li><a href="https://programya.com/categories/%E5%85%B3%E4%BA%8E/">关于 (1)</a></li>
     
